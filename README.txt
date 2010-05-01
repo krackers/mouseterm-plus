@@ -1,26 +1,26 @@
 MouseTerm
 =========
 
-MouseTerm is a [SIMBL][1]/[PlugSuit][2] plugin for Mac OS X's
-[Terminal.app][3] that passes mouse events to the terminal, allowing you to
-use mouse shortcuts within applications that support them.
+MouseTerm is a [SIMBL][1] plugin for Mac OS X's [Terminal.app][2] that passes
+mouse events to the terminal, allowing you to use mouse shortcuts within
+applications that support them.
 
-No configuration is necessary, just open the `.dmg` file, run `Install`, and
-restart Terminal.app. To uninstall, simply run `Uninstall` from the `.dmg`.
+To get started, first install [SIMBL][1] (MouseTerm won't work without it!).
+Once you've done that, open the `.dmg` file, run `Install`, and restart
+Terminal.app. To uninstall, run `Uninstall` from the `.dmg`.
 
 [1]: http://www.culater.net/software/SIMBL/SIMBL.php
-[2]: http://infinite-labs.net/PlugSuit/
-[3]: http://www.apple.com/macosx/technology/unix.html
+[2]: http://www.apple.com/macosx/technology/unix.html
 
 
 Download
 --------
 
-* [MouseTerm.dmg][4] (82 KB, for Snow Leopard users)
-* [MouseTerm-leopard.dmg][5] (82 KB, for Leopard users)
+* [MouseTerm.dmg][3] (82 KB, for Snow Leopard users)
+* [MouseTerm-leopard.dmg][4] (82 KB, for Leopard users)
 
-[4]: http://bitheap.org/mouseterm/MouseTerm.dmg
-[5]: http://bitheap.org/mouseterm/MouseTerm-leopard.dmg
+[3]: http://bitheap.org/mouseterm/MouseTerm.dmg
+[4]: http://bitheap.org/mouseterm/MouseTerm-leopard.dmg
 
 
 Status
@@ -33,7 +33,7 @@ What works:
 
 * Mouse scroll wheel reporting.
 * Simulated mouse wheel scrolling for programs like `less` (i.e. any
-  fullscreen program that uses [application cursor key mode][6]).
+  fullscreen program that uses [application cursor key mode][5]).
 
 What's being worked on:
 
@@ -41,7 +41,7 @@ What's being worked on:
 * `xterm` "hilite" mouse tracking mode.
 * A preferences dialog and terminal profile integration.
 
-[6]: http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter4.html#config-appcursor
+[5]: http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter4.html#config-appcursor
 
 
 Frequently Asked Questions
@@ -49,8 +49,8 @@ Frequently Asked Questions
 
 > What programs can I use the mouse in?
 
-This varies widely and depends on the specific program. `less`, [Emacs][7],
-and [Vim][8] are good places to test out mouse reporting.
+This varies widely and depends on the specific program. `less`, [Emacs][6],
+and [Vim][7] are good places to test out mouse reporting.
 
 > How do I enable mouse reporting in Vim?
 
@@ -77,14 +77,14 @@ enable terminal mouse support, add this to your `~/.emacs` file:
                                    (interactive)
                                    (scroll-up 1))))
 
-[7]: http://www.gnu.org/software/emacs/
-[8]: http://www.vim.org/
+[6]: http://www.gnu.org/software/emacs/
+[7]: http://www.vim.org/
 
 
 Development
 -----------
 
-Download the official development repository using [Git][9]:
+Download the official development repository using [Git][8]:
 
     git clone git://github.com/brodie/mouseterm.git
 
@@ -92,21 +92,21 @@ Run `make` to compile the plugin, and `make install` to install it into
 your home directory's SIMBL plugins folder. Run `make` and `make builddmg`
 to create a disk image of the application.
 
-Visit [GitHub][10] if you'd like to fork the project, watch for new changes,
+Visit [GitHub][9] if you'd like to fork the project, watch for new changes,
 or report issues.
 
-[JRSwizzle][11] and some mouse reporting code from [iTerm][12] are used in
+[JRSwizzle][10] and some mouse reporting code from [iTerm][11] are used in
 MouseTerm.
 
-[9]: http://git-scm.org/
-[10]: http://github.com/brodie/mouseterm
-[11]: http://rentzsch.com/trac/wiki/JRSwizzle
-[12]: http://iterm.sourceforge.net/
+[8]: http://git-scm.org/
+[9]: http://github.com/brodie/mouseterm
+[10]: http://rentzsch.com/trac/wiki/JRSwizzle
+[11]: http://iterm.sourceforge.net/
 
 
 Contact
 -------
 
-Contact information can be found on my site, [brodierao.com][13].
+Contact information can be found on my site, [brodierao.com][12].
 
-[13]: http://brodierao.com/
+[12]: http://brodierao.com/
