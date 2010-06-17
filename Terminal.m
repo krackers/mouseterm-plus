@@ -10,7 +10,7 @@ inline NSValue* init_ivars(id obj)
     if ([MouseTerm_ivars objectForKey: value] == nil)
     {
         [MouseTerm_ivars setObject: [NSMutableDictionary dictionary]
-                         forKey: value];
+                            forKey: value];
     }
     return value;
 }
@@ -193,81 +193,81 @@ inline void set_ivar(id obj, NSString* name, id value)
 
     switch ([(NSNumber*) get_ivar(shell, @"mouseMode") intValue])
     {
-        case NO_MODE:
+    case NO_MODE:
+    {
+        if ([screen isAlternateScreenActive]
+            &&
+            [(NSNumber*) get_ivar(shell, @"appCursorMode") boolValue])
         {
-            if ([screen isAlternateScreenActive]
-                &&
-                [(NSNumber*) get_ivar(shell, @"appCursorMode") boolValue])
-            {
-                // Calculate how many lines to scroll by (takes acceleration
-                // into account)
-                NSData* data;
-                // deltaY returns CGFloat, which can be float or double
-                // depending on the architecture. Upcasting floats to doubles
-                // seems like an easier compromise than detecting what the
-                // type really is.
-                double delta = [event deltaY];
-
-                // Trackpads seem to return a lot of 0.0 events, which
-                // shouldn't trigger scrolling anyway.
-                if (delta == 0.0)
-                    goto handled;
-                else if (delta < 0.0)
-                {
-                    delta = fabs(delta);
-                    data = [NSData dataWithBytes: DOWN_ARROW_APP
-                                   length: ARROW_LEN];
-                }
-                else
-                {
-                    data = [NSData dataWithBytes: UP_ARROW_APP
-                                   length: ARROW_LEN];
-                }
-
-                linecount_t i;
-                linecount_t lines = lround(delta) + 1;
-                for (i = 0; i < lines; ++i)
-                    [shell writeData: data];
-
-                goto handled;
-            }
-            else
-                goto ignored;
-        }
-        // FIXME: Unhandled at the moment
-        case HILITE_MODE:
-            goto ignored;
-        case NORMAL_MODE:
-        case BUTTON_MODE:
-        case ALL_MODE:
-        {
-            MouseButton button;
+            // Calculate how many lines to scroll by (takes acceleration
+            // into account)
+            NSData* data;
+            // deltaY returns CGFloat, which can be float or double
+            // depending on the architecture. Upcasting floats to doubles
+            // seems like an easier compromise than detecting what the
+            // type really is.
             double delta = [event deltaY];
+
+            // Trackpads seem to return a lot of 0.0 events, which
+            // shouldn't trigger scrolling anyway.
             if (delta == 0.0)
                 goto handled;
             else if (delta < 0.0)
             {
                 delta = fabs(delta);
-                button = MOUSE_WHEEL_DOWN;
+                data = [NSData dataWithBytes: DOWN_ARROW_APP
+                                      length: ARROW_LEN];
             }
             else
-                button = MOUSE_WHEEL_UP;
+            {
+                data = [NSData dataWithBytes: UP_ARROW_APP
+                                      length: ARROW_LEN];
+            }
 
-            NSPoint viewloc = [self convertPoint: [event locationInWindow]
-                                    fromView: nil];
-            Position pos = [self displayPositionForPoint: viewloc];
-            // The above method returns the position *including* scrollback,
-            // so we have to compensate for that.
-            pos.y -= scrollback;
-            NSData* data = mousePress(button, [event modifierFlags], pos.x,
-                                      pos.y);
-
-            long i;
-            long lines = lround(delta) + 1;
+            linecount_t i;
+            linecount_t lines = lround(delta) + 1;
             for (i = 0; i < lines; ++i)
                 [shell writeData: data];
 
             goto handled;
+        }
+        else
+            goto ignored;
+    }
+    // FIXME: Unhandled at the moment
+    case HILITE_MODE:
+        goto ignored;
+    case NORMAL_MODE:
+    case BUTTON_MODE:
+    case ALL_MODE:
+    {
+        MouseButton button;
+        double delta = [event deltaY];
+        if (delta == 0.0)
+            goto handled;
+        else if (delta < 0.0)
+        {
+            delta = fabs(delta);
+                button = MOUSE_WHEEL_DOWN;
+        }
+        else
+            button = MOUSE_WHEEL_UP;
+
+        NSPoint viewloc = [self convertPoint: [event locationInWindow]
+                                    fromView: nil];
+        Position pos = [self displayPositionForPoint: viewloc];
+        // The above method returns the position *including* scrollback,
+        // so we have to compensate for that.
+        pos.y -= scrollback;
+        NSData* data = mousePress(button, [event modifierFlags], pos.x,
+                                  pos.y);
+
+        long i;
+        long lines = lround(delta) + 1;
+        for (i = 0; i < lines; ++i)
+            [shell writeData: data];
+
+        goto handled;
         }
     }
 
@@ -287,11 +287,13 @@ ignored:
              commandAsShell: (BOOL) arg6
 {
     [MouseTerm_ivars setObject: [NSMutableDictionary dictionary]
-                     forKey: [NSValue valueWithPointer: self]];
+                        forKey: [NSValue valueWithPointer: self]];
     set_ivar(self, @"mouseMode", [NSNumber numberWithInt: NO_MODE]);
     set_ivar(self, @"appCursorMode", [NSNumber numberWithBool: NO]);
+    set_ivar(self, @"mouseDown", [NSNumber numberWithBool: NO]);
     return [self MouseTerm_initWithAction: arg1 target: arg2 profile: arg3
-                 controller: arg4 customShell: arg5 commandAsShell: arg6];
+                               controller: arg4 customShell: arg5
+                           commandAsShell: arg6];
 }
 
 // Deletes instance variables
