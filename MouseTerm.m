@@ -92,7 +92,6 @@ NSMutableDictionary* MouseTerm_ivars = nil;
             @selector(MouseTerm_initWithAction:target:profile:controller:customShell:commandAsShell:));
     SWIZZLE(shell, @selector(dealloc), @selector(MouseTerm_dealloc));
     SWIZZLE(view, @selector(scrollWheel:), @selector(MouseTerm_scrollWheel:));
-#if 0
     SWIZZLE(view, @selector(mouseDown:), @selector(MouseTerm_mouseDown:));
     SWIZZLE(view, @selector(mouseDragged:),
             @selector(MouseTerm_mouseDragged:));
@@ -109,7 +108,6 @@ NSMutableDictionary* MouseTerm_ivars = nil;
             @selector(MouseTerm_otherMouseDragged:));
     SWIZZLE(view, @selector(otherMouseUp:),
             @selector(MouseTerm_otherMouseUp:));
-#endif
     SWIZZLE(controller, @selector(shellDidReceiveData:),
             @selector(MouseTerm_shellDidReceiveData:));
 }

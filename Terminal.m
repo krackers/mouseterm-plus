@@ -112,83 +112,197 @@ inline void set_ivar(id obj, NSString* name, id value)
 
 @implementation NSView (MouseTermTTView)
 
-// FIXME: These need to be implemented!
-#if 0
+- (BOOL) MouseTerm_shouldIgnore: (NSEvent*) event
+{
+    // Don't handle if alt/option is pressed
+    if ([event modifierFlags] & NSAlternateKeyMask)
+        return YES;
+
+    TTLogicalScreen* screen = [self logicalScreen];
+    // Don't handle if the scroller isn't at the bottom
+    linecount_t scrollback =
+        (linecount_t) [screen lineCount] -
+        (linecount_t) [self rowCount];
+    if (scrollback > 0 &&
+        [[[self pane] scroller] floatValue] < 1.0)
+    {
+        return YES;
+    }
+
+    return NO;
+}
+
+- (BOOL) MouseTerm_shouldIgnoreDown: (NSEvent*) event
+{
+    TTLogicalScreen* screen = [self logicalScreen];
+    // Don't handle if the scroller isn't at the bottom
+    linecount_t scrollback =
+        (linecount_t) [screen lineCount] -
+        (linecount_t) [self rowCount];
+    if (scrollback > 0 &&
+        [[[self pane] scroller] floatValue] < 1.0)
+    {
+        return YES;
+    }
+
+    TTShell* shell = [[self controller] shell];
+    if (![(NSNumber*) get_ivar(shell, @"isMouseDown") boolValue])
+        return YES;
+
+    return NO;
+}
+
+- (Position) MouseTerm_currentPosition: (NSEvent*) event
+{
+    linecount_t scrollback =
+        (linecount_t) [[self logicalScreen] lineCount] -
+        (linecount_t) [self rowCount];
+    NSPoint viewloc = [self convertPoint: [event locationInWindow]
+                                fromView: nil];
+    Position pos = [self displayPositionForPoint: viewloc];
+    // The above method returns the position *including* scrollback,
+    // so we have to compensate for that.
+    pos.y -= scrollback;
+    return pos;
+}
+
 - (void) MouseTerm_mouseDown: (NSEvent*) event
 {
-    NSLog(@"[MouseTerm] mouseDown");
-    return [self MouseTerm_mouseDown: event];
+    if ([self MouseTerm_shouldIgnore: event])
+        goto ignored;
+
+    TTShell* shell = [[self controller] shell];
+    switch ([(NSNumber*) get_ivar(shell, @"mouseMode") intValue])
+    {
+    case NO_MODE:
+    case HILITE_MODE:
+        goto ignored;
+    case NORMAL_MODE:
+    case BUTTON_MODE:
+    case ALL_MODE:
+    {
+        set_ivar(shell, @"isMouseDown", [NSNumber numberWithBool: YES]);
+        Position pos = [self MouseTerm_currentPosition: event];
+        NSData* data = mousePress(MOUSE_BUTTON1, [event modifierFlags],
+                                  pos.x, pos.y);
+        [shell writeData: data];
+
+        goto handled;
+    }
+    }
+
+handled:
+    [self clearTextSelection];
+    return;
+ignored:
+    [self MouseTerm_mouseDown: event];
 }
 
 - (void) MouseTerm_mouseDragged: (NSEvent*) event
 {
-    NSLog(@"[MouseTerm] mouseDragged");
-    return [self MouseTerm_mouseDragged: event];
+    if ([self MouseTerm_shouldIgnoreDown: event])
+        goto ignored;
+
+    TTShell* shell = [[self controller] shell];
+    switch ([(NSNumber*) get_ivar(shell, @"mouseMode") intValue])
+    {
+    case NO_MODE:
+        goto ignored;
+    case NORMAL_MODE:
+    case HILITE_MODE:
+        goto handled;
+    case BUTTON_MODE:
+    case ALL_MODE:
+    {
+        Position pos = [self MouseTerm_currentPosition: event];
+        NSData* data = mouseMotion(MOUSE_RELEASE, [event modifierFlags],
+                                   pos.x, pos.y);
+        [shell writeData: data];
+
+        goto handled;
+    }
+    }
+handled:
+    [self clearTextSelection];
+    return;
+ignored:
+    [self MouseTerm_mouseDragged: event];
 }
 
 - (void) MouseTerm_mouseUp: (NSEvent*) event
 {
-    NSLog(@"[MouseTerm] mouseUp");
-    return [self MouseTerm_mouseUp: event];
+    if ([self MouseTerm_shouldIgnoreDown: event])
+        goto ignored;
+
+    TTShell* shell = [[self controller] shell];
+    switch ([(NSNumber*) get_ivar(shell, @"mouseMode") intValue])
+    {
+    case NO_MODE:
+    case HILITE_MODE:
+        goto ignored;
+    case NORMAL_MODE:
+    case BUTTON_MODE:
+    case ALL_MODE:
+    {
+        set_ivar(shell, @"isMouseDown", [NSNumber numberWithBool: NO]);
+        Position pos = [self MouseTerm_currentPosition: event];
+        NSData* data = mousePress(MOUSE_RELEASE, [event modifierFlags],
+                                  pos.x, pos.y);
+        [shell writeData: data];
+
+        goto handled;
+    }
+    }
+handled:
+    [self clearTextSelection];
+    return;
+ignored:
+    [self MouseTerm_mouseUp: event];
 }
 
 - (void) MouseTerm_rightMouseDown: (NSEvent*) event
 {
     NSLog(@"[MouseTerm] rightMouseDown");
-    return [self MouseTerm_rightMouseDown: event];
+    [self MouseTerm_rightMouseDown: event];
 }
 
 - (void) MouseTerm_rightMouseDragged: (NSEvent*) event
 {
     NSLog(@"[MouseTerm] rightMouseDragged");
-    return [self MouseTerm_rightMouseDragged: event];
+    [self MouseTerm_rightMouseDragged: event];
 }
 
 - (void) MouseTerm_rightMouseUp: (NSEvent*) event
 {
     NSLog(@"[MouseTerm] rightMouseUp");
-    return [self MouseTerm_rightMouseUp: event];
+    [self MouseTerm_rightMouseUp: event];
 }
 
 - (void) MouseTerm_otherMouseDown: (NSEvent*) event
 {
     NSLog(@"[MouseTerm] otherMouseDown");
-    return [self MouseTerm_otherMouseDown: event];
+    [self MouseTerm_otherMouseDown: event];
 }
 
 - (void) MouseTerm_otherMouseDragged: (NSEvent*) event
 {
     NSLog(@"[MouseTerm] otherMouseDragged");
-    return [self MouseTerm_otherMouseDragged: event];
+    [self MouseTerm_otherMouseDragged: event];
 }
 
 - (void) MouseTerm_otherMouseUp: (NSEvent*) event
 {
     NSLog(@"[MouseTerm] otherMouseUp");
-    return [self MouseTerm_otherMouseUp: event];
+    [self MouseTerm_otherMouseUp: event];
 }
-#endif
 
 // Intercepts all scroll wheel movements (one wheel "tick" at a time)
 - (void) MouseTerm_scrollWheel: (NSEvent*) event
 {
-    // Don't handle any scrolling if alt/option is pressed
-    if ([event modifierFlags] & NSAlternateKeyMask)
+    if ([self MouseTerm_shouldIgnore: event])
         goto ignored;
 
     TTLogicalScreen* screen = [self logicalScreen];
-
-    // Don't handle scrolling if the scroller isn't at the bottom
-    linecount_t scrollback =
-        (linecount_t) [screen lineCount] -
-        (linecount_t) [self rowCount];
-
-    if (scrollback > 0 &&
-        [[[self pane] scroller] floatValue] < 1.0)
-    {
-        goto ignored;
-    }
-
     TTShell* shell = [[self controller] shell];
 
     switch ([(NSNumber*) get_ivar(shell, @"mouseMode") intValue])
@@ -253,12 +367,7 @@ inline void set_ivar(id obj, NSString* name, id value)
         else
             button = MOUSE_WHEEL_UP;
 
-        NSPoint viewloc = [self convertPoint: [event locationInWindow]
-                                    fromView: nil];
-        Position pos = [self displayPositionForPoint: viewloc];
-        // The above method returns the position *including* scrollback,
-        // so we have to compensate for that.
-        pos.y -= scrollback;
+        Position pos = [self MouseTerm_currentPosition: event];
         NSData* data = mousePress(button, [event modifierFlags], pos.x,
                                   pos.y);
 
@@ -268,7 +377,7 @@ inline void set_ivar(id obj, NSString* name, id value)
             [shell writeData: data];
 
         goto handled;
-        }
+    }
     }
 
 handled:
@@ -290,7 +399,7 @@ ignored:
                         forKey: [NSValue valueWithPointer: self]];
     set_ivar(self, @"mouseMode", [NSNumber numberWithInt: NO_MODE]);
     set_ivar(self, @"appCursorMode", [NSNumber numberWithBool: NO]);
-    set_ivar(self, @"mouseDown", [NSNumber numberWithBool: NO]);
+    set_ivar(self, @"isMouseDown", [NSNumber numberWithBool: NO]);
     return [self MouseTerm_initWithAction: arg1 target: arg2 profile: arg3
                                controller: arg4 customShell: arg5
                            commandAsShell: arg6];

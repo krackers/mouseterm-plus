@@ -47,22 +47,35 @@ typedef enum
 #define MOUSE_RESPONSE_LEN 6
 
 // Returns a control code for a mouse movement (from iTerm)
-inline NSData* mousePress(MouseButton button, unsigned int modflag,
-                          unsigned int x, unsigned int y)
+inline NSData* mouseEvent(MouseButton button, unsigned int modflag,
+                          unsigned int x, unsigned int y,
+                          BOOL motion)
 {
     char buf[MOUSE_RESPONSE_LEN + 1];
     char cb;
 
     switch (button)
     {
-    case MOUSE_WHEEL_DOWN:
-        cb = 65;
+    case MOUSE_RELEASE:
+        cb = 3;
+        break;
+    case MOUSE_BUTTON1:
+        cb = 0;
+        break;
+    case MOUSE_BUTTON2:
+        cb = 1;
+        break;
+    case MOUSE_BUTTON3:
+        cb = 2;
         break;
     case MOUSE_WHEEL_UP:
         cb = 64;
         break;
+    case MOUSE_WHEEL_DOWN:
+        cb = 65;
+        break;
     default:
-        cb = button % 3;
+        cb = 0;
     }
     cb += 32;
 
@@ -72,8 +85,22 @@ inline NSData* mousePress(MouseButton button, unsigned int modflag,
         cb |= 8;
     if (modflag & NSControlKeyMask)
         cb |= 16;
+    if (motion)
+        cb += 32;
 
     snprintf(buf, sizeof(buf), MOUSE_RESPONSE, cb, 32 + x + 1,
              32 + y + 1);
     return [NSData dataWithBytes: buf length: MOUSE_RESPONSE_LEN];
+}
+
+inline NSData* mousePress(MouseButton button, unsigned int modflag,
+                          unsigned int x, unsigned int y)
+{
+    return mouseEvent(button, modflag, x, y, NO);
+}
+
+inline NSData* mouseMotion(MouseButton button, unsigned int modflag,
+                          unsigned int x, unsigned int y)
+{
+    return mouseEvent(button, modflag, x, y, YES);
 }
