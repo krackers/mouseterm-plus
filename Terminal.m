@@ -4,29 +4,6 @@
 #import "MouseTerm.h"
 #import "Mouse.h"
 
-inline NSValue* init_ivars(id obj)
-{
-    NSValue* value = [NSValue valueWithPointer: obj];
-    if ([MouseTerm_ivars objectForKey: value] == nil)
-    {
-        [MouseTerm_ivars setObject: [NSMutableDictionary dictionary]
-                            forKey: value];
-    }
-    return value;
-}
-
-inline id get_ivar(id obj, NSString* name)
-{
-    NSValue* ptr = init_ivars(obj);
-    return [[MouseTerm_ivars objectForKey: ptr] objectForKey: name];
-}
-
-inline void set_ivar(id obj, NSString* name, id value)
-{
-    NSValue* ptr = init_ivars(obj);
-    [[MouseTerm_ivars objectForKey: ptr] setObject: value forKey: name];
-}
-
 @implementation NSObject (MouseTermTTTabController)
 
 // Intercepts all shell output to look for mouse reporting control codes
@@ -68,12 +45,12 @@ inline void set_ivar(id obj, NSString* name, id value)
                 switch (flag)
                 {
                 case TOGGLE_ON:
-                    set_ivar([self shell], @"mouseMode",
-                             [NSNumber numberWithInt: mouseMode]);
+                    [[self shell] MouseTerm_set: @"mouseMode"
+                                  value: [NSNumber numberWithInt: mouseMode]];
                     break;
                 case TOGGLE_OFF:
-                    set_ivar([self shell], @"mouseMode",
-                             [NSNumber numberWithInt: NO_MODE]);
+                    [[self shell] MouseTerm_set: @"mouseMode"
+                                  value: [NSNumber numberWithInt: NO_MODE]];
                     break;
                 }
             }
@@ -94,12 +71,12 @@ inline void set_ivar(id obj, NSString* name, id value)
             switch (flag)
             {
             case TOGGLE_ON:
-                set_ivar([self shell], @"appCursorMode",
-                         [NSNumber numberWithBool: YES]);
+                [[self shell] MouseTerm_set: @"appCursorMode"
+                                      value: [NSNumber numberWithBool: YES]];
                 break;
             case TOGGLE_OFF:
-                set_ivar([self shell], @"appCursorMode",
-                         [NSNumber numberWithBool: NO]);
+                [[self shell] MouseTerm_set: @"appCursorMode"
+                                      value: [NSNumber numberWithBool: NO]];
                 break;
             }
         }
@@ -146,7 +123,7 @@ inline void set_ivar(id obj, NSString* name, id value)
     }
 
     TTShell* shell = [[self controller] shell];
-    if (![(NSNumber*) get_ivar(shell, @"isMouseDown") boolValue])
+    if (![(NSNumber*) [shell MouseTerm_get: @"isMouseDown"] boolValue])
         return YES;
 
     return NO;
@@ -172,7 +149,7 @@ inline void set_ivar(id obj, NSString* name, id value)
         goto ignored;
 
     TTShell* shell = [[self controller] shell];
-    switch ([(NSNumber*) get_ivar(shell, @"mouseMode") intValue])
+    switch ([(NSNumber*) [shell MouseTerm_get: @"mouseMode"] intValue])
     {
     case NO_MODE:
     case HILITE_MODE:
@@ -181,7 +158,8 @@ inline void set_ivar(id obj, NSString* name, id value)
     case BUTTON_MODE:
     case ALL_MODE:
     {
-        set_ivar(shell, @"isMouseDown", [NSNumber numberWithBool: YES]);
+        [shell MouseTerm_set: @"isMouseDown"
+                       value: [NSNumber numberWithBool: YES]];
         Position pos = [self MouseTerm_currentPosition: event];
         NSData* data = mousePress(MOUSE_BUTTON1, [event modifierFlags],
                                   pos.x, pos.y);
@@ -204,7 +182,7 @@ ignored:
         goto ignored;
 
     TTShell* shell = [[self controller] shell];
-    switch ([(NSNumber*) get_ivar(shell, @"mouseMode") intValue])
+    switch ([(NSNumber*) [shell MouseTerm_get: @"mouseMode"] intValue])
     {
     case NO_MODE:
         goto ignored;
@@ -235,7 +213,7 @@ ignored:
         goto ignored;
 
     TTShell* shell = [[self controller] shell];
-    switch ([(NSNumber*) get_ivar(shell, @"mouseMode") intValue])
+    switch ([(NSNumber*) [shell MouseTerm_get: @"mouseMode"] intValue])
     {
     case NO_MODE:
     case HILITE_MODE:
@@ -244,7 +222,8 @@ ignored:
     case BUTTON_MODE:
     case ALL_MODE:
     {
-        set_ivar(shell, @"isMouseDown", [NSNumber numberWithBool: NO]);
+        [shell MouseTerm_set: @"isMouseDown"
+                       value: [NSNumber numberWithBool: NO]];
         Position pos = [self MouseTerm_currentPosition: event];
         NSData* data = mousePress(MOUSE_RELEASE, [event modifierFlags],
                                   pos.x, pos.y);
@@ -305,13 +284,13 @@ ignored:
     TTLogicalScreen* screen = [self logicalScreen];
     TTShell* shell = [[self controller] shell];
 
-    switch ([(NSNumber*) get_ivar(shell, @"mouseMode") intValue])
+    switch ([(NSNumber*) [shell MouseTerm_get: @"mouseMode"] intValue])
     {
     case NO_MODE:
     {
         if ([screen isAlternateScreenActive]
             &&
-            [(NSNumber*) get_ivar(shell, @"appCursorMode") boolValue])
+            [(NSNumber*) [shell MouseTerm_get: @"appCursorMode"] boolValue])
         {
             // Calculate how many lines to scroll by (takes acceleration
             // into account)
@@ -390,6 +369,16 @@ ignored:
 
 @implementation NSObject (MouseTermTTShell)
 
+- (id) MouseTerm_get: (NSString*) name
+{
+    return [[MouseTerm_ivars objectForKey: self] objectForKey: name];
+}
+
+- (void) MouseTerm_set: (NSString*) name value: (id) value
+{
+    [[MouseTerm_ivars objectForKey: self] setObject: value forKey: name];
+}
+
 // Initializes instance variables
 - (TTShell*) MouseTerm_initWithAction: (SEL) arg1 target: (id) arg2
              profile: (id) arg3 controller: (id) arg4 customShell: (id) arg5
@@ -397,9 +386,12 @@ ignored:
 {
     [MouseTerm_ivars setObject: [NSMutableDictionary dictionary]
                         forKey: [NSValue valueWithPointer: self]];
-    set_ivar(self, @"mouseMode", [NSNumber numberWithInt: NO_MODE]);
-    set_ivar(self, @"appCursorMode", [NSNumber numberWithBool: NO]);
-    set_ivar(self, @"isMouseDown", [NSNumber numberWithBool: NO]);
+    [self MouseTerm_set: @"mouseMode"
+                  value: [NSNumber numberWithInt: NO_MODE]];
+    [self MouseTerm_set: @"appCursorMode"
+                  value: [NSNumber numberWithBool: NO]];
+    [self MouseTerm_set: @"isMouseDown"
+                  value: [NSNumber numberWithBool: NO]];
     return [self MouseTerm_initWithAction: arg1 target: arg2 profile: arg3
                                controller: arg4 customShell: arg5
                            commandAsShell: arg6];

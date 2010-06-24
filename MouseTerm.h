@@ -18,6 +18,11 @@ typedef struct
 - (void) writeData: (NSData*) data;
 @end
 
+@interface TTShell (MouseTermTTShell)
+- (id) MouseTerm_get: (NSString*) name;
+- (void) MouseTerm_set: (NSString*) name value: (id) value;
+@end
+
 @interface TTLogicalScreen: NSObject
 - (BOOL) isAlternateScreenActive;
 - (linecount_t) lineCount;
@@ -41,6 +46,7 @@ typedef struct
 - (TTPane*) pane;
 - (TTTabController*) controller;
 - (Position) displayPositionForPoint: (NSPoint) point;
+- (void) clearTextSelection;
 @end
 
 // Custom instance variables
