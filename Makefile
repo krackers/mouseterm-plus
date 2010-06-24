@@ -26,3 +26,5 @@ clean:
 install: build
 	mkdir -p $(HOME)/Library/Application\ Support/SIMBL/Plugins
 	cp -R $(NAME).bundle $(HOME)/Library/Application\ Support/SIMBL/Plugins
+test: install
+	/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal
