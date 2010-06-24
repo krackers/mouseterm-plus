@@ -1,30 +1,50 @@
-CFLAGS=-bundle -framework Cocoa -O2 -Wall
-OBJECTS=JRSwizzle.m MouseTerm.m Terminal.m
-NAME=MouseTerm
-TARGET=$(NAME).bundle/Contents/MacOS/$(NAME)
-DMGFILES=$(NAME).bundle README.txt LICENSE.txt
+CC=gcc
+LD=gcc
 
-build:
-	mkdir -p $(NAME).bundle/Contents/MacOS
-	gcc $(CFLAGS) -arch i386 -arch x86_64 -mmacosx-version-min=10.6 $(OBJECTS) -o $(TARGET)
-	cp Info.plist $(NAME).bundle/Contents
-buildnative:
-	mkdir -p $(NAME).bundle/Contents/MacOS
-	gcc $(CFLAGS) $(OBJECTS) -o $(TARGET)
-	cp Info.plist $(NAME).bundle/Contents
-dmg builddmg: build
-	rm -rf $(NAME) $(NAME).dmg
+ARCH=-arch i386 -arch x86_64
+OSXVER=10.6
+CFLAGS+=-O2 -Wall -mmacosx-version-min=$(OSXVER) $(ARCH)
+LDFLAGS+=-bundle -framework Cocoa
+
+OBJS=JRSwizzle.m MouseTerm.m Terminal.m
+NAME=MouseTerm
+BUNDLE=$(NAME).bundle
+DMG=$(NAME).dmg
+TARGET=$(BUNDLE)/Contents/MacOS/$(NAME)
+DMGFILES=$(BUNDLE) README.txt LICENSE.txt
+SIMBLDIR=$(HOME)/Library/Application\ Support/SIMBL/Plugins
+TERMINALAPP=/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal
+
+%.o: %.m
+	$(CC) -c $(CFLAGS) $< -o $@
+$(TARGET): $(OBJS)
+	mkdir -p $(BUNDLE)/Contents/MacOS
+	$(LD) $(CFLAGS) $(LDFLAGS) -o $@ $^
+	cp Info.plist $(BUNDLE)/Contents
+
+dist: $(TARGET)
+	rm -rf $(NAME) $(DMG)
 	mkdir $(NAME)
 	osacompile -o $(NAME)/Install.app Install.scpt
 	osacompile -o $(NAME)/Uninstall.app Uninstall.scpt
 	cp -R $(DMGFILES) $(NAME)
-	hdiutil create -fs HFS+ -imagekey zlib-level=9 -srcfolder $(NAME) -volname $(NAME) $(NAME).dmg
+	hdiutil create -fs HFS+ -imagekey zlib-level=9 -srcfolder $(NAME) \
+		-volname $(NAME) $(DMG)
 	rm -rf $(NAME)
 clean:
-	rm -rf $(NAME).bundle
-	rm -f $(NAME).dmg
-install: build
-	mkdir -p $(HOME)/Library/Application\ Support/SIMBL/Plugins
-	cp -R $(NAME).bundle $(HOME)/Library/Application\ Support/SIMBL/Plugins
+	rm -f *.o
+	rm -rf $(BUNDLE)
+	rm -f $(DMG) Terminal.classdump Terminal.otx
+install: $(TARGET)
+	mkdir -p $(SIMBLDIR)
+	rm -rf $(SIMBLDIR)/$(BUNDLE)
+	cp -R $(BUNDLE) $(SIMBLDIR)
 test: install
-	/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal
+	$(TERMINALAPP)
+
+classdump:
+	class-dump $(TERMINALAPP) > Terminal.classdump
+otx:
+	otx $(TERMINALAPP) > Terminal.otx
+
+.PHONY: dist clean install test classdump otx
