@@ -133,7 +133,7 @@
     return NO;
 }
 
-- (BOOL) MouseTerm_shouldIgnoreDown: (NSEvent*) event
+- (BOOL) MouseTerm_shouldIgnoreDown
 {
     TTLogicalScreen* screen = [(TTView*) self logicalScreen];
     // Don't handle if the scroller isn't at the bottom
@@ -202,7 +202,7 @@ ignored:
 
 - (void) MouseTerm_mouseDragged: (NSEvent*) event
 {
-    if ([self MouseTerm_shouldIgnoreDown: event])
+    if ([self MouseTerm_shouldIgnoreDown])
         goto ignored;
 
     MouseTermTTShell* shell = [[(TTView*) self controller] shell];
@@ -232,7 +232,7 @@ ignored:
 
 - (void) MouseTerm_mouseUp: (NSEvent*) event
 {
-    if ([self MouseTerm_shouldIgnoreDown: event])
+    if ([self MouseTerm_shouldIgnoreDown])
         goto ignored;
 
     MouseTermTTShell* shell = [[(TTView*) self controller] shell];

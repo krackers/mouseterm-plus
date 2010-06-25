@@ -108,7 +108,7 @@ typedef struct
                             button: (MouseButton) button
                             motion: (BOOL) motion;
 - (BOOL) MouseTerm_shouldIgnore: (NSEvent*) event;
-- (BOOL) MouseTerm_shouldIgnoreDown: (NSEvent*) event;
+- (BOOL) MouseTerm_shouldIgnoreDown;
 - (Position) MouseTerm_currentPosition: (NSEvent*) event;
 - (void) MouseTerm_mouseDown: (NSEvent*) event;
 - (void) MouseTerm_mouseDragged: (NSEvent*) event;
