@@ -3,7 +3,12 @@ LD=gcc
 
 ARCH=
 ARCHES=$(foreach arch,$(ARCH),-arch $(arch))
-OSXVER=10.5
+OSXVER=10.4
+OSXVER64=10.5
+ifneq ($(OSXVER),$(OSXVER64))
+ARCHES+=-Xarch_x86_64 -mmacosx-version-min=$(OSXVER64)
+endif
+
 CFLAGS+=-O2 -Wall -mmacosx-version-min=$(OSXVER) $(ARCHES)
 LDFLAGS+=-bundle -framework Cocoa
 
