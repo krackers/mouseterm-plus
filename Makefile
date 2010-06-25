@@ -17,7 +17,7 @@ NAME=MouseTerm
 BUNDLE=$(NAME).bundle
 DMG=$(NAME).dmg
 TARGET=$(BUNDLE)/Contents/MacOS/$(NAME)
-DMGFILES=$(BUNDLE) README.txt LICENSE.txt
+DMGFILES=$(BUNDLE) LICENSE.txt
 SIMBLDIR=$(HOME)/Library/Application\ Support/SIMBL/Plugins
 TERMINALAPP=/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal
 
@@ -35,6 +35,7 @@ dist: $(TARGET)
 	osacompile -o $(NAME)/Install.app Install.scpt
 	osacompile -o $(NAME)/Uninstall.app Uninstall.scpt
 	cp -R $(DMGFILES) $(NAME)
+	cp README.md $(NAME)/README.txt
 	hdiutil create -fs HFS+ -imagekey zlib-level=9 -srcfolder $(NAME) \
 		-volname $(NAME) $(DMG)
 	rm -rf $(NAME)
