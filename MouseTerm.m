@@ -69,7 +69,6 @@ NSMutableDictionary* MouseTerm_ivars = nil;
     }
 
     EXISTS(shell, @selector(writeData:));
-    EXISTS(shell, @selector(initWithAction:target:profile:controller:customShell:commandAsShell:));
     EXISTS(shell, @selector(dealloc));
 
     Class view = NSClassFromString(@"TTView");
@@ -88,8 +87,6 @@ NSMutableDictionary* MouseTerm_ivars = nil;
     // if some methods are swizzled but not others.
     MouseTerm_ivars = [[NSMutableDictionary alloc] init];
 
-    SWIZZLE(shell, @selector(initWithAction:target:profile:controller:customShell:commandAsShell:),
-            @selector(MouseTerm_initWithAction:target:profile:controller:customShell:commandAsShell:));
     SWIZZLE(shell, @selector(dealloc), @selector(MouseTerm_dealloc));
     SWIZZLE(view, @selector(scrollWheel:), @selector(MouseTerm_scrollWheel:));
     SWIZZLE(view, @selector(mouseDown:), @selector(MouseTerm_mouseDown:));

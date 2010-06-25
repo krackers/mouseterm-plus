@@ -45,12 +45,14 @@
                 switch (flag)
                 {
                 case TOGGLE_ON:
-                    [[self shell] MouseTerm_set: @"mouseMode"
-                                  value: [NSNumber numberWithInt: mouseMode]];
+                    [[(TTTabController*) self shell]
+                        MouseTerm_set: @"mouseMode"
+                                value: [NSNumber numberWithInt: mouseMode]];
                     break;
                 case TOGGLE_OFF:
-                    [[self shell] MouseTerm_set: @"mouseMode"
-                                  value: [NSNumber numberWithInt: NO_MODE]];
+                    [[(TTTabController*) self shell]
+                        MouseTerm_set: @"mouseMode"
+                                value: [NSNumber numberWithInt: NO_MODE]];
                     break;
                 }
             }
@@ -71,12 +73,14 @@
             switch (flag)
             {
             case TOGGLE_ON:
-                [[self shell] MouseTerm_set: @"appCursorMode"
-                                      value: [NSNumber numberWithBool: YES]];
+                [[(TTTabController*) self shell]
+                    MouseTerm_set: @"appCursorMode"
+                            value: [NSNumber numberWithBool: YES]];
                 break;
             case TOGGLE_OFF:
-                [[self shell] MouseTerm_set: @"appCursorMode"
-                                      value: [NSNumber numberWithBool: NO]];
+                [[(TTTabController*) self shell]
+                    MouseTerm_set: @"appCursorMode"
+                            value: [NSNumber numberWithBool: NO]];
                 break;
             }
         }
@@ -95,13 +99,13 @@
     if ([event modifierFlags] & NSAlternateKeyMask)
         return YES;
 
-    TTLogicalScreen* screen = [self logicalScreen];
+    TTLogicalScreen* screen = [(TTView*) self logicalScreen];
     // Don't handle if the scroller isn't at the bottom
     linecount_t scrollback =
         (linecount_t) [screen lineCount] -
-        (linecount_t) [self rowCount];
+        (linecount_t) [(TTView*) self rowCount];
     if (scrollback > 0 &&
-        [[[self pane] scroller] floatValue] < 1.0)
+        [[[(TTView*) self pane] scroller] floatValue] < 1.0)
     {
         return YES;
     }
@@ -111,18 +115,18 @@
 
 - (BOOL) MouseTerm_shouldIgnoreDown: (NSEvent*) event
 {
-    TTLogicalScreen* screen = [self logicalScreen];
+    TTLogicalScreen* screen = [(TTView*) self logicalScreen];
     // Don't handle if the scroller isn't at the bottom
     linecount_t scrollback =
         (linecount_t) [screen lineCount] -
-        (linecount_t) [self rowCount];
+        (linecount_t) [(TTView*) self rowCount];
     if (scrollback > 0 &&
-        [[[self pane] scroller] floatValue] < 1.0)
+        [[[(TTView*) self pane] scroller] floatValue] < 1.0)
     {
         return YES;
     }
 
-    TTShell* shell = [[self controller] shell];
+    MouseTermTTShell* shell = [[(TTView*) self controller] shell];
     if (![(NSNumber*) [shell MouseTerm_get: @"isMouseDown"] boolValue])
         return YES;
 
@@ -132,11 +136,11 @@
 - (Position) MouseTerm_currentPosition: (NSEvent*) event
 {
     linecount_t scrollback =
-        (linecount_t) [[self logicalScreen] lineCount] -
-        (linecount_t) [self rowCount];
+        (linecount_t) [[(TTView*) self logicalScreen] lineCount] -
+        (linecount_t) [(TTView*) self rowCount];
     NSPoint viewloc = [self convertPoint: [event locationInWindow]
                                 fromView: nil];
-    Position pos = [self displayPositionForPoint: viewloc];
+    Position pos = [(TTView*) self displayPositionForPoint: viewloc];
     // The above method returns the position *including* scrollback,
     // so we have to compensate for that.
     pos.y -= scrollback;
@@ -148,7 +152,7 @@
     if ([self MouseTerm_shouldIgnore: event])
         goto ignored;
 
-    TTShell* shell = [[self controller] shell];
+    MouseTermTTShell* shell = [[(TTView*) self controller] shell];
     switch ([(NSNumber*) [shell MouseTerm_get: @"mouseMode"] intValue])
     {
     case NO_MODE:
@@ -163,14 +167,14 @@
         Position pos = [self MouseTerm_currentPosition: event];
         NSData* data = mousePress(MOUSE_BUTTON1, [event modifierFlags],
                                   pos.x, pos.y);
-        [shell writeData: data];
+        [(TTShell*) shell writeData: data];
 
         goto handled;
     }
     }
 
 handled:
-    [self clearTextSelection];
+    [(TTView*) self clearTextSelection];
     return;
 ignored:
     [self MouseTerm_mouseDown: event];
@@ -181,7 +185,7 @@ ignored:
     if ([self MouseTerm_shouldIgnoreDown: event])
         goto ignored;
 
-    TTShell* shell = [[self controller] shell];
+    MouseTermTTShell* shell = [[(TTView*) self controller] shell];
     switch ([(NSNumber*) [shell MouseTerm_get: @"mouseMode"] intValue])
     {
     case NO_MODE:
@@ -195,13 +199,13 @@ ignored:
         Position pos = [self MouseTerm_currentPosition: event];
         NSData* data = mouseMotion(MOUSE_RELEASE, [event modifierFlags],
                                    pos.x, pos.y);
-        [shell writeData: data];
+        [(TTShell*) shell writeData: data];
 
         goto handled;
     }
     }
 handled:
-    [self clearTextSelection];
+    [(TTView*) self clearTextSelection];
     return;
 ignored:
     [self MouseTerm_mouseDragged: event];
@@ -212,7 +216,7 @@ ignored:
     if ([self MouseTerm_shouldIgnoreDown: event])
         goto ignored;
 
-    TTShell* shell = [[self controller] shell];
+    MouseTermTTShell* shell = [[(TTView*) self controller] shell];
     switch ([(NSNumber*) [shell MouseTerm_get: @"mouseMode"] intValue])
     {
     case NO_MODE:
@@ -227,13 +231,13 @@ ignored:
         Position pos = [self MouseTerm_currentPosition: event];
         NSData* data = mousePress(MOUSE_RELEASE, [event modifierFlags],
                                   pos.x, pos.y);
-        [shell writeData: data];
+        [(TTShell*) shell writeData: data];
 
         goto handled;
     }
     }
 handled:
-    [self clearTextSelection];
+    [(TTView*) self clearTextSelection];
     return;
 ignored:
     [self MouseTerm_mouseUp: event];
@@ -281,8 +285,8 @@ ignored:
     if ([self MouseTerm_shouldIgnore: event])
         goto ignored;
 
-    TTLogicalScreen* screen = [self logicalScreen];
-    TTShell* shell = [[self controller] shell];
+    TTLogicalScreen* screen = [(TTView*) self logicalScreen];
+    MouseTermTTShell* shell = [[(TTView*) self controller] shell];
 
     switch ([(NSNumber*) [shell MouseTerm_get: @"mouseMode"] intValue])
     {
@@ -320,7 +324,7 @@ ignored:
             linecount_t i;
             linecount_t lines = lround(delta) + 1;
             for (i = 0; i < lines; ++i)
-                [shell writeData: data];
+                [(TTShell*) shell writeData: data];
 
             goto handled;
         }
@@ -353,7 +357,7 @@ ignored:
         long i;
         long lines = lround(delta) + 1;
         for (i = 0; i < lines; ++i)
-            [shell writeData: data];
+            [(TTShell*) shell writeData: data];
 
         goto handled;
     }
@@ -369,32 +373,33 @@ ignored:
 
 @implementation NSObject (MouseTermTTShell)
 
+- (NSValue*) MouseTerm_initVars
+{
+    NSValue* ptr = [NSValue valueWithPointer: self];
+    if ([MouseTerm_ivars objectForKey: ptr] == nil)
+    {
+        NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+        [MouseTerm_ivars setObject: dict forKey: ptr];
+        [dict setObject: [NSNumber numberWithInt: NO_MODE]
+                 forKey: @"mouseMode"];
+        [dict setObject: [NSNumber numberWithBool: NO]
+                 forKey: @"appCursorMode"];
+        [dict setObject: [NSNumber numberWithBool: NO]
+                 forKey: @"isMouseDown"];
+    }
+    return ptr;
+}
+
 - (id) MouseTerm_get: (NSString*) name
 {
-    return [[MouseTerm_ivars objectForKey: self] objectForKey: name];
+    NSValue* ptr = [self MouseTerm_initVars];
+    return [[MouseTerm_ivars objectForKey: ptr] objectForKey: name];
 }
 
 - (void) MouseTerm_set: (NSString*) name value: (id) value
 {
-    [[MouseTerm_ivars objectForKey: self] setObject: value forKey: name];
-}
-
-// Initializes instance variables
-- (TTShell*) MouseTerm_initWithAction: (SEL) arg1 target: (id) arg2
-             profile: (id) arg3 controller: (id) arg4 customShell: (id) arg5
-             commandAsShell: (BOOL) arg6
-{
-    [MouseTerm_ivars setObject: [NSMutableDictionary dictionary]
-                        forKey: [NSValue valueWithPointer: self]];
-    [self MouseTerm_set: @"mouseMode"
-                  value: [NSNumber numberWithInt: NO_MODE]];
-    [self MouseTerm_set: @"appCursorMode"
-                  value: [NSNumber numberWithBool: NO]];
-    [self MouseTerm_set: @"isMouseDown"
-                  value: [NSNumber numberWithBool: NO]];
-    return [self MouseTerm_initWithAction: arg1 target: arg2 profile: arg3
-                               controller: arg4 customShell: arg5
-                           commandAsShell: arg6];
+    NSValue* ptr = [self MouseTerm_initVars];
+    [[MouseTerm_ivars objectForKey: ptr] setObject: value forKey: name];
 }
 
 // Deletes instance variables
