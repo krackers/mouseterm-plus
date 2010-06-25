@@ -2,7 +2,7 @@
 #import "Mouse.h"
 #import "Terminal.h"
 
-@interface NSView (MouseTermTTView)
+@interface NSView (MTView)
 - (NSData*) MouseTerm_codeForEvent: (NSEvent*) event
                             button: (MouseButton) button
                             motion: (BOOL) motion;

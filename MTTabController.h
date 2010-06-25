@@ -1,5 +1,5 @@
 #import <Cocoa/Cocoa.h>
 
-@interface NSObject (MouseTermTTTabController)
+@interface NSObject (MTTabController)
 - (void) MouseTerm_shellDidReceiveData: (NSData*) data;
 @end
