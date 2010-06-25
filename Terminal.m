@@ -1,8 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import <math.h>
 
-#import "MouseTerm.h"
-#import "Mouse.h"
+#import "Terminal.h"
 
 @implementation NSObject (MouseTermTTTabController)
 
@@ -93,6 +92,27 @@
 
 @implementation NSView (MouseTermTTView)
 
+- (NSData*) MouseTerm_codeForEvent: (NSEvent*) event
+                            button: (MouseButton) button
+                            motion: (BOOL) motion
+{
+    Position pos = [self MouseTerm_currentPosition: event];
+    unsigned int x = pos.x;
+    unsigned int y = pos.y;
+    char cb = button + 32;
+    char modflag = [event modifierFlags];
+
+    if (modflag & NSShiftKeyMask) cb |= 4;
+    if (modflag & NSAlternateKeyMask) cb |= 8;
+    if (modflag & NSControlKeyMask) cb |= 16;
+    if (motion) cb += 32;
+
+    char buf[MOUSE_RESPONSE_LEN + 1];
+    snprintf(buf, sizeof(buf), MOUSE_RESPONSE, cb, 32 + x + 1,
+             32 + y + 1);
+    return [NSData dataWithBytes: buf length: MOUSE_RESPONSE_LEN];
+}
+
 - (BOOL) MouseTerm_shouldIgnore: (NSEvent*) event
 {
     // Don't handle if alt/option is pressed
@@ -164,9 +184,9 @@
     {
         [shell MouseTerm_set: @"isMouseDown"
                        value: [NSNumber numberWithBool: YES]];
-        Position pos = [self MouseTerm_currentPosition: event];
-        NSData* data = mousePress(MOUSE_BUTTON1, [event modifierFlags],
-                                  pos.x, pos.y);
+        NSData* data = [self MouseTerm_codeForEvent: event
+                                             button: MOUSE_BUTTON1
+                                             motion: NO];
         [(TTShell*) shell writeData: data];
 
         goto handled;
@@ -196,11 +216,10 @@ ignored:
     case BUTTON_MODE:
     case ALL_MODE:
     {
-        Position pos = [self MouseTerm_currentPosition: event];
-        NSData* data = mouseMotion(MOUSE_RELEASE, [event modifierFlags],
-                                   pos.x, pos.y);
+        NSData* data = [self MouseTerm_codeForEvent: event
+                                             button: MOUSE_RELEASE
+                                             motion: YES];
         [(TTShell*) shell writeData: data];
-
         goto handled;
     }
     }
@@ -228,9 +247,9 @@ ignored:
     {
         [shell MouseTerm_set: @"isMouseDown"
                        value: [NSNumber numberWithBool: NO]];
-        Position pos = [self MouseTerm_currentPosition: event];
-        NSData* data = mousePress(MOUSE_RELEASE, [event modifierFlags],
-                                  pos.x, pos.y);
+        NSData* data = [self MouseTerm_codeForEvent: event
+                                             button: MOUSE_RELEASE
+                                             motion: NO];
         [(TTShell*) shell writeData: data];
 
         goto handled;
@@ -345,14 +364,14 @@ ignored:
         else if (delta < 0.0)
         {
             delta = fabs(delta);
-                button = MOUSE_WHEEL_DOWN;
+            button = MOUSE_WHEEL_DOWN;
         }
         else
             button = MOUSE_WHEEL_UP;
 
-        Position pos = [self MouseTerm_currentPosition: event];
-        NSData* data = mousePress(button, [event modifierFlags], pos.x,
-                                  pos.y);
+        NSData* data = [self MouseTerm_codeForEvent: event
+                                             button: button
+                                             motion: NO];
 
         long i;
         long lines = lround(delta) + 1;

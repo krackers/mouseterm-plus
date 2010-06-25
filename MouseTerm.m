@@ -3,7 +3,7 @@
 
 #import "JRSwizzle.h"
 
-#import "MouseTerm.h"
+#import "Terminal.h"
 
 NSMutableDictionary* MouseTerm_ivars = nil;
 
