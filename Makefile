@@ -22,6 +22,7 @@ $(TARGET): $(OBJS)
 	mkdir -p $(BUNDLE)/Contents/MacOS
 	$(LD) $(CFLAGS) $(LDFLAGS) -o $@ $^
 	cp Info.plist $(BUNDLE)/Contents
+all: $(TARGET)
 
 dist: $(TARGET)
 	rm -rf $(NAME) $(DMG)
@@ -48,4 +49,4 @@ classdump:
 otx:
 	otx $(TERMINALAPP) > Terminal.otx
 
-.PHONY: dist clean install test classdump otx
+.PHONY: all dist clean install test classdump otx
