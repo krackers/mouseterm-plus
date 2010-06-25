@@ -1,14 +1,10 @@
 #import <Cocoa/Cocoa.h>
 #import <objc/objc-class.h>
-
 #import "JRSwizzle.h"
-
+#import "MouseTerm.h"
 #import "Terminal.h"
 
 NSMutableDictionary* MouseTerm_ivars = nil;
-
-@interface MouseTerm: NSObject
-@end
 
 @implementation MouseTerm
 
