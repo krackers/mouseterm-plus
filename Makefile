@@ -12,7 +12,7 @@ endif
 CFLAGS+=-O2 -Wall -mmacosx-version-min=$(OSXVER) $(ARCHES)
 LDFLAGS+=-bundle -framework Cocoa
 
-OBJS=JRSwizzle.o MTShell.m MTTabController.m MTview.m MouseTerm.o
+OBJS=JRSwizzle.o MTShell.o MTTabController.o MTView.o MouseTerm.o
 NAME=MouseTerm
 BUNDLE=$(NAME).bundle
 DMG=$(NAME).dmg
