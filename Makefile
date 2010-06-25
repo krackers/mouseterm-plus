@@ -1,9 +1,10 @@
 CC=gcc
 LD=gcc
 
-ARCH=-arch i386 -arch x86_64
+ARCH=
+ARCHES=$(foreach arch,$(ARCH),-arch $(arch))
 OSXVER=10.6
-CFLAGS+=-O2 -Wall -mmacosx-version-min=$(OSXVER) $(ARCH)
+CFLAGS+=-O2 -Wall -mmacosx-version-min=$(OSXVER) $(ARCHES)
 LDFLAGS+=-bundle -framework Cocoa
 
 OBJS=JRSwizzle.m MouseTerm.m Terminal.m
