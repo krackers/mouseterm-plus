@@ -30,6 +30,12 @@
 	{
 		stateObj.lastEscapeIndex = (int)((fpc - 1) - data);
 	}
+	
+	action handle_sda
+	{
+		stateObj.handleSda = YES;
+		stateObj.sdaIndex = stateObj.lastEscapeIndex;
+	}
 
     action handle_mouse
     {
@@ -65,7 +71,8 @@
     appkeys = "1";
 	mouse = "100" . ([0123]) @handle_mouse_digit;
 	debug = (csi . "li");
-    
+	cs_sda = csi . ">" . [01]? . "c";
+	
 	mode_toggle = csi . "?" . (appkeys . flag @handle_flag @handle_appkeys 
         | mouse . flag @handle_flag @handle_mouse );
 
@@ -73,6 +80,7 @@
     st  = 0x9c;
 
     main := ((any - csi | any - osc)* . (mode_toggle # @got_toggle 
+	    | cs_sda @handle_sda
         | debug @got_debug))*;
 }%%
 
