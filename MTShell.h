@@ -9,4 +9,6 @@
 - (void) MouseTerm_setMouseMode: (int)mouseMode;
 - (int) MouseTerm_getMouseMode;
 
+- (void) MouseTerm_setAppCursorMode: (BOOL)appCursorMode;
+- (BOOL) MouseTerm_getAppCursorMode;
 @end

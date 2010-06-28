@@ -47,6 +47,19 @@
 	return [((NSNumber *)[[MouseTerm_ivars objectForKey: ptr] objectForKey: @"mouseMode"]) intValue];
 }
 
+- (void) MouseTerm_setAppCursorMode: (BOOL)appCursorMode
+{
+	NSValue *ptr = [self MouseTerm_initVars];
+	[[MouseTerm_ivars objectForKey: ptr] setObject: [NSNumber numberWithBool:appCursorMode] forKey: @"appCursorMode"];	
+}
+
+- (BOOL) MouseTerm_getAppCursorMode
+{
+	NSValue *ptr = [self MouseTerm_initVars];
+	return [((NSNumber *)[[MouseTerm_ivars objectForKey: ptr] objectForKey: @"appCursorMode"]) boolValue];	
+}
+
+
 // Deletes instance variables
 - (void) MouseTerm_dealloc
 {

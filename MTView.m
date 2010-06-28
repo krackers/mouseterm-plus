@@ -228,7 +228,7 @@ ignored:
     {
         if ([screen isAlternateScreenActive]
             &&
-            [(NSNumber*) [shell MouseTerm_get: @"appCursorMode"] boolValue])
+			[shell MouseTerm_getAppCursorMode])
         {
             // Calculate how many lines to scroll by (takes acceleration
             // into account)

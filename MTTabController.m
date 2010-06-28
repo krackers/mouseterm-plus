@@ -70,13 +70,11 @@
             {
             case TOGGLE_ON:
                 [[(TTTabController*) self shell]
-                    MouseTerm_set: @"appCursorMode"
-                            value: [NSNumber numberWithBool: YES]];
+					MouseTerm_setAppCursorMode: YES];
                 break;
             case TOGGLE_OFF:
                 [[(TTTabController*) self shell]
-                    MouseTerm_set: @"appCursorMode"
-                            value: [NSNumber numberWithBool: NO]];
+					MouseTerm_setAppCursorMode: NO];
                 break;
             }
         }
