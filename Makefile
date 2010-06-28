@@ -1,5 +1,6 @@
 CC=gcc
 LD=gcc
+RL=ragel
 
 ARCH=
 ARCHES=$(foreach arch,$(ARCH),-arch $(arch))
@@ -12,7 +13,7 @@ endif
 CFLAGS+=-O2 -Wall -mmacosx-version-min=$(OSXVER) $(ARCHES)
 LDFLAGS+=-bundle -framework Cocoa
 
-OBJS=JRSwizzle.o MTShell.o MTTabController.o MTView.o MouseTerm.o MTEscapeParserState.o
+OBJS=JRSwizzle.o MTShell.o MTTabController.o MTView.o MouseTerm.o MTEscapeParserState.o EscapeParser.o
 NAME=MouseTerm
 BUNDLE=$(NAME).bundle
 DMG=$(NAME).dmg
@@ -20,7 +21,9 @@ TARGET=$(BUNDLE)/Contents/MacOS/$(NAME)
 DMGFILES=$(BUNDLE) LICENSE.txt
 SIMBLDIR=$(HOME)/Library/Application\ Support/SIMBL/Plugins
 TERMINALAPP=/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal
-
+default: all
+EscapeParser.m: EscapeParser.rl
+	$(RL) -C -o EscapeParser.m EscapeParser.rl
 %.o: %.m
 	$(CC) -c $(CFLAGS) $< -o $@
 $(TARGET): $(OBJS)

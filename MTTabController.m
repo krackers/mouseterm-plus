@@ -3,6 +3,7 @@
 #import "MTShell.h"
 #import "Mouse.h"
 #import "Terminal.h"
+#import "MTEscapeParserState.h"
 
 @implementation NSObject (MTTabController)
 
@@ -14,6 +15,9 @@
     const char* chars = [data bytes];
     const char* pos;
 
+	MTEscapeParserState *state = [[self shell] MouseTerm_getParserState];
+	EscapeParser_execute(chars, length, NO, [self shell], state);
+#if 0
     // Handle mouse reporting toggle
     if ((pos = strnstr(chars, TOGGLE_MOUSE, length)))
     {
@@ -79,6 +83,7 @@
             }
         }
     }
+#endif
 
     [self MouseTerm_shellDidReceiveData: data];
 }
