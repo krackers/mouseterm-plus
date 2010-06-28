@@ -88,7 +88,7 @@
         goto ignored;
 
     MTShell* shell = [[(TTView*) self controller] shell];
-    switch ([(NSNumber*) [shell MouseTerm_get: @"mouseMode"] intValue])
+    switch ([shell MouseTerm_getMouseMode])
     {
     case NO_MODE:
     case HILITE_MODE:
@@ -121,7 +121,7 @@ ignored:
         goto ignored;
 
     MTShell* shell = [[(TTView*) self controller] shell];
-    switch ([(NSNumber*) [shell MouseTerm_get: @"mouseMode"] intValue])
+	switch ([shell MouseTerm_getMouseMode])
     {
     case NO_MODE:
         goto ignored;
@@ -151,7 +151,7 @@ ignored:
         goto ignored;
 
     MTShell* shell = [[(TTView*) self controller] shell];
-    switch ([(NSNumber*) [shell MouseTerm_get: @"mouseMode"] intValue])
+	switch ([shell MouseTerm_getMouseMode])
     {
     case NO_MODE:
     case HILITE_MODE:
@@ -222,7 +222,7 @@ ignored:
     TTLogicalScreen* screen = [(TTView*) self logicalScreen];
     MTShell* shell = [[(TTView*) self controller] shell];
 
-    switch ([(NSNumber*) [shell MouseTerm_get: @"mouseMode"] intValue])
+	switch ([shell MouseTerm_getMouseMode])
     {
     case NO_MODE:
     {

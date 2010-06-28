@@ -45,14 +45,10 @@
                 switch (flag)
                 {
                 case TOGGLE_ON:
-                    [[(TTTabController*) self shell]
-                        MouseTerm_set: @"mouseMode"
-                                value: [NSNumber numberWithInt: mouseMode]];
+					[[(TTTabController*) self shell] MouseTerm_setMouseMode: mouseMode];
                     break;
                 case TOGGLE_OFF:
-                    [[(TTTabController*) self shell]
-                        MouseTerm_set: @"mouseMode"
-                                value: [NSNumber numberWithInt: NO_MODE]];
+					[[(TTTabController*) self shell] MouseTerm_setMouseMode: NO_MODE];
                     break;
                 }
             }

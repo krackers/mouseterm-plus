@@ -35,6 +35,18 @@
     [[MouseTerm_ivars objectForKey: ptr] setObject: value forKey: name];
 }
 
+- (void) MouseTerm_setMouseMode: (int) mouseMode
+{
+	NSValue *ptr = [self MouseTerm_initVars];
+	[[MouseTerm_ivars objectForKey: ptr] setObject: [NSNumber numberWithInt:mouseMode] forKey: @"mouseMode"];
+}
+
+- (int) MouseTerm_getMouseMode
+{
+	NSValue *ptr = [self MouseTerm_initVars];
+	return [((NSNumber *)[[MouseTerm_ivars objectForKey: ptr] objectForKey: @"mouseMode"]) intValue];
+}
+
 // Deletes instance variables
 - (void) MouseTerm_dealloc
 {
