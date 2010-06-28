@@ -26,6 +26,11 @@
         stateObj.pendingMouseMode = (fc - 48);
     }
 
+	action handle_esc
+	{
+		stateObj.lastEscapeIndex = (int)((fpc - 1) - data);
+	}
+
     action handle_mouse
     {
         int mouseMode = stateObj.pendingMouseMode;
@@ -56,7 +61,7 @@
     esc = 0x1b;
     csi = esc . "[";
     flag = ("h" | "l") @handle_flag;
-    osc = esc . ']';
+    osc = (esc . ']') @handle_esc;
     appkeys = "1";
 	mouse = "100" . ([0123]) @handle_mouse_digit;
 	debug = (csi . "li");
