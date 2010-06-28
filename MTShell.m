@@ -19,6 +19,8 @@
                  forKey: @"appCursorMode"];
         [dict setObject: [NSNumber numberWithBool: NO]
                  forKey: @"isMouseDown"];
+		[dict setObject: [[MTEscapeParserState alloc] init]
+                 forKey: @"parserState"];
     }
     return ptr;
 }
@@ -57,6 +59,18 @@
 {
 	NSValue *ptr = [self MouseTerm_initVars];
 	return [((NSNumber *)[[MouseTerm_ivars objectForKey: ptr] objectForKey: @"isMouseDown"]) boolValue];		
+}
+
+- (void) MouseTerm_setParserState: (MTEscapeParserState *)parserState
+{
+	NSValue *ptr = [self MouseTerm_initVars];
+	[[MouseTerm_ivars objectForKey: ptr] setObject: parserState forKey: @"parserState"];		
+}
+
+- (MTEscapeParserState *) MouseTerm_getParserState
+{
+	NSValue *ptr = [self MouseTerm_initVars];
+	return [[MouseTerm_ivars objectForKey: ptr] objectForKey: @"parserState"];
 }
 
 // Deletes instance variables
