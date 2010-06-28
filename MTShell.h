@@ -11,4 +11,8 @@
 
 - (void) MouseTerm_setAppCursorMode: (BOOL)appCursorMode;
 - (BOOL) MouseTerm_getAppCursorMode;
+
+- (void) MouseTerm_setIsMouseDown: (BOOL)isMouseDown;
+- (BOOL) MouseTerm_getIsMouseDown;
+
 @end

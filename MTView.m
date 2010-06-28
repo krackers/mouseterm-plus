@@ -62,7 +62,7 @@
     }
 
     MTShell* shell = [[(TTView*) self controller] shell];
-    if (![(NSNumber*) [shell MouseTerm_get: @"isMouseDown"] boolValue])
+    if (![shell MouseTerm_getIsMouseDown])
         return YES;
 
     return NO;
@@ -97,8 +97,7 @@
     case BUTTON_MODE:
     case ALL_MODE:
     {
-        [shell MouseTerm_set: @"isMouseDown"
-                       value: [NSNumber numberWithBool: YES]];
+		[shell MouseTerm_setIsMouseDown: YES];
         NSData* data = [self MouseTerm_codeForEvent: event
                                              button: MOUSE_BUTTON1
                                              motion: NO];
@@ -160,8 +159,7 @@ ignored:
     case BUTTON_MODE:
     case ALL_MODE:
     {
-        [shell MouseTerm_set: @"isMouseDown"
-                       value: [NSNumber numberWithBool: NO]];
+		[shell MouseTerm_setIsMouseDown:NO];
         NSData* data = [self MouseTerm_codeForEvent: event
                                              button: MOUSE_RELEASE
                                              motion: NO];
