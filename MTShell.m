@@ -23,18 +23,6 @@
     return ptr;
 }
 
-- (id) MouseTerm_get: (NSString*) name
-{
-    NSValue* ptr = [self MouseTerm_initVars];
-    return [[MouseTerm_ivars objectForKey: ptr] objectForKey: name];
-}
-
-- (void) MouseTerm_set: (NSString*) name value: (id) value
-{
-    NSValue* ptr = [self MouseTerm_initVars];
-    [[MouseTerm_ivars objectForKey: ptr] setObject: value forKey: name];
-}
-
 - (void) MouseTerm_setMouseMode: (int) mouseMode
 {
 	NSValue *ptr = [self MouseTerm_initVars];
