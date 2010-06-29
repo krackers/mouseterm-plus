@@ -13,7 +13,6 @@
 // Intercepts all shell output to look for mouse reporting control codes
 - (void) MouseTerm_shellDidReceiveData: (NSData*) data
 {
-    // FIXME: What if the data's split up over method calls?
     NSUInteger length = [data length];
     const char* chars = [data bytes];
     const char* pos;
