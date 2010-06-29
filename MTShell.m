@@ -19,7 +19,7 @@
                  forKey: @"appCursorMode"];
         [dict setObject: [NSNumber numberWithBool: NO]
                  forKey: @"isMouseDown"];
-		[dict setObject: [[MTEscapeParserState alloc] init]
+		[dict setObject: [[[MTEscapeParserState alloc] init] autorelease]
                  forKey: @"parserState"];
     }
     return ptr;
