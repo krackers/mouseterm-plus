@@ -5,9 +5,6 @@
 #import "Terminal.h"
 #import "MTEscapeParserState.h"
 
-#define SDA_RESPONSE "\033[>0;95;c"
-#define SDA_RESPONSE_LEN 9
-
 @implementation NSObject (MTTabController)
 
 // Intercepts all shell output to look for mouse reporting control codes
@@ -26,6 +23,7 @@
 	if (state.handleSda)
 	{
 		[[self shell] writeData: [NSData dataWithBytes: SDA_RESPONSE length: SDA_RESPONSE_LEN]];
+
 		// Unset so it's not set the next time
 		state.handleSda = NO;
 	}
