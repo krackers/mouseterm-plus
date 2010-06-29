@@ -6,5 +6,4 @@
 @synthesize toggleState;
 @synthesize lastEscapeIndex;
 @synthesize handleSda;
-@synthesize sdaIndex;
 @end

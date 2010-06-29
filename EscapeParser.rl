@@ -26,15 +26,9 @@
         stateObj.pendingMouseMode = (fc - 48);
     }
 
-	action handle_esc
-	{
-		stateObj.lastEscapeIndex = (int)((fpc - 1) - data);
-	}
-	
 	action handle_sda
 	{
 		stateObj.handleSda = YES;
-		stateObj.sdaIndex = stateObj.lastEscapeIndex;
 	}
 
     action handle_mouse
@@ -65,9 +59,9 @@
     }
 
     esc = 0x1b;
-    csi = esc . "[";
+	csi = esc . "[";
     flag = ("h" | "l") @handle_flag;
-    osc = (esc . ']') @handle_esc;
+	osc = esc . ']';
     appkeys = "1";
 	mouse = "100" . ([0123]) @handle_mouse_digit;
 	debug = (csi . "li");
