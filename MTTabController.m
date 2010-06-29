@@ -5,6 +5,9 @@
 #import "Terminal.h"
 #import "MTEscapeParserState.h"
 
+#define SDA_RESPONSE "\033[>0;95;c"
+#define SDA_RESPONSE_LEN 9
+
 @implementation NSObject (MTTabController)
 
 // Intercepts all shell output to look for mouse reporting control codes
