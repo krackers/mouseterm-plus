@@ -89,6 +89,7 @@ NSMutableDictionary* MouseTerm_ivars = nil;
     SWIZZLE(view, @selector(mouseDragged:),
             @selector(MouseTerm_mouseDragged:));
     SWIZZLE(view, @selector(mouseUp:), @selector(MouseTerm_mouseUp:));
+#if 0
     SWIZZLE(view, @selector(rightMouseDown:),
             @selector(MouseTerm_rightMouseDown:));
     SWIZZLE(view, @selector(rightMouseDragged:),
@@ -101,6 +102,7 @@ NSMutableDictionary* MouseTerm_ivars = nil;
             @selector(MouseTerm_otherMouseDragged:));
     SWIZZLE(view, @selector(otherMouseUp:),
             @selector(MouseTerm_otherMouseUp:));
+#endif
     SWIZZLE(controller, @selector(shellDidReceiveData:),
             @selector(MouseTerm_shellDidReceiveData:));
 }
