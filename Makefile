@@ -4,7 +4,7 @@ RL=ragel
 
 ARCH=
 ARCHES=$(foreach arch,$(ARCH),-arch $(arch))
-OSXVER=10.4
+OSXVER=10.5
 OSXVER64=10.5
 ifneq ($(OSXVER),$(OSXVER64))
 ARCHES+=-Xarch_x86_64 -mmacosx-version-min=$(OSXVER64)
