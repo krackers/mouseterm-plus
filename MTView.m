@@ -213,7 +213,7 @@ ignored:
 
 - (void) MouseTerm_rightMouseUp: (NSEvent*) event
 {
-    if (![self MouseTerm_buttonDragged: event])
+    if (![self MouseTerm_buttonUp: event])
         [self MouseTerm_rightMouseUp: event];
 }
 
