@@ -16,11 +16,9 @@ Terminal.app. To uninstall, run `Uninstall` from the `.dmg`.
 Download
 --------
 
-* [MouseTerm.dmg][3] (82 KB, for Snow Leopard users)
-* [MouseTerm-leopard.dmg][4] (82 KB, for Leopard users)
+* [MouseTerm.dmg][3] (98 KB, requires Leopard or newer)
 
 [3]: http://bitheap.org/mouseterm/MouseTerm.dmg
-[4]: http://bitheap.org/mouseterm/MouseTerm-leopard.dmg
 
 
 Status
@@ -31,9 +29,10 @@ been implemented, and there may be bugs in the current implementation.
 
 What works:
 
+* Left mouse button reporting.
 * Mouse scroll wheel reporting.
 * Simulated mouse wheel scrolling for programs like `less` (i.e. any
-  fullscreen program that uses [application cursor key mode][5]).
+  fullscreen program that uses [application cursor key mode][4]).
 
 What's being worked on:
 
@@ -41,7 +40,7 @@ What's being worked on:
 * `xterm` "hilite" mouse tracking mode.
 * A preferences dialog and terminal profile integration.
 
-[5]: http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter4.html#config-appcursor
+[4]: http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter4.html#config-appcursor
 
 
 Frequently Asked Questions
@@ -49,8 +48,8 @@ Frequently Asked Questions
 
 > What programs can I use the mouse in?
 
-This varies widely and depends on the specific program. `less`, [Emacs][6],
-and [Vim][7] are good places to test out mouse reporting.
+This varies widely and depends on the specific program. `less`, [Emacs][5],
+and [Vim][6] are good places to test out mouse reporting.
 
 > How do I enable mouse reporting in Vim?
 
@@ -77,14 +76,14 @@ enable terminal mouse support, add this to your `~/.emacs` file:
                                    (interactive)
                                    (scroll-up 1))))
 
-[6]: http://www.gnu.org/software/emacs/
-[7]: http://www.vim.org/
+[5]: http://www.gnu.org/software/emacs/
+[6]: http://www.vim.org/
 
 
 Development
 -----------
 
-Download the official development repository using [Git][8]:
+Download the official development repository using [Git][7]:
 
     git clone git://github.com/brodie/mouseterm.git
 
@@ -92,21 +91,21 @@ Run `make` to compile the plugin, and `make install` to install it into
 your home directory's SIMBL plugins folder. Run `make` and `make builddmg`
 to create a disk image of the application.
 
-Visit [GitHub][9] if you'd like to fork the project, watch for new changes,
+Visit [GitHub][8] if you'd like to fork the project, watch for new changes,
 or report issues.
 
-[JRSwizzle][10] and some mouse reporting code from [iTerm][11] are used in
+[JRSwizzle][9] and some mouse reporting code from [iTerm][10] are used in
 MouseTerm.
 
-[8]: http://git-scm.org/
-[9]: http://github.com/brodie/mouseterm
-[10]: http://rentzsch.com/trac/wiki/JRSwizzle
-[11]: http://iterm.sourceforge.net/
+[7]: http://git-scm.org/
+[8]: http://github.com/brodie/mouseterm
+[9]: http://rentzsch.com/trac/wiki/JRSwizzle
+[10]: http://iterm.sourceforge.net/
 
 
 Contact
 -------
 
-Contact information can be found on my site, [brodierao.com][12].
+Contact information can be found on my site, [brodierao.com][11].
 
-[12]: http://brodierao.com/
+[11]: http://brodierao.com/
