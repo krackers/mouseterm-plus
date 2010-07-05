@@ -30,8 +30,8 @@
 
 - (BOOL) MouseTerm_shouldIgnore: (NSEvent*) event
 {
-    // Don't handle if alt/option is pressed
-    if ([event modifierFlags] & NSAlternateKeyMask)
+    // Don't handle if alt/option/control is pressed
+    if ([event modifierFlags] & (NSAlternateKeyMask | NSControlKeyMask))
         return YES;
 
     TTLogicalScreen* screen = [(TTView*) self logicalScreen];
@@ -48,18 +48,10 @@
     return NO;
 }
 
-- (BOOL) MouseTerm_shouldIgnoreDown
+- (BOOL) MouseTerm_shouldIgnoreDown: (NSEvent*) event
 {
-    TTLogicalScreen* screen = [(TTView*) self logicalScreen];
-    // Don't handle if the scroller isn't at the bottom
-    linecount_t scrollback =
-        (linecount_t) [screen lineCount] -
-        (linecount_t) [(TTView*) self rowCount];
-    if (scrollback > 0 &&
-        [[[(TTView*) self pane] scroller] floatValue] < 1.0)
-    {
+    if ([self MouseTerm_shouldIgnore: event])
         return YES;
-    }
 
     MTShell* shell = [[(TTView*) self controller] shell];
     if (![shell MouseTerm_getIsMouseDown])
@@ -116,7 +108,7 @@ ignored:
 
 - (BOOL) MouseTerm_buttonDragged: (NSEvent*) event
 {
-    if ([self MouseTerm_shouldIgnoreDown])
+    if ([self MouseTerm_shouldIgnoreDown: event])
         goto ignored;
 
     MTShell* shell = [[(TTView*) self controller] shell];
@@ -146,7 +138,7 @@ ignored:
 
 - (BOOL) MouseTerm_buttonUp: (NSEvent*) event
 {
-    if ([self MouseTerm_shouldIgnoreDown])
+    if ([self MouseTerm_shouldIgnoreDown: event])
         goto ignored;
 
     MTShell* shell = [[(TTView*) self controller] shell];

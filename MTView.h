@@ -7,7 +7,7 @@
                             button: (MouseButton) button
                             motion: (BOOL) motion;
 - (BOOL) MouseTerm_shouldIgnore: (NSEvent*) event;
-- (BOOL) MouseTerm_shouldIgnoreDown;
+- (BOOL) MouseTerm_shouldIgnoreDown: (NSEvent*) event;
 - (Position) MouseTerm_currentPosition: (NSEvent*) event;
 - (BOOL) MouseTerm_buttonDown: (NSEvent*) event button: (MouseButton) button;
 - (BOOL) MouseTerm_buttonDragged: (NSEvent*) event;
