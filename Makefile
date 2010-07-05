@@ -13,7 +13,7 @@ endif
 CFLAGS+=-O2 -Wall -mmacosx-version-min=$(OSXVER) $(ARCHES)
 LDFLAGS+=-bundle -framework Cocoa
 
-OBJS=JRSwizzle.o MTShell.o MTTabController.o MTView.o MouseTerm.o MTEscapeParserState.o EscapeParser.o
+OBJS=JRSwizzle.o MouseTerm.m MTParser.o MTParserState.o MTShell.o MTTabController.o MTView.o
 NAME=MouseTerm
 BUNDLE=$(NAME).bundle
 DMG=$(NAME).dmg
@@ -23,8 +23,8 @@ SIMBLDIR=$(HOME)/Library/Application\ Support/SIMBL/Plugins
 TERMINALAPP=/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal
 
 default: all
-EscapeParser.m: EscapeParser.rl
-	$(RL) -C -o EscapeParser.m EscapeParser.rl
+MTParser.m: MTParser.rl
+	$(RL) -C -o MTParser.m MTParser.rl
 %.o: %.m
 	$(CC) -c $(CFLAGS) $< -o $@
 $(TARGET): $(OBJS)
@@ -44,7 +44,7 @@ dist: $(TARGET)
 		-volname $(NAME) $(DMG)
 	rm -rf $(NAME)
 clean:
-	rm -f *.o
+	rm -f *.o MTParser.m
 	rm -rf $(BUNDLE)
 	rm -f $(DMG) Terminal.classdump Terminal.otx
 install: $(TARGET)

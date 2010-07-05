@@ -1,6 +1,6 @@
-#import "MTEscapeParserState.h"
+#import "MTParserState.h"
 
-@implementation MTEscapeParserState
+@implementation MTParserState
 
 @synthesize currentState;
 @synthesize pendingMouseMode;

@@ -1,9 +1,9 @@
 #import <Cocoa/Cocoa.h>
-#import "MTTabController.h"
-#import "MTShell.h"
 #import "Mouse.h"
+#import "MTParserState.h"
+#import "MTShell.h"
+#import "MTTabController.h"
 #import "Terminal.h"
-#import "MTEscapeParserState.h"
 
 #define SDA_RESPONSE "\033[>0;95;c"
 #define SDA_RESPONSE_LEN 9
@@ -17,8 +17,8 @@
     const char* chars = [data bytes];
     const char* pos;
 
-    MTEscapeParserState *state = [[self shell] MouseTerm_getParserState];
-    EscapeParser_execute(chars, length, NO, [self shell], state);
+    MTParserState *state = [[self shell] MouseTerm_getParserState];
+    MTParser_execute(chars, length, NO, [self shell], state);
 
     [self MouseTerm_shellDidReceiveData: data];
 

@@ -1,6 +1,6 @@
 #import <Cocoa/Cocoa.h>
 
-@interface MTEscapeParserState: NSObject
+@interface MTParserState: NSObject
 {
     int currentState;
     int pendingMouseMode;

@@ -1,8 +1,8 @@
 #import <Cocoa/Cocoa.h>
-
-#import "MTShell.h"
-#import "MouseTerm.h"
 #import "Mouse.h"
+#import "MouseTerm.h"
+#import "MTParserState.h"
+#import "MTShell.h"
 
 @implementation NSObject (MTShell)
 
@@ -19,7 +19,7 @@
                  forKey: @"appCursorMode"];
         [dict setObject: [NSNumber numberWithBool: NO]
                  forKey: @"isMouseDown"];
-        [dict setObject: [[[MTEscapeParserState alloc] init] autorelease]
+        [dict setObject: [[[MTParserState alloc] init] autorelease]
                  forKey: @"parserState"];
     }
     return ptr;
@@ -69,14 +69,14 @@
                             objectForKey: @"isMouseDown"] boolValue];
 }
 
-- (void) MouseTerm_setParserState: (MTEscapeParserState*) parserState
+- (void) MouseTerm_setParserState: (MTParserState*) parserState
 {
     NSValue *ptr = [self MouseTerm_initVars];
     [[MouseTerm_ivars objectForKey: ptr] setObject: parserState
                                             forKey: @"parserState"];
 }
 
-- (MTEscapeParserState*) MouseTerm_getParserState
+- (MTParserState*) MouseTerm_getParserState
 {
     NSValue *ptr = [self MouseTerm_initVars];
     return [[MouseTerm_ivars objectForKey: ptr] objectForKey: @"parserState"];

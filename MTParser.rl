@@ -1,8 +1,9 @@
 #import <Cocoa/Cocoa.h>
 #import <math.h>
-#import "EscapeParser.h"
 #import "Mouse.h"
 #import "MouseTerm.h"
+#import "MTParser.h"
+#import "MTParserState.h"
 #import "MTShell.h"
 #import "MTTabController.h"
 #import "Terminal.h"
@@ -78,8 +79,8 @@
 
 %% write data;
 
-int EscapeParser_execute(const char* data, int len, BOOL isEof, id obj,
-                         MTEscapeParserState* stateObj)
+int MTParser_execute(const char* data, int len, BOOL isEof, id obj,
+                     MTParserState* stateObj)
 {
     const char* p = data;
     const char* pe = data + len;
