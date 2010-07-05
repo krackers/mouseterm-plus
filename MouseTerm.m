@@ -12,8 +12,8 @@ NSMutableDictionary* MouseTerm_ivars = nil;
     do {                                                                 \
         if (!class_getInstanceMethod(cls, sel))                          \
         {                                                                \
-            NSLog(@"[MouseTerm] ERROR: Got nil Method for [%@ %s]", cls, \
-                  sel);                                                  \
+            NSLog(@"[MouseTerm] ERROR: Got nil Method for [%@ %@]", cls, \
+                  NSStringFromSelector(sel));                            \
             return;                                                      \
         }                                                                \
     } while (0)
@@ -23,8 +23,8 @@ NSMutableDictionary* MouseTerm_ivars = nil;
         NSError *err = nil;                                             \
         if (![cls jr_swizzleMethod: sel1 withMethod: sel2 error: &err]) \
         {                                                               \
-            NSLog(@"[MouseTerm] ERROR: Failed to swizzle [%@ %s]: %@",  \
-                  cls, sel1, err);                                      \
+            NSLog(@"[MouseTerm] ERROR: Failed to swizzle [%@ %@]: %@",  \
+                  cls, NSStringFromSelector(sel1), err);                \
             return;                                                     \
         }                                                               \
     } while (0)
