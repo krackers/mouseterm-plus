@@ -9,6 +9,9 @@
 - (BOOL) MouseTerm_shouldIgnore: (NSEvent*) event;
 - (BOOL) MouseTerm_shouldIgnoreDown;
 - (Position) MouseTerm_currentPosition: (NSEvent*) event;
+- (BOOL) MouseTerm_buttonDown: (NSEvent*) event button: (MouseButton) button;
+- (BOOL) MouseTerm_buttonDragged: (NSEvent*) event;
+- (BOOL) MouseTerm_buttonUp: (NSEvent*) event;
 - (void) MouseTerm_mouseDown: (NSEvent*) event;
 - (void) MouseTerm_mouseDragged: (NSEvent*) event;
 - (void) MouseTerm_mouseUp: (NSEvent*) event;

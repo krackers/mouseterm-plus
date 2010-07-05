@@ -82,7 +82,7 @@
     return pos;
 }
 
-- (void) MouseTerm_mouseDown: (NSEvent*) event
+- (BOOL) MouseTerm_buttonDown: (NSEvent*) event button: (MouseButton) button
 {
     if ([self MouseTerm_shouldIgnore: event])
         goto ignored;
@@ -99,7 +99,7 @@
     {
         [shell MouseTerm_setIsMouseDown: YES];
         NSData* data = [self MouseTerm_codeForEvent: event
-                                             button: MOUSE_BUTTON1
+                                             button: button
                                              motion: NO];
         [(TTShell*) shell writeData: data];
 
@@ -109,12 +109,12 @@
 
 handled:
     [(TTView*) self clearTextSelection];
-    return;
+    return YES;
 ignored:
-    [self MouseTerm_mouseDown: event];
+    return NO;
 }
 
-- (void) MouseTerm_mouseDragged: (NSEvent*) event
+- (BOOL) MouseTerm_buttonDragged: (NSEvent*) event
 {
     if ([self MouseTerm_shouldIgnoreDown])
         goto ignored;
@@ -139,12 +139,12 @@ ignored:
     }
 handled:
     [(TTView*) self clearTextSelection];
-    return;
+    return YES;
 ignored:
-    [self MouseTerm_mouseDragged: event];
+    return NO;
 }
 
-- (void) MouseTerm_mouseUp: (NSEvent*) event
+- (BOOL) MouseTerm_buttonUp: (NSEvent*) event
 {
     if ([self MouseTerm_shouldIgnoreDown])
         goto ignored;
@@ -170,45 +170,69 @@ ignored:
     }
 handled:
     [(TTView*) self clearTextSelection];
-    return;
+    return YES;
 ignored:
-    [self MouseTerm_mouseUp: event];
+    return NO;
+}
+
+- (void) MouseTerm_mouseDown: (NSEvent*) event
+{
+    MouseButton button;
+    if ([event modifierFlags] & NSCommandKeyMask)
+        button = MOUSE_BUTTON3;
+    else
+        button = MOUSE_BUTTON1;
+
+    if (![self MouseTerm_buttonDown: event button: button])
+        [self MouseTerm_mouseDown: event];
+}
+
+- (void) MouseTerm_mouseDragged: (NSEvent*) event
+{
+    if (![self MouseTerm_buttonDragged: event])
+        [self MouseTerm_mouseDragged: event];
+}
+
+- (void) MouseTerm_mouseUp: (NSEvent*) event
+{
+    if (![self MouseTerm_buttonUp: event])
+        [self MouseTerm_mouseUp: event];
 }
 
 - (void) MouseTerm_rightMouseDown: (NSEvent*) event
 {
-    NSLog(@"[MouseTerm] rightMouseDown");
-    [self MouseTerm_rightMouseDown: event];
+    if (![self MouseTerm_buttonDown: event button: MOUSE_BUTTON2])
+        [self MouseTerm_rightMouseDown: event];
 }
 
 - (void) MouseTerm_rightMouseDragged: (NSEvent*) event
 {
-    NSLog(@"[MouseTerm] rightMouseDragged");
-    [self MouseTerm_rightMouseDragged: event];
+    if (![self MouseTerm_buttonDragged: event])
+        [self MouseTerm_rightMouseDragged: event];
 }
 
 - (void) MouseTerm_rightMouseUp: (NSEvent*) event
 {
-    NSLog(@"[MouseTerm] rightMouseUp");
-    [self MouseTerm_rightMouseUp: event];
+    if (![self MouseTerm_buttonDragged: event])
+        [self MouseTerm_rightMouseUp: event];
 }
 
 - (void) MouseTerm_otherMouseDown: (NSEvent*) event
 {
-    NSLog(@"[MouseTerm] otherMouseDown");
-    [self MouseTerm_otherMouseDown: event];
+    if (![self MouseTerm_buttonDown: event button: MOUSE_BUTTON3])
+        [self MouseTerm_otherMouseDown: event];
 }
 
 - (void) MouseTerm_otherMouseDragged: (NSEvent*) event
 {
-    NSLog(@"[MouseTerm] otherMouseDragged");
-    [self MouseTerm_otherMouseDragged: event];
+    if (![self MouseTerm_buttonDragged: event])
+        [self MouseTerm_otherMouseDragged: event];
 }
 
 - (void) MouseTerm_otherMouseUp: (NSEvent*) event
 {
-    NSLog(@"[MouseTerm] otherMouseUp");
-    [self MouseTerm_otherMouseUp: event];
+    if (![self MouseTerm_buttonUp: event])
+        [self MouseTerm_otherMouseUp: event];
 }
 
 // Intercepts all scroll wheel movements (one wheel "tick" at a time)
