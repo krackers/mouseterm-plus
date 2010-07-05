@@ -84,7 +84,7 @@ int MTParser_execute(const char* data, int len, BOOL isEof, id obj,
 {
     const char* p = data;
     const char* pe = data + len;
-    const char* eof = isEof ? pe : 0;
+    const char* eof __attribute__((unused)) = isEof ? pe : 0;
 
     int cs = state.currentState;
     MTShell* mobj = (MTShell*) obj;
