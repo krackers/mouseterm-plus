@@ -17,7 +17,7 @@
     const char* chars = [data bytes];
     const char* pos;
 
-    MTParserState *state = [[self shell] MouseTerm_getParserState];
+    MTParserState* state = [[self shell] MouseTerm_getParserState];
     MTParser_execute(chars, length, NO, [self shell], state);
 
     [self MouseTerm_shellDidReceiveData: data];

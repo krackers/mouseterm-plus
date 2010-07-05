@@ -14,27 +14,27 @@
     action got_debug {}
     action handle_flag
     {
-        stateObj.toggleState = (fc == 'h' ? YES : NO);
+        state.toggleState = (fc == 'h' ? YES : NO);
     }
 
     action handle_appkeys
     {
-        [mobj MouseTerm_setAppCursorMode: stateObj.toggleState];
+        [mobj MouseTerm_setAppCursorMode: state.toggleState];
     }
 
     action handle_mouse_digit
     {
-        stateObj.pendingMouseMode = (fc - 48);
+        state.pendingMouseMode = (fc - 48);
     }
 
     action handle_sda
     {
-        stateObj.handleSda = YES;
+        state.handleSda = YES;
     }
 
     action handle_mouse
     {
-        int mouseMode = stateObj.pendingMouseMode;
+        int mouseMode = state.pendingMouseMode;
         MouseMode newMouseMode = NO_MODE;
         switch (mouseMode)
         {
@@ -53,7 +53,7 @@
         default:
             newMouseMode = NO_MODE;
         }
-        if (newMouseMode != NO_MODE && stateObj.toggleState)
+        if (newMouseMode != NO_MODE && state.toggleState)
             [mobj MouseTerm_setMouseMode: newMouseMode];
         else
             [mobj MouseTerm_setMouseMode: NO_MODE];
@@ -80,20 +80,20 @@
 %% write data;
 
 int MTParser_execute(const char* data, int len, BOOL isEof, id obj,
-                     MTParserState* stateObj)
+                     MTParserState* state)
 {
     const char* p = data;
     const char* pe = data + len;
     const char* eof = isEof ? pe : 0;
 
-    int cs = stateObj.currentState;
+    int cs = state.currentState;
     MTShell* mobj = (MTShell*) obj;
-    NSThread* ct = [NSThread currentThread];
+    [NSThread currentThread];
 
     %%write init nocs;
     %%write exec;
 
-    stateObj.currentState = cs;
+    state.currentState = cs;
 
     if (cs == EscapeSeqParser_error)
         return -1;
