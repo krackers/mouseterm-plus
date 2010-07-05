@@ -21,6 +21,7 @@ TARGET=$(BUNDLE)/Contents/MacOS/$(NAME)
 DMGFILES=$(BUNDLE) LICENSE.txt
 SIMBLDIR=$(HOME)/Library/Application\ Support/SIMBL/Plugins
 TERMINALAPP=/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal
+
 default: all
 EscapeParser.m: EscapeParser.rl
 	$(RL) -C -o EscapeParser.m EscapeParser.rl

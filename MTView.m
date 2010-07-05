@@ -97,7 +97,7 @@
     case BUTTON_MODE:
     case ALL_MODE:
     {
-		[shell MouseTerm_setIsMouseDown: YES];
+        [shell MouseTerm_setIsMouseDown: YES];
         NSData* data = [self MouseTerm_codeForEvent: event
                                              button: MOUSE_BUTTON1
                                              motion: NO];
@@ -120,7 +120,7 @@ ignored:
         goto ignored;
 
     MTShell* shell = [[(TTView*) self controller] shell];
-	switch ([shell MouseTerm_getMouseMode])
+    switch ([shell MouseTerm_getMouseMode])
     {
     case NO_MODE:
         goto ignored;
@@ -150,7 +150,7 @@ ignored:
         goto ignored;
 
     MTShell* shell = [[(TTView*) self controller] shell];
-	switch ([shell MouseTerm_getMouseMode])
+    switch ([shell MouseTerm_getMouseMode])
     {
     case NO_MODE:
     case HILITE_MODE:
@@ -159,7 +159,7 @@ ignored:
     case BUTTON_MODE:
     case ALL_MODE:
     {
-		[shell MouseTerm_setIsMouseDown:NO];
+        [shell MouseTerm_setIsMouseDown: NO];
         NSData* data = [self MouseTerm_codeForEvent: event
                                              button: MOUSE_RELEASE
                                              motion: NO];
@@ -220,13 +220,12 @@ ignored:
     TTLogicalScreen* screen = [(TTView*) self logicalScreen];
     MTShell* shell = [[(TTView*) self controller] shell];
 
-	switch ([shell MouseTerm_getMouseMode])
+    switch ([shell MouseTerm_getMouseMode])
     {
     case NO_MODE:
     {
-        if ([screen isAlternateScreenActive]
-            &&
-			[shell MouseTerm_getAppCursorMode])
+        if ([screen isAlternateScreenActive] &&
+            [shell MouseTerm_getAppCursorMode])
         {
             // Calculate how many lines to scroll by (takes acceleration
             // into account)

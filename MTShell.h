@@ -8,13 +8,13 @@
 - (void) MouseTerm_setMouseMode: (int)mouseMode;
 - (int) MouseTerm_getMouseMode;
 
-- (void) MouseTerm_setAppCursorMode: (BOOL)appCursorMode;
+- (void) MouseTerm_setAppCursorMode: (BOOL) appCursorMode;
 - (BOOL) MouseTerm_getAppCursorMode;
 
-- (void) MouseTerm_setIsMouseDown: (BOOL)isMouseDown;
+- (void) MouseTerm_setIsMouseDown: (BOOL) isMouseDown;
 - (BOOL) MouseTerm_getIsMouseDown;
 
-- (void) MouseTerm_setParserState: (MTEscapeParserState *)parserState;
-- (MTEscapeParserState *) MouseTerm_getParserState;
+- (void) MouseTerm_setParserState: (MTEscapeParserState*) parserState;
+- (MTEscapeParserState*) MouseTerm_getParserState;
 
 @end
