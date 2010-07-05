@@ -295,6 +295,7 @@ ignored:
     }
 
 handled:
+    [(TTView*) self clearTextSelection];
     return;
 ignored:
     [self MouseTerm_scrollWheel: event];
