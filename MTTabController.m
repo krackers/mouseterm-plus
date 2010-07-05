@@ -17,15 +17,18 @@
     const char* chars = [data bytes];
     const char* pos;
 
-    MTParserState* state = [[self shell] MouseTerm_getParserState];
-    MTParser_execute(chars, length, NO, [self shell], state);
+    MTParserState* state = [[(TTTabController*) self shell]
+                               MouseTerm_getParserState];
+    MTParser_execute(chars, length, NO, [(TTTabController*) self shell],
+                     state);
 
     [self MouseTerm_shellDidReceiveData: data];
 
     if (state.handleSda)
     {
-        [[self shell] writeData: [NSData dataWithBytes: SDA_RESPONSE
-                                                length: SDA_RESPONSE_LEN]];
+        [[(TTTabController*) self shell]
+            writeData: [NSData dataWithBytes: SDA_RESPONSE
+                                      length: SDA_RESPONSE_LEN]];
         // Unset so it's not set the next time
         state.handleSda = NO;
     }
