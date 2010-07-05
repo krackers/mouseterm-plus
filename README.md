@@ -29,15 +29,13 @@ been implemented, and there may be bugs in the current implementation.
 
 What works:
 
-* Left mouse button reporting.
+* Mouse button reporting.
 * Mouse scroll wheel reporting.
 * Simulated mouse wheel scrolling for programs like `less` (i.e. any
   fullscreen program that uses [application cursor key mode][4]).
 
 What's being worked on:
 
-* Reporting for other mouse buttons.
-* `xterm` "hilite" mouse tracking mode.
 * A preferences dialog and terminal profile integration.
 
 [4]: http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter4.html#config-appcursor
