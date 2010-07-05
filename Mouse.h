@@ -38,8 +38,8 @@ typedef enum
 typedef enum
 {
     MOUSE_BUTTON1 = 0,
-    MOUSE_BUTTON2 = 1,
-    MOUSE_BUTTON3 = 2,
+    MOUSE_BUTTON3 = 1,
+    MOUSE_BUTTON2 = 2,
     MOUSE_RELEASE = 3,
     MOUSE_WHEEL_UP = 64,
     MOUSE_WHEEL_DOWN = 65
