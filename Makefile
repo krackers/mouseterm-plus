@@ -1,5 +1,5 @@
 CC=gcc
-LD=gcc
+LD=$(CC)
 RL=ragel
 
 ARCH=
@@ -10,7 +10,8 @@ ifneq ($(OSXVER),$(OSXVER64))
 ARCHES+=-Xarch_x86_64 -mmacosx-version-min=$(OSXVER64)
 endif
 
-CFLAGS+=-O2 -Wall -mmacosx-version-min=$(OSXVER) $(ARCHES)
+OPTLEVEL=2
+CFLAGS+=-O$(OPTLEVEL) -Wall -mmacosx-version-min=$(OSXVER) $(ARCHES)
 LDFLAGS+=-bundle -framework Cocoa
 
 OBJS=JRSwizzle.o MouseTerm.m MTParser.o MTParserState.o MTShell.o \
@@ -46,7 +47,7 @@ dist: $(TARGET)
 	rm -rf $(NAME)
 clean:
 	rm -f *.o MTParser.m
-	rm -rf $(BUNDLE)
+	rm -rf $(BUNDLE) $(NAME)
 	rm -f $(DMG) Terminal.classdump Terminal.otx
 install: $(TARGET)
 	mkdir -p $(SIMBLDIR)
