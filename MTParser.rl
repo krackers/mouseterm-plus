@@ -68,7 +68,7 @@
     debug = (csi . "li");
     cs_sda = csi . ">" . [01]? . "c";
     mode_toggle = csi . "?" . (appkeys . flag @handle_flag @handle_appkeys
-                               | mouse . flag @handle_flag @handle_mouse );
+                               | mouse . flag @handle_flag @handle_mouse);
     bel = 0x07;
     st  = 0x9c;
 
