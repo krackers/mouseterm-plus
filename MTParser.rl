@@ -14,7 +14,7 @@
     action got_debug {}
     action handle_flag
     {
-        state.toggleState = (fc == 'h' ? YES : NO);
+        state.toggleState = (fc == 'h');
     }
 
     action handle_appkeys
