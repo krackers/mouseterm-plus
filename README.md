@@ -86,24 +86,25 @@ Download the official development repository using [Git][7]:
     git clone git://github.com/brodie/mouseterm.git
 
 Run `make` to compile the plugin, and `make install` to install it into
-your home directory's SIMBL plugins folder. Run `make` and `make builddmg`
-to create a disk image of the application.
+your home directory's SIMBL plugins folder. `make test` will install
+the plugin and run a second instance of Terminal.app for testing.
 
 Visit [GitHub][8] if you'd like to fork the project, watch for new changes,
 or report issues.
 
 [JRSwizzle][9] and some mouse reporting code from [iTerm][10] are used in
-MouseTerm.
+MouseTerm. [Ragel][11] is used for parsing control codes.
 
 [7]: http://git-scm.org/
 [8]: http://github.com/brodie/mouseterm
 [9]: http://rentzsch.com/trac/wiki/JRSwizzle
 [10]: http://iterm.sourceforge.net/
+[11]: http://www.complang.org/ragel/
 
 
 Contact
 -------
 
-Contact information can be found on my site, [brodierao.com][11].
+Contact information can be found on my site, [brodierao.com][12].
 
-[11]: http://brodierao.com/
+[12]: http://brodierao.com/
