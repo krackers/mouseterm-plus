@@ -125,7 +125,7 @@ NSMutableDictionary* MouseTerm_ivars = nil;
     }
 
     [shellMenu addItem: [NSMenuItem separatorItem]];
-    NSMenuItem* item = [shellMenu addItemWithTitle: @"Enable Mouse Reporting"
+    NSMenuItem* item = [shellMenu addItemWithTitle: @"Send Mouse Events"
                                             action: @selector(toggle:)
                                      keyEquivalent: @"m"];
     if (!item)
