@@ -6,6 +6,8 @@
 - (NSData*) MouseTerm_codeForEvent: (NSEvent*) event
                             button: (MouseButton) button
                             motion: (BOOL) motion;
++ (void) MouseTerm_setEnabled: (BOOL) value;
++ (BOOL) MouseTerm_getEnabled;
 - (BOOL) MouseTerm_shouldIgnore: (NSEvent*) event;
 - (BOOL) MouseTerm_shouldIgnoreDown: (NSEvent*) event;
 - (Position) MouseTerm_currentPosition: (NSEvent*) event;

@@ -7,6 +7,8 @@
 
 @implementation NSView (MTView)
 
+static BOOL enabled = YES;
+
 - (NSData*) MouseTerm_codeForEvent: (NSEvent*) event
                             button: (MouseButton) button
                             motion: (BOOL) motion
@@ -28,8 +30,21 @@
     return [NSData dataWithBytes: buf length: MOUSE_RESPONSE_LEN];
 }
 
++ (void) MouseTerm_setEnabled: (BOOL) value
+{
+    enabled = value;
+}
+
++ (BOOL) MouseTerm_getEnabled
+{
+    return enabled;
+}
+
 - (BOOL) MouseTerm_shouldIgnore: (NSEvent*) event
 {
+    if (![NSView MouseTerm_getEnabled])
+        return YES;
+
     // Don't handle if alt/option/control is pressed
     if ([event modifierFlags] & (NSAlternateKeyMask | NSControlKeyMask))
         return YES;

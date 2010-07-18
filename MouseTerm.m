@@ -2,6 +2,7 @@
 #import <objc/objc-class.h>
 #import "JRSwizzle.h"
 #import "MouseTerm.h"
+#import "MTView.h"
 #import "Terminal.h"
 
 NSMutableDictionary* MouseTerm_ivars = nil;
@@ -104,6 +105,39 @@ NSMutableDictionary* MouseTerm_ivars = nil;
             @selector(MouseTerm_otherMouseUp:));
     SWIZZLE(controller, @selector(shellDidReceiveData:),
             @selector(MouseTerm_shellDidReceiveData:));
+
+    [self insertMenuItem];
+}
+
++ (IBAction) toggle: (NSMenuItem*) sender
+{
+    [sender setState: ![sender state]];
+    [NSView MouseTerm_setEnabled: [sender state]];
+}
+
++ (void) insertMenuItem;
+{
+    NSMenu* shellMenu = [[[NSApp mainMenu] itemAtIndex: 1] submenu];
+    if (!shellMenu)
+    {
+        NSLog(@"[MouseTerm] ERROR: Shell menu not found");
+        return;
+    }
+
+    [shellMenu addItem: [NSMenuItem separatorItem]];
+    NSMenuItem* item = [shellMenu addItemWithTitle: @"Enable Mouse Reporting"
+                                            action: @selector(toggle:)
+                                     keyEquivalent: @"m"];
+    if (!item)
+    {
+        NSLog(@"[MouseTerm] ERROR: Unable to create menu item");
+        return;
+    }
+
+    [item setKeyEquivalentModifierMask: (NSShiftKeyMask | NSCommandKeyMask)];
+    [item setTarget: self];
+    [item setState: NSOnState];
+    [item setEnabled: YES];
 }
 
 // Deletes instance variables dictionary
