@@ -82,6 +82,15 @@
     return [[MouseTerm_ivars objectForKey: ptr] objectForKey: @"parserState"];
 }
 
+- (void) MouseTerm_writeData: (NSData*) data
+{
+    if ([self MouseTerm_getParserState].handleSda &&
+        !strncmp([data bytes], PDA_RESPONSE, PDA_RESPONSE_LEN))
+        return;
+
+    [self MouseTerm_writeData: data];
+}
+
 // Deletes instance variables
 - (void) MouseTerm_dealloc
 {

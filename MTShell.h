@@ -4,6 +4,7 @@
 
 @interface NSObject (MTShell)
 - (NSValue*) MouseTerm_initVars;
+- (void) MouseTerm_writeData: (NSData*) data;
 - (void) MouseTerm_dealloc;
 
 - (void) MouseTerm_setMouseMode: (int) mouseMode;

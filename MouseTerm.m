@@ -84,6 +84,7 @@ NSMutableDictionary* MouseTerm_ivars = nil;
     MouseTerm_ivars = [[NSMutableDictionary alloc] init];
 
     SWIZZLE(shell, @selector(dealloc), @selector(MouseTerm_dealloc));
+    SWIZZLE(shell, @selector(writeData:), @selector(MouseTerm_writeData:));
     SWIZZLE(view, @selector(scrollWheel:), @selector(MouseTerm_scrollWheel:));
     SWIZZLE(view, @selector(mouseDown:), @selector(MouseTerm_mouseDown:));
     SWIZZLE(view, @selector(mouseDragged:),
