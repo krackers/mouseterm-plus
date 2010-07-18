@@ -11,7 +11,7 @@ typedef enum
 // Control codes
 
 #define SDA_RESPONSE "\033[>0;95;c"
-#define SDA_RESPONSE_LEN 9
+#define SDA_RESPONSE_LEN (sizeof(SDA_RESPONSE) - 1)
 
 // Normal control codes
 #define UP_ARROW "\033[A"

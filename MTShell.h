@@ -6,7 +6,7 @@
 - (NSValue*) MouseTerm_initVars;
 - (void) MouseTerm_dealloc;
 
-- (void) MouseTerm_setMouseMode: (int)mouseMode;
+- (void) MouseTerm_setMouseMode: (int) mouseMode;
 - (int) MouseTerm_getMouseMode;
 
 - (void) MouseTerm_setAppCursorMode: (BOOL) appCursorMode;
