@@ -106,4 +106,8 @@ Contact
 
 Contact information can be found on my site, [brodierao.com][12].
 
+Thanks to [Tom Feist][13] and [Scott Kroll][14] for their contributions.
+
 [12]: http://brodierao.com/
+[13]: http://github.com/shabble
+[14]: http://github.com/skroll
