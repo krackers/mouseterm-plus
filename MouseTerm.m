@@ -125,7 +125,10 @@ NSMutableDictionary* MouseTerm_ivars = nil;
     }
 
     [shellMenu addItem: [NSMenuItem separatorItem]];
-    NSMenuItem* item = [shellMenu addItemWithTitle: @"Send Mouse Events"
+    NSBundle *bundle = [NSBundle bundleForClass: self];
+    NSString* t = NSLocalizedStringFromTableInBundle(@"Send Mouse Events", nil,
+                                                     bundle, nil);
+    NSMenuItem* item = [shellMenu addItemWithTitle: t
                                             action: @selector(toggle:)
                                      keyEquivalent: @"m"];
     if (!item)

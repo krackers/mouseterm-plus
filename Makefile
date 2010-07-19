@@ -33,6 +33,8 @@ $(TARGET): $(OBJS)
 	mkdir -p $(BUNDLE)/Contents/MacOS
 	$(LD) $(CFLAGS) $(LDFLAGS) -o $@ $^
 	cp Info.plist $(BUNDLE)/Contents
+	mkdir -p $(BUNDLE)/Contents/Resources
+	cp -R *.lproj $(BUNDLE)/Contents/Resources
 all: $(TARGET)
 
 dist: $(TARGET)
