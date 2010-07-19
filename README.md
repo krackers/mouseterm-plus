@@ -66,7 +66,6 @@ enable terminal mouse support, add this to your `~/.emacs` file:
 
     (unless window-system
       (xterm-mouse-mode 1)
-      (mouse-wheel-mode 1)
       (global-set-key [mouse-4] '(lambda ()
                                    (interactive)
                                    (scroll-down 1)))
