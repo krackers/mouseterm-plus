@@ -40,6 +40,14 @@ static BOOL enabled = YES;
     return enabled;
 }
 
+- (NSScroller*) MouseTerm_scroller
+{
+    if ([self respondsToSelector: @selector(pane)])
+        return [[(TTView*) self pane] scroller];
+    else
+        return [(TTTabController*) [(TTView*) self controller] scroller];
+}
+
 - (BOOL) MouseTerm_shouldIgnore: (NSEvent*) event
 {
     if (![NSView MouseTerm_getEnabled])
@@ -54,8 +62,7 @@ static BOOL enabled = YES;
     linecount_t scrollback =
         (linecount_t) [screen lineCount] -
         (linecount_t) [(TTView*) self rowCount];
-    if (scrollback > 0 &&
-        [[[(TTView*) self pane] scroller] floatValue] < 1.0)
+    if (scrollback > 0 && [[self MouseTerm_scroller] floatValue] < 1.0)
     {
         return YES;
     }

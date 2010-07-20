@@ -41,14 +41,6 @@ NSMutableDictionary* MouseTerm_ivars = nil;
 
     EXISTS(controller, @selector(shellDidReceiveData:));
 
-    Class pane = NSClassFromString(@"TTPane");
-    if (!pane)
-    {
-        NSLog(@"[MouseTerm] ERROR: Got nil Class for TTPane");
-        return;
-    }
-    EXISTS(pane, @selector(scroller));
-
     Class logicalScreen = NSClassFromString(@"TTLogicalScreen");
     if (!logicalScreen)
     {

@@ -26,11 +26,13 @@ typedef struct
 - (linecount_t) lineCount;
 @end
 
+// TTPane is new in OS X 10.6
 @interface TTPane: NSObject
 - (NSScroller*) scroller;
 @end
 
 @interface TTTabController: NSObject
+- (NSScroller*) scroller; // This method exists only in OS X 10.5 or older
 - (MTShell*) shell;
 @end
 
