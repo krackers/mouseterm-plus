@@ -1,7 +1,8 @@
 #import <Cocoa/Cocoa.h>
 #import <math.h>
-#import "MTView.h"
+#import "MTProfile.h"
 #import "MTShell.h"
+#import "MTView.h"
 #import "Mouse.h"
 #import "Terminal.h"
 
@@ -48,7 +49,7 @@ static BOOL enabled = YES;
         return [(TTTabController*) [(TTView*) self controller] scroller];
 }
 
-- (BOOL) MouseTerm_shouldIgnore: (NSEvent*) event
+- (BOOL) MouseTerm_shouldIgnore: (NSEvent*) event button: (MouseButton) button
 {
     if (![NSView MouseTerm_getEnabled])
         return YES;
@@ -67,12 +68,19 @@ static BOOL enabled = YES;
         return YES;
     }
 
+    // Don't handle if a profile option is disabled
+    MTProfile* profile = [(TTTabController*) [(TTView*) self controller]
+                                             profile];
+    if (![profile MouseTerm_buttonEnabled: button])
+        return YES;
+
     return NO;
 }
 
 - (BOOL) MouseTerm_shouldIgnoreDown: (NSEvent*) event
+                             button: (MouseButton) button
 {
-    if ([self MouseTerm_shouldIgnore: event])
+    if ([self MouseTerm_shouldIgnore: event button: button])
         return YES;
 
     MTShell* shell = [[(TTView*) self controller] shell];
@@ -98,7 +106,7 @@ static BOOL enabled = YES;
 
 - (BOOL) MouseTerm_buttonDown: (NSEvent*) event button: (MouseButton) button
 {
-    if ([self MouseTerm_shouldIgnore: event])
+    if ([self MouseTerm_shouldIgnore: event button: button])
         goto ignored;
 
     MTShell* shell = [[(TTView*) self controller] shell];
@@ -128,9 +136,9 @@ ignored:
     return NO;
 }
 
-- (BOOL) MouseTerm_buttonDragged: (NSEvent*) event
+- (BOOL) MouseTerm_buttonDragged: (NSEvent*) event button: (MouseButton) button
 {
-    if ([self MouseTerm_shouldIgnoreDown: event])
+    if ([self MouseTerm_shouldIgnoreDown: event button: button])
         goto ignored;
 
     MTShell* shell = [[(TTView*) self controller] shell];
@@ -158,9 +166,9 @@ ignored:
     return NO;
 }
 
-- (BOOL) MouseTerm_buttonUp: (NSEvent*) event
+- (BOOL) MouseTerm_buttonUp: (NSEvent*) event button: (MouseButton) button
 {
-    if ([self MouseTerm_shouldIgnoreDown: event])
+    if ([self MouseTerm_shouldIgnoreDown: event button: button])
         goto ignored;
 
     MTShell* shell = [[(TTView*) self controller] shell];
@@ -203,13 +211,25 @@ ignored:
 
 - (void) MouseTerm_mouseDragged: (NSEvent*) event
 {
-    if (![self MouseTerm_buttonDragged: event])
+    MouseButton button;
+    if ([event modifierFlags] & NSCommandKeyMask)
+        button = MOUSE_BUTTON3;
+    else
+        button = MOUSE_BUTTON1;
+
+    if (![self MouseTerm_buttonDragged: event button: button])
         [self MouseTerm_mouseDragged: event];
 }
 
 - (void) MouseTerm_mouseUp: (NSEvent*) event
 {
-    if (![self MouseTerm_buttonUp: event])
+    MouseButton button;
+    if ([event modifierFlags] & NSCommandKeyMask)
+        button = MOUSE_BUTTON3;
+    else
+        button = MOUSE_BUTTON1;
+
+    if (![self MouseTerm_buttonUp: event button: button])
         [self MouseTerm_mouseUp: event];
 }
 
@@ -221,13 +241,13 @@ ignored:
 
 - (void) MouseTerm_rightMouseDragged: (NSEvent*) event
 {
-    if (![self MouseTerm_buttonDragged: event])
+    if (![self MouseTerm_buttonDragged: event button: MOUSE_BUTTON2])
         [self MouseTerm_rightMouseDragged: event];
 }
 
 - (void) MouseTerm_rightMouseUp: (NSEvent*) event
 {
-    if (![self MouseTerm_buttonUp: event])
+    if (![self MouseTerm_buttonUp: event button: MOUSE_BUTTON2])
         [self MouseTerm_rightMouseUp: event];
 }
 
@@ -239,22 +259,19 @@ ignored:
 
 - (void) MouseTerm_otherMouseDragged: (NSEvent*) event
 {
-    if (![self MouseTerm_buttonDragged: event])
+    if (![self MouseTerm_buttonDragged: event button: MOUSE_BUTTON3])
         [self MouseTerm_otherMouseDragged: event];
 }
 
 - (void) MouseTerm_otherMouseUp: (NSEvent*) event
 {
-    if (![self MouseTerm_buttonUp: event])
+    if (![self MouseTerm_buttonUp: event button: MOUSE_BUTTON3])
         [self MouseTerm_otherMouseUp: event];
 }
 
 // Intercepts all scroll wheel movements (one wheel "tick" at a time)
 - (void) MouseTerm_scrollWheel: (NSEvent*) event
 {
-    if ([self MouseTerm_shouldIgnore: event])
-        goto ignored;
-
     TTLogicalScreen* screen = [(TTView*) self logicalScreen];
     MTShell* shell = [[(TTView*) self controller] shell];
 
@@ -262,7 +279,10 @@ ignored:
     {
     case NO_MODE:
     {
-        if ([screen isAlternateScreenActive] &&
+        MTProfile* profile = [(TTTabController*) [(TTView*) self controller]
+                                                 profile];
+        if ([profile MouseTerm_emulationEnabled] &&
+            [screen isAlternateScreenActive] &&
             [shell MouseTerm_getAppCursorMode])
         {
             // Calculate how many lines to scroll by (takes acceleration
@@ -307,6 +327,9 @@ ignored:
     case BUTTON_MODE:
     case ALL_MODE:
     {
+        if ([self MouseTerm_shouldIgnore: event button: MOUSE_WHEEL_UP])
+            goto ignored;
+
         MouseButton button;
         double delta = [event deltaY];
         if (delta == 0.0)

@@ -72,6 +72,26 @@ NSMutableDictionary* MouseTerm_ivars = nil;
     EXISTS(view, @selector(controller));
     EXISTS(view, @selector(logicalScreen));
 
+    Class prefs = NSClassFromString(@"TTAppPrefsController");
+    if (!prefs)
+    {
+        NSLog(@"[MouseTerm] ERROR: Got nil Class for TTAppPrefsController");
+        return;
+    }
+
+    EXISTS(prefs, @selector(windowDidLoad));
+
+    Class profile = NSClassFromString(@"TTProfile");
+    if (!profile)
+    {
+        NSLog(@"[MouseTerm] ERROR: Got nil Class for TTProfile");
+        return;
+    }
+
+    EXISTS(profile, @selector(valueForKey:));
+    EXISTS(profile, @selector(setValue:forKey:));
+    EXISTS(profile, @selector(propertyListRepresentation));
+
     // Initialize instance vars before any swizzling so nothing bad happens
     // if some methods are swizzled but not others.
     MouseTerm_ivars = [[NSMutableDictionary alloc] init];
@@ -97,6 +117,14 @@ NSMutableDictionary* MouseTerm_ivars = nil;
             @selector(MouseTerm_otherMouseUp:));
     SWIZZLE(controller, @selector(shellDidReceiveData:),
             @selector(MouseTerm_shellDidReceiveData:));
+    SWIZZLE(prefs, @selector(windowDidLoad),
+            @selector(MouseTerm_windowDidLoad));
+    SWIZZLE(profile, @selector(valueForKey:),
+            @selector(MouseTerm_valueForKey:));
+    SWIZZLE(profile, @selector(setValue:forKey:),
+            @selector(MouseTerm_setValue:forKey:));
+    SWIZZLE(profile, @selector(propertyListRepresentation),
+            @selector(MouseTerm_propertyListRepresentation));
 
     [self insertMenuItem];
 }
@@ -133,6 +161,42 @@ NSMutableDictionary* MouseTerm_ivars = nil;
     [item setTarget: self];
     [item setState: NSOnState];
     [item setEnabled: YES];
+}
+
++ (MouseTerm*) sharedInstance
+{
+    static MouseTerm* plugin = nil;
+    if (!plugin)
+        plugin = [[MouseTerm alloc] init];
+
+    return plugin;
+}
+
+- (void) orderFrontMouseConfiguration: (id) sender
+{
+    if (![self window] &&
+        ![NSBundle loadNibNamed: @"Configuration" owner: self])
+    {
+        NSLog(@"[MouseTerm] ERROR: Failed to load Configuration.nib");
+        return;
+    }
+
+    [NSApp beginSheet: [self window] modalForWindow: [sender window]
+        modalDelegate: nil didEndSelector: nil contextInfo: nil];
+}
+
+- (IBAction) orderOutConfiguration: (id) sender
+{
+    [NSApp endSheet: [sender window]];
+    [[sender window] orderOut: self];
+}
+
+- (TTProfileArrayController*) profilesController
+{
+    Class cls = NSClassFromString(@"TTAppPrefsController");
+    TTProfileArrayController* controller = [[cls sharedPreferencesController]
+                                               profilesController];
+    return controller;
 }
 
 // Deletes instance variables dictionary

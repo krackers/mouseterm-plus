@@ -2,6 +2,7 @@
 
 @class MTShell;
 @class MTTabController;
+@class MTProfile;
 
 // Classes from Terminal.app being overridden
 
@@ -34,6 +35,7 @@ typedef struct
 @interface TTTabController: NSObject
 - (NSScroller*) scroller; // This method exists only in OS X 10.5 or older
 - (MTShell*) shell;
+- (MTProfile*) profile;
 @end
 
 @interface TTView: NSView
@@ -43,4 +45,13 @@ typedef struct
 - (MTTabController*) controller;
 - (Position) displayPositionForPoint: (NSPoint) point;
 - (void) clearTextSelection;
+@end
+
+@interface TTProfileArrayController:
+    NSArrayController <NSOpenSavePanelDelegate>
+@end
+
+@interface TTAppPrefsController: NSWindowController <NSWindowDelegate>
++ (TTAppPrefsController*) sharedPreferencesController;
+- (TTProfileArrayController*) profilesController;
 @end

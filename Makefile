@@ -11,11 +11,11 @@ ARCHES+=-Xarch_x86_64 -mmacosx-version-min=$(OSXVER64)
 endif
 
 OPTLEVEL=2
-CFLAGS+=-O$(OPTLEVEL) -Wall -mmacosx-version-min=$(OSXVER) $(ARCHES)
+CFLAGS+=-std=c99 -O$(OPTLEVEL) -Wall -mmacosx-version-min=$(OSXVER) $(ARCHES)
 LDFLAGS+=-bundle -framework Cocoa
 
-OBJS=JRSwizzle.o MouseTerm.m MTParser.o MTParserState.o MTShell.o \
-	MTTabController.o MTView.o
+OBJS=JRSwizzle.o MouseTerm.m MTAppPrefsController.o MTParser.o \
+	MTParserState.o MTProfile.o MTShell.o MTTabController.o MTView.o
 NAME=MouseTerm
 BUNDLE=$(NAME).bundle
 DMG=$(NAME).dmg
@@ -35,6 +35,11 @@ $(TARGET): $(OBJS)
 	cp Info.plist $(BUNDLE)/Contents
 	mkdir -p $(BUNDLE)/Contents/Resources
 	cp -R *.lproj $(BUNDLE)/Contents/Resources
+	rm -f $(BUNDLE)/Contents/Resources/English.lproj/*.xib
+	ibtool --errors --warnings --notices \
+		--output-format human-readable-text --compile \
+		$(BUNDLE)/Contents/Resources/English.lproj/Configuration.nib \
+		English.lproj/Configuration.xib
 all: $(TARGET)
 
 dist: $(TARGET)

@@ -9,12 +9,15 @@
 + (void) MouseTerm_setEnabled: (BOOL) value;
 + (BOOL) MouseTerm_getEnabled;
 - (NSScroller*) MouseTerm_scroller;
-- (BOOL) MouseTerm_shouldIgnore: (NSEvent*) event;
-- (BOOL) MouseTerm_shouldIgnoreDown: (NSEvent*) event;
+- (BOOL) MouseTerm_shouldIgnore: (NSEvent*) event button: (MouseButton) button;
+- (BOOL) MouseTerm_shouldIgnoreDown: (NSEvent*) event
+                             button: (MouseButton) button;
 - (Position) MouseTerm_currentPosition: (NSEvent*) event;
 - (BOOL) MouseTerm_buttonDown: (NSEvent*) event button: (MouseButton) button;
-- (BOOL) MouseTerm_buttonDragged: (NSEvent*) event;
-- (BOOL) MouseTerm_buttonUp: (NSEvent*) event;
+- (BOOL) MouseTerm_buttonDragged: (NSEvent*) event
+                          button: (MouseButton) button;
+- (BOOL) MouseTerm_buttonUp: (NSEvent*) event
+                     button: (MouseButton) button;
 - (void) MouseTerm_mouseDown: (NSEvent*) event;
 - (void) MouseTerm_mouseDragged: (NSEvent*) event;
 - (void) MouseTerm_mouseUp: (NSEvent*) event;
