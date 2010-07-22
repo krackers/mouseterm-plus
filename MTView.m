@@ -281,7 +281,8 @@ ignored:
     {
         MTProfile* profile = [(TTTabController*) [(TTView*) self controller]
                                                  profile];
-        if ([profile MouseTerm_emulationEnabled] &&
+        if ([NSView MouseTerm_getEnabled] &&
+            [profile MouseTerm_emulationEnabled] &&
             [screen isAlternateScreenActive] &&
             [shell MouseTerm_getAppCursorMode])
         {
