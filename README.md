@@ -24,9 +24,8 @@ Download
 Status
 ------
 
-MouseTerm is currently alpha quality software. Some features have not
-yet been implemented, and there may be bugs in the current
-implementation.
+MouseTerm is currently beta quality software. It's feature complete,
+but still needs testing.
 
 What works:
 
@@ -34,7 +33,7 @@ What works:
 * Mouse scroll wheel reporting.
 * Simulated mouse wheel scrolling for programs like `less` (i.e. any
   fullscreen program that uses [application cursor key mode][4]).
-* A preferences dialog and terminal profile integration.
+* Terminal profile integration (with preferences dialog).
 
 What's being worked on:
 
