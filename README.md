@@ -1,13 +1,13 @@
 MouseTerm
 =========
 
-MouseTerm is a [SIMBL][1] plugin for Mac OS X's [Terminal.app][2] that passes
-mouse events to the terminal, allowing you to use mouse shortcuts within
-applications that support them.
+MouseTerm is a [SIMBL][1] plugin for Mac OS X's [Terminal.app][2] that
+passes mouse events to the terminal, allowing you to use mouse
+shortcuts within applications that support them.
 
-To get started, first install [SIMBL][1] (MouseTerm won't work without it!).
-Once you've done that, open the `.dmg` file, run `Install`, and restart
-Terminal.app. To uninstall, run `Uninstall` from the `.dmg`.
+To get started, first install [SIMBL][1] (MouseTerm won't work without
+it!). Once you've done that, open the `.dmg` file, run `Install`, and
+restart Terminal.app. To uninstall, run `Uninstall` from the `.dmg`.
 
 [1]: http://www.culater.net/software/SIMBL/SIMBL.php
 [2]: http://www.apple.com/macosx/technology/unix.html
@@ -24,8 +24,9 @@ Download
 Status
 ------
 
-MouseTerm is currently alpha quality software. Some features have not yet
-been implemented, and there may be bugs in the current implementation.
+MouseTerm is currently alpha quality software. Some features have not
+yet been implemented, and there may be bugs in the current
+implementation.
 
 What works:
 
@@ -47,8 +48,8 @@ Frequently Asked Questions
 
 > What programs can I use the mouse in?
 
-This varies widely and depends on the specific program. `less`, [Emacs][5],
-and [Vim][6] are good places to test out mouse reporting.
+This varies widely and depends on the specific program. `less`,
+[Emacs][5], and [Vim][6] are good places to test out mouse reporting.
 
 > How do I disable mouse reporting temporarily?
 
@@ -63,7 +64,8 @@ are reported to programs in the terminal.
 
 > How do I enable mouse reporting in Vim?
 
-To enable the mouse for all modes add the following to your `~/.vimrc` file:
+To enable the mouse for all modes add the following to your `~/.vimrc`
+file:
 
     if has("mouse")
         set mouse=a
@@ -73,8 +75,9 @@ Run `:help mouse` for more information and other possible values.
 
 > What about enabling it in Emacs?
 
-By default MouseTerm will use simulated mouse wheel scrolling in Emacs. To
-enable terminal mouse support, add this to your `~/.emacs` file:
+By default MouseTerm will use simulated mouse wheel scrolling in
+Emacs. To enable terminal mouse support, add this to your `~/.emacs`
+file:
 
     (unless window-system
       (xterm-mouse-mode 1)
@@ -96,15 +99,16 @@ Download the official development repository using [Git][7]:
 
     git clone git://github.com/brodie/mouseterm.git
 
-Run `make` to compile the plugin, and `make install` to install it into
-your home directory's SIMBL plugins folder. `make test` will install
-the plugin and run a second instance of Terminal.app for testing.
+Run `make` to compile the plugin, and `make install` to install it
+into your home directory's SIMBL plugins folder. `make test` will
+install the plugin and run a second instance of Terminal.app for
+testing.
 
-Visit [GitHub][8] if you'd like to fork the project, watch for new changes,
-or report issues.
+Visit [GitHub][8] if you'd like to fork the project, watch for new
+changes, or report issues.
 
-[JRSwizzle][9] and some mouse reporting code from [iTerm][10] are used in
-MouseTerm. [Ragel][11] is used for parsing control codes.
+[JRSwizzle][9] and some mouse reporting code from [iTerm][10] are used
+in MouseTerm. [Ragel][11] is used for parsing control codes.
 
 [7]: http://git-scm.org/
 [8]: http://github.com/brodie/mouseterm
@@ -118,7 +122,8 @@ Contact
 
 Contact information can be found on my site, [brodierao.com][12].
 
-Thanks to [Tom Feist][13] and [Scott Kroll][14] for their contributions.
+Thanks to [Tom Feist][13] and [Scott Kroll][14] for their
+contributions.
 
 [12]: http://brodierao.com/
 [13]: http://github.com/shabble
