@@ -25,9 +25,11 @@ static BOOL enabled = YES;
     if (modflag & NSControlKeyMask) cb |= 16;
     if (motion) cb += 32;
 
+    x = MIN(x + 33, 255);
+    y = MIN(y + 33, 255);
+
     char buf[MOUSE_RESPONSE_LEN + 1];
-    snprintf(buf, sizeof(buf), MOUSE_RESPONSE, cb, 32 + x + 1,
-             32 + y + 1);
+    snprintf(buf, sizeof(buf), MOUSE_RESPONSE, cb, x, y);
     return [NSData dataWithBytes: buf length: MOUSE_RESPONSE_LEN];
 }
 
