@@ -16,7 +16,7 @@ Terminal.app. To uninstall, run `Uninstall` from the `.dmg`.
 Download
 --------
 
-* [MouseTerm.dmg][3] (106 KB, requires Leopard or newer)
+* [MouseTerm.dmg][3] (116 KB, requires Leopard or newer)
 
 [3]: http://bitheap.org/mouseterm/MouseTerm.dmg
 
@@ -33,10 +33,11 @@ What works:
 * Mouse scroll wheel reporting.
 * Simulated mouse wheel scrolling for programs like `less` (i.e. any
   fullscreen program that uses [application cursor key mode][4]).
+* A preferences dialog and terminal profile integration.
 
 What's being worked on:
 
-* A preferences dialog and terminal profile integration.
+* A nicer preferences dialog.
 
 [4]: http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter4.html#config-appcursor
 
@@ -48,6 +49,17 @@ Frequently Asked Questions
 
 This varies widely and depends on the specific program. `less`, [Emacs][5],
 and [Vim][6] are good places to test out mouse reporting.
+
+> How do I disable mouse reporting temporarily?
+
+Use "Send Mouse Events" in the Shell menu.
+
+> How do I configure mouse reporting on a profile basis?
+
+In the preferences dialog under Settings, you can configure terminal
+profiles. Select the profile you want to configure, go to the Keyboard
+section, and click the "Mouse..." button to change what mouse buttons
+are reported to programs in the terminal.
 
 > How do I enable mouse reporting in Vim?
 
