@@ -270,6 +270,9 @@ ignored:
 // Intercepts all scroll wheel movements (one wheel "tick" at a time)
 - (void) MouseTerm_scrollWheel: (NSEvent*) event
 {
+    if ([self MouseTerm_shouldIgnore: event button: MOUSE_WHEEL_UP])
+        goto ignored;
+
     TTLogicalScreen* screen = [(TTView*) self logicalScreen];
     MTShell* shell = [[(TTView*) self controller] shell];
 
@@ -326,9 +329,6 @@ ignored:
     case BUTTON_MODE:
     case ALL_MODE:
     {
-        if ([self MouseTerm_shouldIgnore: event button: MOUSE_WHEEL_UP])
-            goto ignored;
-
         MouseButton button;
         double delta = [event deltaY];
         if (delta == 0.0)
