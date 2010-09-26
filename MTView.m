@@ -64,9 +64,7 @@ static BOOL enabled = YES;
         (linecount_t) [screen lineCount] -
         (linecount_t) [(TTView*) self rowCount];
     if (scrollback > 0 && [[self MouseTerm_scroller] floatValue] < 1.0)
-    {
         return YES;
-    }
 
     // Don't handle if a profile option is disabled
     MTProfile* profile = [(TTTabController*) [(TTView*) self controller]
