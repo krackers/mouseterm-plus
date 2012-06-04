@@ -131,6 +131,10 @@ static BOOL enabled = YES;
     // The above method returns the position *including* scrollback,
     // so we have to compensate for that.
     pos.y -= scrollback;
+    // pos.x may not indicate correct coordinate value if the tail 
+    // cells of line buffer are empty, so we calculate it from the cell size. 
+    CGSize size = [(TTView*) self cellSize];
+    pos.x = floor(viewloc.x / size.width);
     return pos;
 }
 
