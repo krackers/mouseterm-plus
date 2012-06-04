@@ -45,6 +45,7 @@ typedef struct
 - (MTTabController*) controller;
 - (Position) displayPositionForPoint: (NSPoint) point;
 - (void) clearTextSelection;
+- (struct CGSize)cellSize;
 @end
 
 @interface TTProfileArrayController:
