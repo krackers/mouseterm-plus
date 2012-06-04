@@ -32,7 +32,7 @@
         state.handleSda = YES;
     }
 
-    action handle_mouse
+    action handle_mouse_mode
     {
         int mouseMode = state.pendingMouseMode;
         MouseMode newMouseMode = NO_MODE;
@@ -59,6 +59,22 @@
             [mobj MouseTerm_setMouseMode: NO_MODE];
     }
 
+    action handle_urxvt_protocol
+    {
+        if (state.toggleState)
+            [mobj MouseTerm_setMouseProtocol: URXVT_PROTOCOL];
+        else
+            [mobj MouseTerm_setMouseProtocol: NORMAL_PROTOCOL];
+    }
+
+    action handle_sgr_protocol
+    {
+        if (state.toggleState)
+            [mobj MouseTerm_setMouseProtocol: SGR_PROTOCOL];
+        else
+            [mobj MouseTerm_setMouseProtocol: NORMAL_PROTOCOL];
+    }
+
     esc = 0x1b;
     csi = esc . "[";
     flag = ("h" | "l") @handle_flag;
@@ -68,7 +84,9 @@
     debug = (csi . "li");
     cs_sda = csi . ">" . [01]? . "c";
     mode_toggle = csi . "?" . (appkeys . flag @handle_flag @handle_appkeys
-                               | mouse . flag @handle_flag @handle_mouse);
+                               | mouse . flag @handle_flag @handle_mouse_mode
+                               | "1015" . flag @handle_flag @handle_urxvt_protocol
+                               | "1006" . flag @handle_flag @handle_sgr_protocol);
     bel = 0x07;
     st  = 0x9c;
 

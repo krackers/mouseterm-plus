@@ -5,7 +5,8 @@
 @interface NSView (MTView)
 - (NSData*) MouseTerm_codeForEvent: (NSEvent*) event
                             button: (MouseButton) button
-                            motion: (BOOL) motion;
+                            motion: (BOOL) motion
+                           release: (BOOL) release;
 + (void) MouseTerm_setEnabled: (BOOL) value;
 + (BOOL) MouseTerm_getEnabled;
 - (NSScroller*) MouseTerm_scroller;

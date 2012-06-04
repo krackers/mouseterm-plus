@@ -8,6 +8,13 @@ typedef enum
     ALL_MODE
 } MouseMode;
 
+typedef enum
+{
+    NORMAL_PROTOCOL = 0,
+    URXVT_PROTOCOL,
+    SGR_PROTOCOL
+} MouseProtocol;
+
 // Control codes
 
 #define PDA_RESPONSE "\033[?1;2c"
