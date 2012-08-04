@@ -8,7 +8,8 @@
 
 @implementation NSView (MTView)
 
-static BOOL enabled = YES;
+static BOOL mouseEnabled = YES;
+static BOOL base64CopyEnabled = YES;
 
 - (NSData*) MouseTerm_codeForEvent: (NSEvent*) event
                             button: (MouseButton) button
@@ -69,14 +70,24 @@ static BOOL enabled = YES;
     return [NSData dataWithBytes: buf length: len];
 }
 
-+ (void) MouseTerm_setEnabled: (BOOL) value
++ (void) MouseTerm_setMouseEnabled: (BOOL) value
 {
-    enabled = value;
+    mouseEnabled = value;
 }
 
-+ (BOOL) MouseTerm_getEnabled
++ (BOOL) MouseTerm_getMouseEnabled
 {
-    return enabled;
+    return mouseEnabled;
+}
+
++ (void) MouseTerm_setBase64CopyEnabled: (BOOL) value
+{
+    base64CopyEnabled = value;
+}
+
++ (BOOL) MouseTerm_getBase64CopyEnabled
+{
+    return base64CopyEnabled;
 }
 
 - (NSScroller*) MouseTerm_scroller
@@ -89,7 +100,7 @@ static BOOL enabled = YES;
 
 - (BOOL) MouseTerm_shouldIgnore: (NSEvent*) event button: (MouseButton) button
 {
-    if (![NSView MouseTerm_getEnabled])
+    if (![NSView MouseTerm_getMouseEnabled])
         return YES;
 
     // Don't handle if alt/option/control is pressed
@@ -380,7 +391,7 @@ ignored:
     {
         MTProfile* profile = [(TTTabController*) [(TTView*) self controller]
                                                  profile];
-        if ([NSView MouseTerm_getEnabled] &&
+        if ([NSView MouseTerm_getMouseEnabled] &&
             [profile MouseTerm_emulationEnabled] &&
             [screen isAlternateScreenActive] &&
             [shell MouseTerm_getAppCursorMode])

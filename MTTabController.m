@@ -3,6 +3,7 @@
 #import "MTParser.h"
 #import "MTParserState.h"
 #import "MTShell.h"
+#import "MTView.h"
 #import "MTTabController.h"
 #import "Terminal.h"
 

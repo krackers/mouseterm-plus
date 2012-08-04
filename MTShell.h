@@ -19,6 +19,9 @@
 - (void) MouseTerm_setIsMouseDown: (BOOL) isMouseDown;
 - (BOOL) MouseTerm_getIsMouseDown;
 
+- (BOOL) MouseTerm_writeToPasteBoard: (NSString*) stringToWrite;
+- (NSString*) MouseTerm_readFromPasteBoard;
+
 - (void) MouseTerm_setParserState: (MTParserState*) parserState;
 - (MTParserState*) MouseTerm_getParserState;
 

@@ -86,6 +86,17 @@
                             objectForKey: @"isMouseDown"] boolValue];
 }
 
+- (BOOL) MouseTerm_writeToPasteBoard: (NSString*) stringToWrite
+{
+    return [[NSPasteboard generalPasteboard] setString:stringToWrite
+                                               forType:NSStringPboardType];
+}
+
+- (NSString*) MouseTerm_readFromPasteBoard
+{
+    return [[NSPasteboard generalPasteboard] stringForType:NSStringPboardType];
+}
+
 - (void) MouseTerm_setParserState: (MTParserState*) parserState
 {
     NSValue *ptr = [self MouseTerm_initVars];

@@ -1,10 +1,13 @@
 #import <Cocoa/Cocoa.h>
+#import <apr-1/apr.h>
+#import <apr-1/apr_base64.h>
 #import <math.h>
 #import "Mouse.h"
 #import "MouseTerm.h"
 #import "MTParser.h"
 #import "MTParserState.h"
 #import "MTShell.h"
+#import "MTView.h"
 #import "MTTabController.h"
 #import "Terminal.h"
 
@@ -75,6 +78,40 @@
             [mobj MouseTerm_setMouseProtocol: NORMAL_PROTOCOL];
     }
 
+    action handle_osc52_start
+    {
+        if ([NSView MouseTerm_getBase64CopyEnabled]) {
+            if (osc52Buffer)
+                [osc52Buffer release];
+            osc52Buffer = [[NSMutableData alloc] init];
+        }
+    }
+
+    action handle_osc52
+    {
+        if (osc52Buffer)
+            [osc52Buffer appendBytes: &fc length: 1];
+    }
+
+    action handle_osc_end
+    {
+        if (osc52Buffer) {
+            NSString *str= [[NSString alloc] initWithData:osc52Buffer 
+                                                 encoding:NSASCIIStringEncoding];
+	        char *encodedBuffer = (char*)[str cStringUsingEncoding:NSASCIIStringEncoding];
+	        int destLength = apr_base64_decode_len(encodedBuffer);
+	        char *decodedBuffer = malloc(destLength);
+	        apr_base64_decode(decodedBuffer, encodedBuffer);
+	        NSString *resultString = [NSString stringWithUTF8String:decodedBuffer];
+	        free(decodedBuffer);
+
+            [[[[mobj controller] activePane] view] copy: nil];
+            [mobj MouseTerm_writeToPasteBoard: resultString];
+            [osc52Buffer release];
+            osc52Buffer = nil;
+        }
+    }
+
     esc = 0x1b;
     csi = esc . "[";
     flag = ("h" | "l") @handle_flag;
@@ -88,14 +125,22 @@
                                | "1015" . flag @handle_flag @handle_urxvt_protocol
                                | "1006" . flag @handle_flag @handle_sgr_protocol);
     bel = 0x07;
-    st  = 0x9c;
+    st  = esc . "\\" | 0x9c;
+    base64 = ([a-zA-Z0-9\+/]+[=]*);
+    osc52 = osc . "52;" . [0-9]* . ";" @handle_osc52_start;
 
-    main := ((any - csi | any - osc)* . (mode_toggle # @got_toggle
-                                         | cs_sda @handle_sda
-                                         | debug @got_debug))*;
+    main := ((base64 @handle_osc52
+              | (bel | st) @handle_osc_end
+              | any - csi
+              | any - osc)* . (mode_toggle # @got_toggle
+                               | osc52
+                               | cs_sda @handle_sda
+                               | debug @got_debug))*;
 }%%
 
 %% write data;
+
+static NSMutableData *osc52Buffer = nil;
 
 int MTParser_execute(const char* data, int len, BOOL isEof, id obj,
                      MTParserState* state)

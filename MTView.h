@@ -7,8 +7,10 @@
                             button: (MouseButton) button
                             motion: (BOOL) motion
                            release: (BOOL) release;
-+ (void) MouseTerm_setEnabled: (BOOL) value;
-+ (BOOL) MouseTerm_getEnabled;
++ (void) MouseTerm_setMouseEnabled: (BOOL) value;
++ (BOOL) MouseTerm_getMouseEnabled;
++ (void) MouseTerm_setBase64CopyEnabled: (BOOL) value;
++ (BOOL) MouseTerm_getBase64CopyEnabled;
 - (NSScroller*) MouseTerm_scroller;
 - (BOOL) MouseTerm_shouldIgnore: (NSEvent*) event button: (MouseButton) button;
 - (BOOL) MouseTerm_shouldIgnoreDown: (NSEvent*) event

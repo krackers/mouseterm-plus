@@ -12,7 +12,7 @@ endif
 
 OPTLEVEL=2
 CFLAGS+=-std=c99 -O$(OPTLEVEL) -Wall -mmacosx-version-min=$(OSXVER) $(ARCHES)
-LDFLAGS+=-bundle -framework Cocoa
+LDFLAGS+=-bundle -framework Cocoa -laprutil-1 -lapr-1
 
 OBJS=JRSwizzle.o MouseTerm.m MTAppPrefsController.o MTParser.o \
 	MTParserState.o MTProfile.o MTShell.o MTTabController.o MTView.o

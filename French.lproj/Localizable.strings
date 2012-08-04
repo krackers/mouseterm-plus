@@ -1,2 +1,3 @@
 /* Send Mouse Events menu item */
 "Send Mouse Events" = "Envoyer les évènements souris";
+"Enable Base64 Copy" = "Permettre la base64 Copie";
