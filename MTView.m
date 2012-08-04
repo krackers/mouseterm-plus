@@ -126,6 +126,16 @@ static BOOL enabled = YES;
     return NO;
 }
 
+- (BOOL) MouseTerm_shouldIgnoreMoved: (NSEvent*) event
+{
+    // check if the mouse location is in the bounds of window.
+    NSPoint location = [event locationInWindow];
+    NSRect bounds = [(NSView*) self bounds];
+    if (NSPointInRect(location, bounds))
+        return NO;
+    return YES;
+}
+
 - (Position) MouseTerm_currentPosition: (NSEvent*) event
 {
     linecount_t scrollback =
@@ -141,11 +151,12 @@ static BOOL enabled = YES;
     // pos.x may not indicate correct coordinate value if the tail 
     // cells of line buffer are empty, so we calculate it from the cell size. 
     CGSize size = [(TTView*) self cellSize];
-    pos.x = (int)round(viewloc.x / size.width);
+    pos.x = (linecount_t)round(viewloc.x / size.width);
 
     // treat negative position value as 1.
-    pos.x = MAX(1, pos.x);
-    pos.y = MAX(1, pos.y);
+    pos.x = MAX(1, (int)pos.x);
+    pos.y = MAX(1, (int)pos.y);
+
     return pos;
 }
 
@@ -181,6 +192,38 @@ handled:
 ignored:
     return NO;
 }
+
+- (BOOL) MouseTerm_buttonMoved: (NSEvent*) event
+{
+    if ([self MouseTerm_shouldIgnoreMoved: event])
+        goto ignored;
+
+    MTShell* shell = [[(TTView*) self controller] shell];
+    switch ([shell MouseTerm_getMouseMode])
+    {
+    case NO_MODE:
+        goto ignored;
+    case NORMAL_MODE:
+    case HILITE_MODE:
+    case BUTTON_MODE:
+        goto handled;
+    case ALL_MODE:
+    {
+        NSData* data = [self MouseTerm_codeForEvent: event
+                                             button: MOUSE_RELEASE + 32
+                                             motion: NO
+                                            release: NO];
+        [(TTShell*) shell writeData: data];
+        goto handled;
+    }
+    }
+handled:
+    [(TTView*) self clearTextSelection];
+    return YES;
+ignored:
+    return NO;
+}
+
 
 - (BOOL) MouseTerm_buttonDragged: (NSEvent*) event button: (MouseButton) button
 {
@@ -255,6 +298,11 @@ ignored:
 
     if (![self MouseTerm_buttonDown: event button: button])
         [self MouseTerm_mouseDown: event];
+}
+
+- (void) MouseTerm_mouseMoved: (NSEvent*) event
+{
+    [self MouseTerm_buttonMoved: event];
 }
 
 - (void) MouseTerm_mouseDragged: (NSEvent*) event
