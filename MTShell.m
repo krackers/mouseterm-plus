@@ -1,4 +1,7 @@
 #import <Cocoa/Cocoa.h>
+#import <apr-1/apr.h>
+#import <apr-1/apr_base64.h>
+#import "terminal.h"
 #import "Mouse.h"
 #import "MouseTerm.h"
 #import "MTParserState.h"
@@ -95,6 +98,42 @@
 - (NSString*) MouseTerm_readFromPasteBoard
 {
     return [[NSPasteboard generalPasteboard] stringForType:NSStringPboardType];
+}
+
+- (void) MouseTerm_osc52SetAccess: (NSString*) stringToWrite
+{
+    char *encodedBuffer = (char*)[stringToWrite cStringUsingEncoding:NSASCIIStringEncoding];
+    int destLength = apr_base64_decode_len(encodedBuffer);
+    char *decodedBuffer = malloc(destLength);
+    apr_base64_decode(decodedBuffer, encodedBuffer);
+    NSString *resultString = [NSString stringWithUTF8String:decodedBuffer];
+    free(decodedBuffer);
+
+    [[[[(TTShell*)self controller] activePane] view] copy: nil];
+    [self MouseTerm_writeToPasteBoard: resultString];
+}
+
+- (void) MouseTerm_osc52GetAccess
+{
+    // ref: http://blog.livedoor.jp/jgoamakf/archives/51160286.html
+    NSString *str = [self MouseTerm_readFromPasteBoard];
+    char *sourceCString = (char*)[str UTF8String];
+    const char prefix[] = "\x1b]52;c;"; // OSC52 from Clipboard
+    const char postfix[] = "\x1b\\"; // ST
+
+    int sourceLength = strlen(sourceCString);
+    int resultLength = apr_base64_encode_len(sourceLength);
+    int allLength = sizeof(prefix) + resultLength + sizeof(postfix);
+    char *encodedBuffer = (char*)malloc(allLength);
+    char *it = encodedBuffer;
+    memcpy(it, prefix, sizeof(prefix));
+    it += sizeof(prefix);
+    apr_base64_encode(it, sourceCString, sourceLength);
+    it += resultLength;
+    memcpy(it, postfix, sizeof(postfix));
+
+    [(TTShell*)self writeData: [NSData dataWithBytes: encodedBuffer
+                                              length: allLength]];
 }
 
 - (void) MouseTerm_setParserState: (MTParserState*) parserState

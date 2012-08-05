@@ -22,6 +22,7 @@ typedef struct
 
 @interface TTShell: NSObject
 - (void) writeData: (NSData*) data;
+- (id)controller;
 @end
 
 @interface TTLogicalScreen: NSObject

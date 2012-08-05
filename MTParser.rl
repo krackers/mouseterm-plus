@@ -1,6 +1,4 @@
 #import <Cocoa/Cocoa.h>
-#import <apr-1/apr.h>
-#import <apr-1/apr_base64.h>
 #import <math.h>
 #import "Mouse.h"
 #import "MouseTerm.h"
@@ -78,13 +76,23 @@
             [mobj MouseTerm_setMouseProtocol: NORMAL_PROTOCOL];
     }
 
-    action handle_osc52_start
+    action handle_osc52_set_start
     {
         if ([NSView MouseTerm_getBase64CopyEnabled]) {
             if (osc52Buffer)
                 [osc52Buffer release];
             osc52Buffer = [[NSMutableData alloc] init];
         }
+    }
+
+    action handle_osc52_get
+    {
+        if (osc52Buffer) {
+            [osc52Buffer release];
+            osc52Buffer = nil;
+        }
+
+        [mobj MouseTerm_osc52GetAccess];
     }
 
     action handle_osc52
@@ -98,15 +106,7 @@
         if (osc52Buffer) {
             NSString *str= [[NSString alloc] initWithData:osc52Buffer 
                                                  encoding:NSASCIIStringEncoding];
-	        char *encodedBuffer = (char*)[str cStringUsingEncoding:NSASCIIStringEncoding];
-	        int destLength = apr_base64_decode_len(encodedBuffer);
-	        char *decodedBuffer = malloc(destLength);
-	        apr_base64_decode(decodedBuffer, encodedBuffer);
-	        NSString *resultString = [NSString stringWithUTF8String:decodedBuffer];
-	        free(decodedBuffer);
-
-            [[[[mobj controller] activePane] view] copy: nil];
-            [mobj MouseTerm_writeToPasteBoard: resultString];
+            [mobj MouseTerm_osc52SetAccess:str];
             [osc52Buffer release];
             osc52Buffer = nil;
         }
@@ -116,6 +116,7 @@
     csi = esc . "[";
     flag = ("h" | "l") @handle_flag;
     osc = esc . ']';
+    dcs = esc . 'P';
     appkeys = "1";
     mouse = "100" . ([0123]) @handle_mouse_digit;
     debug = (csi . "li");
@@ -127,7 +128,8 @@
     bel = 0x07;
     st  = esc . "\\" | 0x9c;
     base64 = ([a-zA-Z0-9\+/]+[=]*);
-    osc52 = osc . "52;" . [0-9]* . ";" @handle_osc52_start;
+    osc52 = osc . "52;" . [psc0-9]* . (";" @handle_osc52_set_start)
+                                    . ("?" @handle_osc52_get)?;
 
     main := ((base64 @handle_osc52
               | (bel | st) @handle_osc_end

@@ -22,6 +22,9 @@
 - (BOOL) MouseTerm_writeToPasteBoard: (NSString*) stringToWrite;
 - (NSString*) MouseTerm_readFromPasteBoard;
 
+- (void) MouseTerm_osc52SetAccess: (NSString*) stringToWrite;
+- (void) MouseTerm_osc52GetAccess;
+
 - (void) MouseTerm_setParserState: (MTParserState*) parserState;
 - (MTParserState*) MouseTerm_getParserState;
 
