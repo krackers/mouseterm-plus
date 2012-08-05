@@ -13,7 +13,7 @@
 - (void) MouseTerm_shellDidReceiveData: (NSData*) data
 {
     NSUInteger length = [data length];
-    const char* chars = [data bytes];
+    char* chars = (char*)[data bytes];
 
     MTParserState* state = [[(TTTabController*) self shell]
                                MouseTerm_getParserState];

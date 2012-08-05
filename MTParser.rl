@@ -28,6 +28,27 @@
         state.pendingMouseMode = (fc - 48);
     }
 
+    action handle_dcs
+    {
+        const char *it = p;
+        const char *end = data + len;
+        if (++it != end) {
+            if (*it != '\x1b' || *it != '\x90') {
+                if (++it != end) {
+                    if (*it != '\x1b' || *it != '\x90') {
+                        if (++it != end) {
+                            if (*it != '\x1b' || *it != '\x90') {
+                                *(char*)p = ']';
+                                *(char*)(p + 1) = '4';
+                                *(char*)(p + 2) = ';';
+                            }
+                        }
+                    }
+                }
+            } 
+        }
+    }
+
     action handle_sda
     {
         state.handleSda = YES;
@@ -134,6 +155,7 @@
 
     main := ((base64 @handle_osc52
               | (bel | st) @handle_osc_end
+              | dcs @handle_dcs
               | any - csi
               | any - osc)* . (mode_toggle # @got_toggle
                                | osc52
@@ -145,7 +167,7 @@
 
 static NSMutableData *osc52Buffer = nil;
 
-int MTParser_execute(const char* data, int len, BOOL isEof, id obj,
+int MTParser_execute(char* data, int len, BOOL isEof, id obj,
                      MTParserState* state)
 {
     const char* p = data;

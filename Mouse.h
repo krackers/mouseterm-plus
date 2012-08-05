@@ -19,7 +19,8 @@ typedef enum
 
 #define PDA_RESPONSE "\033[?1;2c"
 #define PDA_RESPONSE_LEN (sizeof(PDA_RESPONSE) - 1)
-#define SDA_RESPONSE "\033[>0;95;c"
+//#define SDA_RESPONSE "\033[>0;95;c"
+#define SDA_RESPONSE "\033[>32;277;2c"
 #define SDA_RESPONSE_LEN (sizeof(SDA_RESPONSE) - 1)
 
 // Normal control codes
