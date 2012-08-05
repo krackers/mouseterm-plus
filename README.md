@@ -1,7 +1,7 @@
-MouseTerm Plus
+MouseTerm plus
 ==============
 
-MouseTerm Plus is the provisional fork of brodie's MouseTerm (https://bitheap.org/mouseterm)
+MouseTerm plus is the provisional fork of brodie's MouseTerm (https://bitheap.org/mouseterm)
 
  - URXVT 1015 mouse tracking (for vim).
  - SGR 1006 mouse tracking.
@@ -11,6 +11,7 @@ MouseTerm Plus is the provisional fork of brodie's MouseTerm (https://bitheap.or
  - Emurate xterm patch-level 277 (the former reports as pl.95, in DA2 response).
  - Ignore DCS (\eP ... ST, for vim, it's dirty hack - -;)
 
+---
 
 MouseTerm
 =========
@@ -25,14 +26,6 @@ restart Terminal.app. To uninstall, run `Uninstall` from the `.dmg`.
 
 [1]: http://www.culater.net/software/SIMBL/SIMBL.php
 [2]: http://www.apple.com/macosx/technology/unix.html
-
-
-Download
---------
-
-* [MouseTerm.dmg][3] (116 KB, requires Leopard or newer)
-
-[3]: http://bitheap.org/mouseterm/MouseTerm.dmg
 
 
 Status
