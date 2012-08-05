@@ -1,3 +1,17 @@
+MouseTerm Plus
+==============
+
+MouseTerm Plus is the provisional fork of brodie's MouseTerm (https://bitheap.org/mouseterm)
+
+ - URXVT 1015 mouse tracking (for vim).
+ - SGR 1006 mouse tracking.
+ - Supports xterm's "Any Event Mouse(DECSET 1003)" tracking mode (The formar supports "Button Event" only).
+ - OSC 52 clipboard accsess (get/set)
+ - Localization support of menu resource (French/Japanese)
+ - Emurate xterm patch-level 277 (the former reports as pl.95, in DA2 response).
+ - Ignore DCS (\eP ... ST, for vim, it's dirty hack - -;)
+
+
 MouseTerm
 =========
 
