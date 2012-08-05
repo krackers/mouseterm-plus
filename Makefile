@@ -40,6 +40,20 @@ $(TARGET): $(OBJS)
 		--output-format human-readable-text --compile \
 		$(BUNDLE)/Contents/Resources/English.lproj/Configuration.nib \
 		English.lproj/Configuration.xib
+	rm -f $(BUNDLE)/Contents/Resources/Japanese.lproj/*.xib
+	ibtool --errors --warnings --notices \
+		--output-format human-readable-text --compile \
+		$(BUNDLE)/Contents/Resources/Japanese.lproj/Configuration.nib \
+		English.lproj/Configuration.xib
+	rm -f $(BUNDLE)/Contents/Resources/French.lproj/*.xib
+	ibtool --errors --warnings --notices \
+		--output-format human-readable-text --compile \
+		$(BUNDLE)/Contents/Resources/French.lproj/Configuration.nib \
+		English.lproj/Configuration.xib
+
+ all: $(TARGET)
+ 
+ dist: $(TARGET)
 all: $(TARGET)
 
 dist: $(TARGET)

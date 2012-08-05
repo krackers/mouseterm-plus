@@ -10,6 +10,7 @@
 
 static BOOL mouseEnabled = YES;
 static BOOL base64CopyEnabled = YES;
+static BOOL base64PasteEnabled = YES;
 
 - (NSData*) MouseTerm_codeForEvent: (NSEvent*) event
                             button: (MouseButton) button
@@ -88,6 +89,16 @@ static BOOL base64CopyEnabled = YES;
 + (BOOL) MouseTerm_getBase64CopyEnabled
 {
     return base64CopyEnabled;
+}
+
++ (void) MouseTerm_setBase64PasteEnabled: (BOOL) value
+{
+    base64PasteEnabled = value;
+}
+
++ (BOOL) MouseTerm_getBase64PasteEnabled
+{
+    return base64PasteEnabled;
 }
 
 - (NSScroller*) MouseTerm_scroller

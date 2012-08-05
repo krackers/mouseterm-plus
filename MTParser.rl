@@ -91,8 +91,9 @@
             [osc52Buffer release];
             osc52Buffer = nil;
         }
-
-        [mobj MouseTerm_osc52GetAccess];
+        if ([NSView MouseTerm_getBase64PasteEnabled]) {
+            [mobj MouseTerm_osc52GetAccess];
+        }
     }
 
     action handle_osc52

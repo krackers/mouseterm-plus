@@ -1,3 +1,4 @@
 /* Send Mouse Events menu item */
 "Send Mouse Events" = "Send Mouse Events";
 "Enable Base64 Copy" = "Enable Base64 Copy";
+"Enable Base64 Paste" = "Enable Base64 Paste";

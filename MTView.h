@@ -11,6 +11,8 @@
 + (BOOL) MouseTerm_getMouseEnabled;
 + (void) MouseTerm_setBase64CopyEnabled: (BOOL) value;
 + (BOOL) MouseTerm_getBase64CopyEnabled;
++ (void) MouseTerm_setBase64PasteEnabled: (BOOL) value;
++ (BOOL) MouseTerm_getBase64PasteEnabled;
 - (NSScroller*) MouseTerm_scroller;
 - (BOOL) MouseTerm_shouldIgnore: (NSEvent*) event button: (MouseButton) button;
 - (BOOL) MouseTerm_shouldIgnoreDown: (NSEvent*) event
