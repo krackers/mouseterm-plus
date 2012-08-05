@@ -1,0 +1,4 @@
+/* Send Mouse Events menu item */
+"Send Mouse Events" = "マウスイベントを送る";
+"Enable Base64 Copy" = "クリップボード書き込みアクセスを許可する";
+"Enable Base64 Paste" = "クリップボード読み込みアクセスを許可する";
