@@ -1,32 +1,25 @@
 MouseTerm plus
 ==============
 
-MouseTerm plus is the provisional fork of brodie's MouseTerm (https://bitheap.org/mouseterm)
+MouseTerm plus is the provisional fork of [brodie's MouseTerm][1].
+We want to push the results of this experimental project to the original MouseTerm, if possible.
+
+MouseTerm is a [SIMBL][2] plugin for Mac OS X's [Terminal.app][3] that
+passes mouse events to the terminal, allowing you to use mouse
+shortcuts within applications that support them.
+
 
  - URXVT 1015 mouse tracking (for vim).
  - SGR 1006 mouse tracking.
  - Supports xterm's "Any Event Mouse(DECSET 1003)" tracking mode (The formar supports "Button Event" only).
- - OSC 52 clipboard accsess (get/set)
+ - OSC 52 clipboard accsess (get access/set access, for tmux)
  - Localization support of menu resource (French/Japanese)
  - Emurate xterm patch-level 277 (the former reports as pl.95, in DA2 response).
  - Ignore DCS (\eP ... ST, for vim, it's dirty hack - -;)
 
----
-
-MouseTerm
-=========
-
-MouseTerm is a [SIMBL][1] plugin for Mac OS X's [Terminal.app][2] that
-passes mouse events to the terminal, allowing you to use mouse
-shortcuts within applications that support them.
-
-To get started, first install [SIMBL][1] (MouseTerm won't work without
-it!). Once you've done that, open the `.dmg` file, run `Install`, and
-restart Terminal.app. To uninstall, run `Uninstall` from the `.dmg`.
-
-[1]: http://www.culater.net/software/SIMBL/SIMBL.php
-[2]: http://www.apple.com/macosx/technology/unix.html
-
+[1]: https://bitheap.org/mouseterm
+[2]: http://www.culater.net/software/SIMBL/SIMBL.php
+[3]: http://www.apple.com/macosx/technology/unix.html
 
 Status
 ------
@@ -36,18 +29,28 @@ but still needs testing.
 
 What works:
 
-* Mouse button reporting.
+* Mouse normal event reporting.
+* Mouse button event reporting.
+* Mouse any event reporting.
 * Mouse scroll wheel reporting.
 * Simulated mouse wheel scrolling for programs like `less` (i.e. any
   fullscreen program that uses [application cursor key mode][4]).
-* Terminal profile integration (with preferences dialog).
-
-What's being worked on:
-
-* A nicer preferences dialog.
+* URXVT 1015 styled mouse tracking.
+* SGR 1006 styled mouse tracking.
+* Menu item integration.
 
 [4]: http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter4.html#config-appcursor
 
+Thanks
+======
+
+Thanks to [Brodie Rao][5], [Tom Feist][6] and [Scott Kroll][7] for their contributions.
+
+[5]: http://brodierao.com/
+[6]: http://github.com/shabble
+[7]: http://github.com/skroll
+
+-------
 
 Frequently Asked Questions
 --------------------------
@@ -55,7 +58,7 @@ Frequently Asked Questions
 > What programs can I use the mouse in?
 
 This varies widely and depends on the specific program. `less`,
-[Emacs][5], and [Vim][6] are good places to test out mouse reporting.
+[Emacs][8], and [Vim][9] are good places to test out mouse reporting.
 
 > How do I disable mouse reporting temporarily?
 
@@ -94,8 +97,8 @@ file:
                                    (interactive)
                                    (scroll-up 1))))
 
-[5]: http://www.gnu.org/software/emacs/
-[6]: http://www.vim.org/
+[8]: http://www.gnu.org/software/emacs/
+[9]: http://www.vim.org/
 
 
 Development
@@ -103,7 +106,7 @@ Development
 
 Download the official development repository using [Git][7]:
 
-    git clone git://github.com/brodie/mouseterm.git
+    git clone git://github.com/saitoha/mouseterm-plus.git
 
 Run `make` to compile the plugin, and `make install` to install it
 into your home directory's SIMBL plugins folder. `make test` will
@@ -122,15 +125,3 @@ in MouseTerm. [Ragel][11] is used for parsing control codes.
 [10]: http://iterm.sourceforge.net/
 [11]: http://www.complang.org/ragel/
 
-
-Contact
--------
-
-Contact information can be found on my site, [brodierao.com][12].
-
-Thanks to [Tom Feist][13] and [Scott Kroll][14] for their
-contributions.
-
-[12]: http://brodierao.com/
-[13]: http://github.com/shabble
-[14]: http://github.com/skroll
