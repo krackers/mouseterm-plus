@@ -8,15 +8,6 @@ MouseTerm is a [SIMBL][2] plugin for Mac OS X's [Terminal.app][3] that
 passes mouse events to the terminal, allowing you to use mouse
 shortcuts within applications that support them.
 
-
- - URXVT 1015 mouse tracking (for vim).
- - SGR 1006 mouse tracking.
- - Supports xterm's "Any Event Mouse(DECSET 1003)" tracking mode (The formar supports "Button Event" only).
- - OSC 52 clipboard accsess (get access/set access, for tmux)
- - Localization support of menu resource (French/Japanese)
- - Emurate xterm patch-level 277 (the former reports as pl.95, in DA2 response).
- - Ignore DCS (\eP ... ST, for vim, it's dirty hack - -;)
-
 [1]: https://bitheap.org/mouseterm
 [2]: http://www.culater.net/software/SIMBL/SIMBL.php
 [3]: http://www.apple.com/macosx/technology/unix.html
@@ -31,20 +22,25 @@ What works:
 
 * Mouse normal event reporting.
 * Mouse button event reporting.
-* Mouse any event reporting.
 * Mouse scroll wheel reporting.
 * Simulated mouse wheel scrolling for programs like `less` (i.e. any
   fullscreen program that uses [application cursor key mode][4]).
-* URXVT 1015 styled mouse tracking.
+* URXVT 1015 styled mouse tracking (for vim).
 * SGR 1006 styled mouse tracking.
 * Menu item integration.
+
+* Supports xterm's "Any Event Mouse(DECSET 1003)" tracking mode (The formar supports "Button Event" only).
+* OSC 52 clipboard accsess (get access/set access, for tmux)
+* Localization support of menu resource (French/Japanese)
+* Emurate xterm patch-level 277 (the former reports as pl.95, in DA2 response).
+* Ignore DCS (\eP ... ST, for vim, it's dirty hack - -;)
 
 [4]: http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter4.html#config-appcursor
 
 Thanks
 ======
 
-Thanks to [Brodie Rao][5], [Tom Feist][6] and [Scott Kroll][7] for their contributions.
+Thanks to the original developper [Brodie Rao][5], and [Tom Feist][6] and [Scott Kroll][7] for their contributions.
 
 [5]: http://brodierao.com/
 [6]: http://github.com/shabble
