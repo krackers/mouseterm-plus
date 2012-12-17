@@ -28,6 +28,8 @@ typedef struct
 @interface TTLogicalScreen: NSObject
 - (BOOL) isAlternateScreenActive;
 - (linecount_t) lineCount;
+@property(retain) NSString *tabTitle; // @synthesize tabTitle=_tabTitle;
+@property(retain) NSString *windowTitle; // @synthesize windowTitle=_windowTitle;
 @end
 
 // TTPane is new in OS X 10.6
@@ -40,6 +42,7 @@ typedef struct
 - (NSScroller*) scroller; // This method exists only in OS X 10.5 or older
 - (MTShell*) shell;
 - (MTProfile*) profile;
+- (id)encodingConverter;
 @property(readonly) TTPane *activePane; // @synthesize activePane;
 @end
 

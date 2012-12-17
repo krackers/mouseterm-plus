@@ -16,6 +16,12 @@
 - (void) MouseTerm_setAppCursorMode: (BOOL) appCursorMode;
 - (BOOL) MouseTerm_getAppCursorMode;
 
+- (void) MouseTerm_pushWindowTitle;
+- (void) MouseTerm_popWindowTitle;
+
+- (void) MouseTerm_pushTabTitle;
+- (void) MouseTerm_popTabTitle;
+
 - (void) MouseTerm_setIsMouseDown: (BOOL) isMouseDown;
 - (BOOL) MouseTerm_getIsMouseDown;
 

@@ -26,6 +26,10 @@
                  forKey: @"isMouseDown"];
         [dict setObject: [[[MTParserState alloc] init] autorelease]
                  forKey: @"parserState"];
+        [dict setObject: [[[NSMutableArray alloc] init] autorelease]
+                 forKey: @"windowTitleStack"];
+        [dict setObject: [[[NSMutableArray alloc] init] autorelease]
+                 forKey: @"tabTitleStack"];
     }
     return ptr;
 }
@@ -74,6 +78,64 @@
                             objectForKey: @"appCursorMode"] boolValue];
 }
 
+- (void) MouseTerm_pushWindowTitle
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    NSMutableArray *stack = (NSMutableArray *)[[MouseTerm_ivars objectForKey: ptr]
+                                                                objectForKey: @"windowTitleStack"];
+    TTLogicalScreen *screen = [[(TTShell *)self controller] logicalScreen];
+    NSString *title = [screen windowTitle];
+    if (title == nil)
+        title = @"";
+    [stack addObject: title];
+}
+
+- (void) MouseTerm_popWindowTitle
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    NSMutableArray *stack = (NSMutableArray *)[[MouseTerm_ivars objectForKey: ptr]
+                                                                objectForKey: @"windowTitleStack"];
+    NSUInteger count = [stack count];
+    if (count > 0) {
+        TTLogicalScreen *screen = [[(TTShell *)self controller] logicalScreen];
+        if (screen != nil) {
+            NSString *title = [stack objectAtIndex: count - 1];
+            if (title != nil)
+                [screen setWindowTitle:title];
+            [stack removeObjectAtIndex: count - 1];
+        }
+    }
+}
+
+- (void) MouseTerm_pushTabTitle
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    NSMutableArray *stack = (NSMutableArray *)[[MouseTerm_ivars objectForKey: ptr]
+                                                                objectForKey: @"tabTitleStack"];
+    TTLogicalScreen *screen = [[(TTShell *)self controller] logicalScreen];
+    NSString *title = [screen tabTitle];
+    if (title == nil)
+        title = @"";
+    [stack addObject: title];
+}
+
+- (void) MouseTerm_popTabTitle
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    NSMutableArray *stack = (NSMutableArray *)[[MouseTerm_ivars objectForKey: ptr]
+                                                                objectForKey: @"tabTitleStack"];
+    NSUInteger count = [stack count];
+    if (count > 0) {
+        TTLogicalScreen *screen = [[(TTShell *)self controller] logicalScreen];
+        if (screen != nil) {
+            NSString *title = [stack objectAtIndex: count - 1];
+            if (title != nil)
+                [screen setTabTitle:title];
+            [stack removeObjectAtIndex: count - 1];
+        }
+    }
+}
+
 - (void) MouseTerm_setIsMouseDown: (BOOL) isMouseDown
 {
     NSValue *ptr = [self MouseTerm_initVars];
@@ -107,6 +169,11 @@
     char *decodedBuffer = malloc(destLength);
     apr_base64_decode(decodedBuffer, encodedBuffer);
     NSString *resultString = [NSString stringWithUTF8String:decodedBuffer];
+    if (!resultString) {
+        NSData *data = (NSData*)[[[(TTShell *)self controller] encodingConverter] decodedData];
+        resultString = [[[NSString alloc] initWithData: data
+                                              encoding: NSUTF8StringEncoding] autoRelease];
+    }
     free(decodedBuffer);
 
     [[[[(TTShell*)self controller] activePane] view] copy: nil];
