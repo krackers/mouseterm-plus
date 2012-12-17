@@ -134,6 +134,76 @@
         }
     }
 
+    action handle_cursor_style
+    {
+        int mouseMode = state.pendingMouseMode;
+        MouseMode newMouseMode = NO_MODE;
+        switch (mouseMode)
+        {
+        case 0:
+            newMouseMode = NORMAL_MODE;
+            break;
+        case 1:
+            newMouseMode = HILITE_MODE;
+            break;
+        case 2:
+            newMouseMode = BUTTON_MODE;
+            break;
+        case 3:
+            newMouseMode = ALL_MODE;
+            break;
+        default:
+            newMouseMode = NO_MODE;
+        }
+        if (newMouseMode != NO_MODE && state.toggleState)
+            [mobj MouseTerm_setMouseMode: newMouseMode];
+        else
+            [mobj MouseTerm_setMouseMode: NO_MODE];
+    }
+
+    action handle_title_digit
+    {
+        state.pendingTitleDigit = (fc - 48);
+    }
+
+    action handle_titlepush
+    {
+        switch (state.pendingTitleDigit)
+        {
+        case 0:
+            [mobj MouseTerm_pushWindowTitle];
+            [mobj MouseTerm_pushTabTitle];
+            break;
+        case 1:
+            [mobj MouseTerm_pushTabTitle];
+            break;
+        case 2:
+            [mobj MouseTerm_pushWindowTitle];
+            break;
+        default:
+            break;
+        }
+    }
+
+    action handle_titlepop
+    {
+        switch (state.pendingTitleDigit)
+        {
+        case 0:
+            [mobj MouseTerm_popWindowTitle];
+            [mobj MouseTerm_popTabTitle];
+            break;
+        case 1:
+            [mobj MouseTerm_popTabTitle];
+            break;
+        case 2:
+            [mobj MouseTerm_popWindowTitle];
+            break;
+        default:
+            break;
+        }
+    }
+
     esc = 0x1b;
     csi = esc . "[";
     flag = ("h" | "l") @handle_flag;
@@ -143,10 +213,13 @@
     mouse = "100" . ([0123]) @handle_mouse_digit;
     debug = (csi . "li");
     cs_sda = csi . ">" . [01]? . "c";
+    cs_titlepush = csi . "22;" . ([012]?) @handle_title_digit . "t";
+    cs_titlepop = csi . "23;" . ([012]?) @handle_title_digit . "t";
     mode_toggle = csi . "?" . (appkeys . flag @handle_flag @handle_appkeys
                                | mouse . flag @handle_flag @handle_mouse_mode
                                | "1015" . flag @handle_flag @handle_urxvt_protocol
                                | "1006" . flag @handle_flag @handle_sgr_protocol);
+    cursor_style = csi . ([0123456]) @handle_cursor_style . " q";
     bel = 0x07;
     st  = esc . "\\" | 0x9c;
     base64 = ([a-zA-Z0-9\+/]+[=]*);
@@ -158,8 +231,11 @@
               | dcs @handle_dcs
               | any - csi
               | any - osc)* . (mode_toggle # @got_toggle
+                               | cursor_style
                                | osc52
                                | cs_sda @handle_sda
+                               | cs_titlepush @handle_titlepush
+                               | cs_titlepop @handle_titlepop
                                | debug @got_debug))*;
 }%%
 

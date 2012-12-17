@@ -4,6 +4,7 @@
 
 @synthesize currentState;
 @synthesize pendingMouseMode;
+@synthesize pendingTitleDigit;
 @synthesize toggleState;
 @synthesize lastEscapeIndex;
 @synthesize handleSda;
