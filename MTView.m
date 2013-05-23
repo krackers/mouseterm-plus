@@ -482,5 +482,50 @@ ignored:
     [self MouseTerm_scrollWheel: event];
 }
 
+- (BOOL) MouseTerm_acceptsFirstResponder
+{
+    return YES;
+}
+
+- (BOOL) MouseTerm_windowDidBecomeKey: (id) arg1
+{
+    NSData* data = [NSData dataWithBytes: "\x1b[I" length: 3];
+    MTShell* shell = [[(TTView*) self controller] shell];
+    if ([shell MouseTerm_getFocusMode]) {
+        [(TTShell*) shell writeData: data];
+    }
+    return YES;
+}
+
+- (BOOL) MouseTerm_windowDidResignKey: (id) arg1
+{
+    NSData* data = [NSData dataWithBytes: "\x1b[O" length: 3];
+    MTShell* shell = [[(TTView*) self controller] shell];
+    if ([shell MouseTerm_getFocusMode]) {
+        [(TTShell*) shell writeData: data];
+    }
+    return YES;
+}
+
+- (BOOL) MouseTerm_becomeFirstResponder
+{
+    NSData* data = [NSData dataWithBytes: "\x1b[I" length: 3];
+    MTShell* shell = [[(TTView*) self controller] shell];
+    if ([shell MouseTerm_getFocusMode]) {
+        [(TTShell*) shell writeData: data];
+    }
+    return YES;
+}
+
+- (BOOL) MouseTerm_resignFirstResponder
+{
+    NSData* data = [NSData dataWithBytes: "\x1b[O" length: 3];
+    MTShell* shell = [[(TTView*) self controller] shell];
+    if ([shell MouseTerm_getFocusMode]) {
+        [(TTShell*) shell writeData: data];
+    }
+    return YES;
+}
+
 @end
 
