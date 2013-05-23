@@ -16,6 +16,8 @@
     {
         NSMutableDictionary* dict = [NSMutableDictionary dictionary];
         [MouseTerm_ivars setObject: dict forKey: ptr];
+        [dict setObject: [NSNumber numberWithBool: NO]
+                 forKey: @"focusMode"];
         [dict setObject: [NSNumber numberWithInt: NO_MODE]
                  forKey: @"mouseMode"];
         [dict setObject: [NSNumber numberWithInt: NORMAL_PROTOCOL]
@@ -32,6 +34,20 @@
                  forKey: @"tabTitleStack"];
     }
     return ptr;
+}
+
+- (void) MouseTerm_setFocusMode: (BOOL) focusMode
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    [[MouseTerm_ivars objectForKey: ptr]
+        setObject: [NSNumber numberWithBool:focusMode] forKey: @"focusMode"];
+}
+
+- (BOOL) MouseTerm_getFocusMode
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    return [(NSNumber*) [[MouseTerm_ivars objectForKey: ptr]
+                            objectForKey: @"focusMode"] boolValue];
 }
 
 - (void) MouseTerm_setMouseMode: (int) mouseMode

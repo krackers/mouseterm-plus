@@ -7,6 +7,9 @@
 - (void) MouseTerm_writeData: (NSData*) data;
 - (void) MouseTerm_dealloc;
 
+- (void) MouseTerm_setFocusMode: (BOOL) focusMode;
+- (BOOL) MouseTerm_getFocuseMode;
+
 - (void) MouseTerm_setMouseMode: (int) mouseMode;
 - (int) MouseTerm_getMouseMode;
 

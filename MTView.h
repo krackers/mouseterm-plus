@@ -35,4 +35,9 @@
 - (void) MouseTerm_otherMouseDragged: (NSEvent*) event;
 - (void) MouseTerm_otherMouseUp: (NSEvent*) event;
 - (void) MouseTerm_scrollWheel: (NSEvent*) event;
+- (BOOL) MouseTerm_windowDidBecomeKey: (id) arg1;
+- (BOOL) MouseTerm_windowDidResignKey: (id) arg1;
+- (BOOL) MouseTerm_acceptsFirstResponder;
+- (BOOL) MouseTerm_becomeFirstResponder;
+- (BOOL) MouseTerm_resignFirstResponder;
 @end

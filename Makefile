@@ -16,7 +16,8 @@ CFLAGS+=-std=c99 -O$(OPTLEVEL) -Wall -mmacosx-version-min=$(OSXVER) $(ARCHES)
 LDFLAGS+=-bundle -laprutil-1 -lapr-1 /System/Library/Frameworks/Cocoa.framework/Versions/Current/Cocoa
 
 OBJS=JRSwizzle.o MouseTerm.m MTAppPrefsController.o MTParser.o \
-	MTParserState.o MTProfile.o MTShell.o MTTabController.o MTView.o
+	MTParserState.o MTProfile.o MTShell.o \
+	MTTabController.o MTView.o
 NAME=MouseTerm
 BUNDLE=$(NAME).bundle
 DMG=$(NAME).dmg

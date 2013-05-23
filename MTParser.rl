@@ -25,7 +25,7 @@
 
     action handle_mouse_digit
     {
-        state.pendingMouseMode = (fc - 48);
+        state.pendingMouseMode = (fc - '0');
     }
 
     action handle_dcs
@@ -57,28 +57,41 @@
     action handle_mouse_mode
     {
         int mouseMode = state.pendingMouseMode;
-        MouseMode newMouseMode = NO_MODE;
         switch (mouseMode)
         {
         case 0:
-            newMouseMode = NORMAL_MODE;
+            if (state.toggleState)
+                [mobj MouseTerm_setMouseMode: NORMAL_MODE];
+            else
+                [mobj MouseTerm_setMouseMode: NO_MODE];
             break;
         case 1:
-            newMouseMode = HILITE_MODE;
+            if (state.toggleState)
+                [mobj MouseTerm_setMouseMode: HILITE_MODE];
+            else
+                [mobj MouseTerm_setMouseMode: NO_MODE];
             break;
         case 2:
-            newMouseMode = BUTTON_MODE;
+            if (state.toggleState)
+                [mobj MouseTerm_setMouseMode: BUTTON_MODE];
+            else
+                [mobj MouseTerm_setMouseMode: NO_MODE];
             break;
         case 3:
-            newMouseMode = ALL_MODE;
+            if (state.toggleState)
+                [mobj MouseTerm_setMouseMode: ALL_MODE];
+            else
+                [mobj MouseTerm_setMouseMode: NO_MODE];
+            break;
+        case 4:
+            if (state.toggleState)
+                [mobj MouseTerm_setFocusMode: YES];
+            else
+                [mobj MouseTerm_setFocusMode: NO];
             break;
         default:
-            newMouseMode = NO_MODE;
+            break;
         }
-        if (newMouseMode != NO_MODE && state.toggleState)
-            [mobj MouseTerm_setMouseMode: newMouseMode];
-        else
-            [mobj MouseTerm_setMouseMode: NO_MODE];
     }
 
     action handle_urxvt_protocol
@@ -210,7 +223,7 @@
     osc = esc . ']';
     dcs = esc . 'P';
     appkeys = "1";
-    mouse = "100" . ([0123]) @handle_mouse_digit;
+    mouse = "100" . ([01234]) @handle_mouse_digit;
     debug = (csi . "li");
     cs_sda = csi . ">" . [01]? . "c";
     cs_titlepush = csi . "22;" . ([012]?) @handle_title_digit . "t";
