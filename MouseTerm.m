@@ -116,9 +116,9 @@ NSMutableDictionary* MouseTerm_ivars = nil;
             @selector(MouseTerm_otherMouseDragged:));
     SWIZZLE(view, @selector(otherMouseUp:),
             @selector(MouseTerm_otherMouseUp:));
-	SWIZZLE(view, @selector(windowDidBecomeKey:),
+    SWIZZLE(view, @selector(windowDidBecomeKey:),
             @selector(MouseTerm_windowDidBecomeKey:));
-	SWIZZLE(view, @selector(windowDidResignKey:),
+    SWIZZLE(view, @selector(windowDidResignKey:),
             @selector(MouseTerm_windowDidResignKey:));
     SWIZZLE(view, @selector(acceptsFirstResponder),
             @selector(MouseTerm_acceptsFirstResponder));

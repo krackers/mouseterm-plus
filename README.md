@@ -29,13 +29,14 @@ What works:
 * SGR 1006 styled mouse tracking.
 * Menu item integration.
 
-* Supports xterm's "Any Event Mouse(DECSET 1003)" tracking mode (The formar supports "Button Event" only).
+* Supports xterm's "Any Event Mouse(private mode 1003)" tracking mode (The formar supports "Button Event" only).
 * OSC 52 clipboard accsess (get access/set access, for tmux)
 * Localization support of menu resource (French/Japanese)
 * Emulate xterm patch-level 277 (the former reports as pl.95, in DA2 response).
 * Ignore DCS (\eP ... ST, for vim, it's dirty hack - -;)
 * Supports VT520's DECSCUSR
 * Supports xterm's "Title stacking"
+* Supports xterm's "Focus Reporting Mode (private mode 1004)"
 
 [4]: http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter4.html#config-appcursor
 
