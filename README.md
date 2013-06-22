@@ -34,7 +34,6 @@ What works:
 * Localization support of menu resource (French/Japanese)
 * Emulate xterm patch-level 277 (the former reports as pl.95, in DA2 response).
 * Ignore DCS (\eP ... ST, for vim, it's dirty hack - -;)
-* Supports VT520's DECSCUSR
 * Supports xterm's "Title stacking"
 * Supports xterm's "Focus Reporting Mode (private mode 1004)"
 

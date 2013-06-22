@@ -55,14 +55,6 @@ typedef enum
     MOUSE_WHEEL_DOWN = 65
 } MouseButton;
 
-// Cursor shape 
-typedef enum
-{
-    CURSOR_BLOCK = 0,
-    CURSOR_UNDERLINE = 1,
-    CURSOR_VERTICAL = 2,
-} CursorShape;
-
 // X11 mouse reporting responses
 #define MOUSE_RESPONSE "\033[M%c%c%c"
 #define MOUSE_RESPONSE_LEN 6

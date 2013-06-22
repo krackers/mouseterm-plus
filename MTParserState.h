@@ -4,15 +4,14 @@
 {
     int currentState;
     int pendingMouseMode;
-    int pendingTitleDigit;
+    int pendingDigit;
     BOOL toggleState;
     int lastEscapeIndex;
     BOOL handleSda;
 }
 
 @property(nonatomic, assign) int currentState;
-@property(nonatomic, assign) int pendingMouseMode;
-@property(nonatomic, assign) int pendingTitleDigit;
+@property(nonatomic, assign) int pendingDigit;
 @property(nonatomic, assign) BOOL toggleState;
 @property(nonatomic, assign) int lastEscapeIndex;
 @property(nonatomic, assign) BOOL handleSda;

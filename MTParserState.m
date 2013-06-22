@@ -3,8 +3,7 @@
 @implementation MTParserState
 
 @synthesize currentState;
-@synthesize pendingMouseMode;
-@synthesize pendingTitleDigit;
+@synthesize pendingDigit;
 @synthesize toggleState;
 @synthesize lastEscapeIndex;
 @synthesize handleSda;
