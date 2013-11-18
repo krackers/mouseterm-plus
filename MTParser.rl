@@ -28,6 +28,15 @@
         state.pendingDigit = (fc - '0');
     }
 
+    action handle_ris
+    {
+        [mobj MouseTerm_setMouseMode: NO_MODE];
+        [mobj MouseTerm_setFocusMode: NO];
+        [mobj MouseTerm_setMouseProtocol: NORMAL_PROTOCOL];
+        [osc52Buffer release];
+        osc52Buffer = nil;
+    }
+
     action handle_dcs
     {
         const char *it = p;
@@ -187,6 +196,7 @@
 
     esc = 0x1b;
     csi = esc . "[";
+    ris = esc . "c";
     flag = ("h" | "l") @handle_flag;
     osc = esc . ']';
     dcs = esc . 'P';
@@ -209,6 +219,7 @@
     main := ((base64 @handle_osc52
               | (bel | st) @handle_osc_end
               | dcs @handle_dcs
+              | ris @handle_ris
               | any - csi
               | any - osc)* . (mode_toggle # @got_toggle
                                | osc52
