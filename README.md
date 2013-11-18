@@ -36,6 +36,7 @@ What works:
 * Ignore DCS (\eP ... ST, for vim, it's dirty hack - -;)
 * Supports xterm's "Title stacking"
 * Supports xterm's "Focus Reporting Mode (private mode 1004)"
+* Handle RIS (hard reset) sequence
 
 [4]: http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter4.html#config-appcursor
 
