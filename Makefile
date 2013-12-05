@@ -72,10 +72,13 @@ clean:
 	rm -f *.o MTParser.m
 	rm -rf $(BUNDLE) $(NAME)
 	rm -f $(DMG) Terminal.classdump Terminal.otx
-install: $(TARGET)
+install: $(TARGET) uninstall
 	mkdir -p $(SIMBLDIR)
-	rm -rf $(SIMBLDIR)/$(BUNDLE)
 	cp -R $(BUNDLE) $(SIMBLDIR)
+
+uninstall:
+	rm -rf $(SIMBLDIR)/$(BUNDLE)
+
 test: install
 	$(TERMINALAPP)
 
