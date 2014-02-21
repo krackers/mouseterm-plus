@@ -8,7 +8,7 @@
 - (void) MouseTerm_dealloc;
 
 - (void) MouseTerm_setFocusMode: (BOOL) focusMode;
-- (BOOL) MouseTerm_getFocuseMode;
+- (BOOL) MouseTerm_getFocusMode;
 
 - (void) MouseTerm_setMouseMode: (int) mouseMode;
 - (int) MouseTerm_getMouseMode;
