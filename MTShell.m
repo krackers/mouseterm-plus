@@ -188,7 +188,7 @@
     if (!resultString) {
         NSData *data = (NSData*)[[[(TTShell *)self controller] encodingConverter] decodedData];
         resultString = [[[NSString alloc] initWithData: data
-                                              encoding: NSUTF8StringEncoding] autoRelease];
+                                              encoding: NSUTF8StringEncoding] autorelease];
     }
     free(decodedBuffer);
 
