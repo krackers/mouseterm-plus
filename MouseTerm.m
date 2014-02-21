@@ -140,19 +140,19 @@ NSMutableDictionary* MouseTerm_ivars = nil;
     [self insertMenuItem];
 }
 
-+ (IBAction) toggleMouse: (NSMenuItem*) sender
++ (void) toggleMouse: (NSMenuItem*) sender
 {
     [sender setState: ![sender state]];
     [NSView MouseTerm_setMouseEnabled: [sender state]];
 }
 
-+ (IBAction) toggleBase64Copy: (NSMenuItem*) sender
++ (void) toggleBase64Copy: (NSMenuItem*) sender
 {
     [sender setState: ![sender state]];
     [NSView MouseTerm_setBase64CopyEnabled: [sender state]];
 }
 
-+ (IBAction) toggleBase64Paste: (NSMenuItem*) sender
++ (void) toggleBase64Paste: (NSMenuItem*) sender
 {
     [sender setState: ![sender state]];
     [NSView MouseTerm_setBase64PasteEnabled: [sender state]];
@@ -240,7 +240,7 @@ NSMutableDictionary* MouseTerm_ivars = nil;
         modalDelegate: nil didEndSelector: nil contextInfo: nil];
 }
 
-- (IBAction) orderOutConfiguration: (id) sender
+- (void) orderOutConfiguration: (id) sender
 {
     [NSApp endSheet: [sender window]];
     [[sender window] orderOut: self];
