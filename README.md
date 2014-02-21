@@ -22,10 +22,9 @@ Installer package with source code is available:
 Status
 ------
 
-MouseTerm is currently beta quality software. It's feature complete,
-but still needs testing.
+MouseTerm-Plus is currently beta quality software. it still needs testing.
 
-Original MouseTerm(version to 1.0b1) does:
+Original MouseTerm(version 1.0b1) does:
 
 * Mouse normal event reporting.
 * Mouse button event reporting.
