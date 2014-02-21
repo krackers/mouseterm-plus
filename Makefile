@@ -87,4 +87,7 @@ classdump:
 otx:
 	otx $(TERMINALAPP) > Terminal.otx
 
+upload: dist
+	scp $(DMG) zuse:/var/www/misc/Mouseterm-Plus.dmg
+
 .PHONY: all dist clean install test classdump otx
