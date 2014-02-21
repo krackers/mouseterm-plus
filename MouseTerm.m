@@ -140,19 +140,19 @@ NSMutableDictionary* MouseTerm_ivars = nil;
     [self insertMenuItem];
 }
 
-+ (IBAction) toggleMouse: (NSMenuItem*) sender
++ (void) toggleMouse: (NSMenuItem*) sender
 {
     [sender setState: ![sender state]];
     [NSView MouseTerm_setMouseEnabled: [sender state]];
 }
 
-+ (IBAction) toggleBase64Copy: (NSMenuItem*) sender
++ (void) toggleBase64Copy: (NSMenuItem*) sender
 {
     [sender setState: ![sender state]];
     [NSView MouseTerm_setBase64CopyEnabled: [sender state]];
 }
 
-+ (IBAction) toggleBase64Paste: (NSMenuItem*) sender
++ (void) toggleBase64Paste: (NSMenuItem*) sender
 {
     [sender setState: ![sender state]];
     [NSView MouseTerm_setBase64PasteEnabled: [sender state]];
@@ -186,10 +186,10 @@ NSMutableDictionary* MouseTerm_ivars = nil;
     [itemToggleMouse setEnabled: YES];
 
     NSString* t2 = NSLocalizedStringFromTableInBundle(@"Enable Base64 Copy", nil,
-                                                     bundle, nil);
+                                                      bundle, nil);
     NSMenuItem* itemToggleBase64Copy = [shellMenu addItemWithTitle: t2
-                                                       action: @selector(toggleBase64Copy:)
-                                                keyEquivalent: @"c"];
+                                                            action: @selector(toggleBase64Copy:)
+                                                     keyEquivalent: @"c"];
     if (!itemToggleBase64Copy)
     {
         NSLog(@"[MouseTerm] ERROR: Unable to create menu item: toggleBase64Copy");
@@ -202,10 +202,10 @@ NSMutableDictionary* MouseTerm_ivars = nil;
     [itemToggleBase64Copy setEnabled: YES];
 
     NSString* t3 = NSLocalizedStringFromTableInBundle(@"Enable Base64 Paste", nil,
-                                                     bundle, nil);
+                                                      bundle, nil);
     NSMenuItem* itemToggleBase64Paste = [shellMenu addItemWithTitle: t3
-                                                       action: @selector(toggleBase64Paste:)
-                                                keyEquivalent: @"p"];
+                                                             action: @selector(toggleBase64Paste:)
+                                                      keyEquivalent: @"p"];
     if (!itemToggleBase64Paste)
     {
         NSLog(@"[MouseTerm] ERROR: Unable to create menu item: toggleBase64Paste");
@@ -214,8 +214,8 @@ NSMutableDictionary* MouseTerm_ivars = nil;
 
     [itemToggleBase64Paste setKeyEquivalentModifierMask: (NSShiftKeyMask | NSCommandKeyMask)];
     [itemToggleBase64Paste setTarget: self];
-    [itemToggleBase64Paste setState: NSOnState];
-    [itemToggleBase64Paste setEnabled: YES];
+    [itemToggleBase64Paste setState: NSOffState];
+    [itemToggleBase64Paste setEnabled: NO];
 }
 
 + (MouseTerm*) sharedInstance
@@ -240,7 +240,7 @@ NSMutableDictionary* MouseTerm_ivars = nil;
         modalDelegate: nil didEndSelector: nil contextInfo: nil];
 }
 
-- (IBAction) orderOutConfiguration: (id) sender
+- (void) orderOutConfiguration: (id) sender
 {
     [NSApp endSheet: [sender window]];
     [[sender window] orderOut: self];

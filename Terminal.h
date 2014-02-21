@@ -38,15 +38,15 @@ typedef struct
 @property(readonly) TTView *view; // @synthesize view;
 @end
 
-@protocol TTOutputDecoder
-- (id)decodeData:(id)arg1;
+@interface TTOutputDecoder
+- (NSData*)decodeData:(id)arg1;
 @end
 
 @interface TTTabController: NSObject
 - (NSScroller*) scroller; // This method exists only in OS X 10.5 or older
 - (MTShell*) shell;
 - (MTProfile*) profile;
-- (NSObject<TTOutputDecoder>*) encodingConverter;
+- (TTOutputDecoder*) encodingConverter;
 @property(readonly) TTPane *activePane; // @synthesize activePane;
 @end
 
