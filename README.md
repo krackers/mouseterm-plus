@@ -17,8 +17,7 @@ Download
 
 Installer package with source code is available:
 
-[http://zsue.jp/misc/MouseTerm-Plus.dmg](http://zsue.jp/misc/MouseTerm-Plus.dmg)
-
+[http://zuse.jp/misc/MouseTerm-Plus.dmg](http://zuse.jp/misc/MouseTerm-Plus.dmg)
 
 Status
 ------
