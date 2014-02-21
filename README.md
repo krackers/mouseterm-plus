@@ -12,6 +12,14 @@ shortcuts within applications that support them.
 [2]: http://www.culater.net/software/SIMBL/SIMBL.php
 [3]: http://www.apple.com/macosx/technology/unix.html
 
+Download
+--------
+
+Installer package with source code is available:
+
+[http://zsue.jp/misc/MouseTerm-Plus.dmg](http://zsue.jp/misc/MouseTerm-Plus.dmg)
+
+
 Status
 ------
 
@@ -103,7 +111,7 @@ file:
 Development
 -----------
 
-Download the official development repository using [Git][7]:
+Download the development repository using [Git][7]:
 
     git clone git://github.com/saitoha/mouseterm-plus.git
 
