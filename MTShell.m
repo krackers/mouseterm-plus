@@ -186,7 +186,10 @@
     apr_base64_decode(decodedBuffer, encodedBuffer);
     NSString *resultString = [NSString stringWithUTF8String:decodedBuffer];
     if (!resultString) {
-        NSData *data = (NSData*)[[[(TTShell *)self controller] encodingConverter] decodedData];
+        TTTabController *controller = [(TTShell *)self controller];
+        TTOutputDecoder *decoder = [controller encodingConverter];
+        NSData *data = [decoder decodeData:[NSData dataWithBytes:decodedBuffer
+                                                          length:destLength]];
         resultString = [[[NSString alloc] initWithData: data
                                               encoding: NSUTF8StringEncoding] autorelease];
     }
