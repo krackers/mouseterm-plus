@@ -24,7 +24,7 @@
     [button setTarget: [MouseTerm sharedInstance]];
     [button setAction: @selector(orderFrontMouseConfiguration:)];
     // FIXME: Set the position relative to the checkbox above it
-    [button setFrameOrigin: NSMakePoint(11, 3)];
+    [button setFrameOrigin: NSMakePoint(318, 32)];
     [keyboardView addSubview: button];
     [button release];
 }
