@@ -60,11 +60,13 @@ all: $(TARGET)
 
 dist: $(TARGET)
 	rm -rf $(NAME) $(DMG)
-	mkdir $(NAME)
+	mkdir -p $(NAME)/src
 	osacompile -o $(NAME)/Install.app Install.scpt
 	osacompile -o $(NAME)/Uninstall.app Uninstall.scpt
 	cp -R $(DMGFILES) $(NAME)
 	cp README.md $(NAME)/README.txt
+	cp -r Makefile *.h *.m *.lproj *.md *.plist *.rl *.scpt *.txt utils \
+		$(NAME)/src
 	hdiutil create -fs HFS+ -imagekey zlib-level=9 -srcfolder $(NAME) \
 		-volname $(NAME) $(DMG)
 	rm -rf $(NAME)
@@ -72,10 +74,13 @@ clean:
 	rm -f *.o MTParser.m
 	rm -rf $(BUNDLE) $(NAME)
 	rm -f $(DMG) Terminal.classdump Terminal.otx
-install: $(TARGET)
+install: $(TARGET) uninstall
 	mkdir -p $(SIMBLDIR)
-	rm -rf $(SIMBLDIR)/$(BUNDLE)
 	cp -R $(BUNDLE) $(SIMBLDIR)
+
+uninstall:
+	rm -rf $(SIMBLDIR)/$(BUNDLE)
+
 test: install
 	$(TERMINALAPP)
 
@@ -83,5 +88,8 @@ classdump:
 	class-dump $(TERMINALAPP) > Terminal.classdump
 otx:
 	otx $(TERMINALAPP) > Terminal.otx
+
+upload: dist
+	scp $(DMG) zuse:/var/www/misc/Mouseterm-Plus.dmg
 
 .PHONY: all dist clean install test classdump otx

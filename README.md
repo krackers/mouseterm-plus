@@ -2,7 +2,7 @@ MouseTerm plus
 ==============
 
 MouseTerm plus is the provisional fork of [brodie's MouseTerm][1].
-We want to push the results of this experimental project to the original MouseTerm, if possible.
+We want to push the fruits of this experimental project to the original MouseTerm, if possible.
 
 MouseTerm is a [SIMBL][2] plugin for Mac OS X's [Terminal.app][3] that
 passes mouse events to the terminal, allowing you to use mouse
@@ -12,30 +12,42 @@ shortcuts within applications that support them.
 [2]: http://www.culater.net/software/SIMBL/SIMBL.php
 [3]: http://www.apple.com/macosx/technology/unix.html
 
+Download
+--------
+
+Installer package with source code is available:
+
+[http://zuse.jp/misc/MouseTerm-Plus.dmg](http://zuse.jp/misc/MouseTerm-Plus.dmg)
+
 Status
 ------
 
-MouseTerm is currently beta quality software. It's feature complete,
-but still needs testing.
+MouseTerm-Plus is currently beta quality software. it still needs testing.
 
-What works:
+Original MouseTerm(version 1.0b1) does:
 
 * Mouse normal event reporting.
 * Mouse button event reporting.
 * Mouse scroll wheel reporting.
 * Simulated mouse wheel scrolling for programs like `less` (i.e. any
   fullscreen program that uses [application cursor key mode][4]).
-* URXVT 1015 styled mouse tracking (for vim).
-* SGR 1006 styled mouse tracking.
 * Menu item integration.
 
-* Supports xterm's "Any Event Mouse(private mode 1003)" tracking mode (The formar supports "Button Event" only).
+Additionally, this project does:
+
+* Fix OS X Mavericks installation problem.
+* URXVT 1015 styled mouse tracking.
+* SGR 1006 styled mouse tracking.
+* Fix some bugs around mouse event coordinate handling.
+* Support xterm's "Any Event Mouse(private mode 1003)" tracking mode
+  (The formar supports "Button Event" only).
 * OSC 52 clipboard accsess (get access/set access, for tmux)
 * Localization support of menu resource (French/Japanese)
 * Emulate xterm patch-level 277 (the former reports as pl.95, in DA2 response).
 * Ignore DCS (\eP ... ST, for vim, it's dirty hack - -;)
-* Supports xterm's "Title stacking"
-* Supports xterm's "Focus Reporting Mode (private mode 1004)"
+* Support xterm's "Title stacking"
+* Support xterm's "Focus Reporting Mode (private mode 1004)"
+* Handle RIS (hard reset) sequence ("reset" command works well)
 
 [4]: http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter4.html#config-appcursor
 
@@ -102,7 +114,7 @@ file:
 Development
 -----------
 
-Download the official development repository using [Git][7]:
+Download the development repository using [Git][7]:
 
     git clone git://github.com/saitoha/mouseterm-plus.git
 

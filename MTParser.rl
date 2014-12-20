@@ -30,6 +30,7 @@
 
     action handle_ris
     {
+        [mobj MouseTerm_setAppCursorMode: NO];
         [mobj MouseTerm_setMouseMode: NO_MODE];
         [mobj MouseTerm_setFocusMode: NO];
         [mobj MouseTerm_setMouseProtocol: NORMAL_PROTOCOL];
