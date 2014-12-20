@@ -250,6 +250,8 @@ int MTParser_execute(char* data, int len, BOOL isEof, id obj,
 
     state.currentState = cs;
 
+    (void) EscapeSeqParser_start;
+    (void) EscapeSeqParser_en_main;
     if (cs == EscapeSeqParser_error)
         return -1;
     if (cs >= EscapeSeqParser_first_final)
