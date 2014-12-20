@@ -4,7 +4,6 @@
 #import "terminal.h"
 #import "Mouse.h"
 #import "MouseTerm.h"
-#import "MTParserState.h"
 #import "MTShell.h"
 
 @implementation NSObject (MTShell)
@@ -14,6 +13,14 @@
     NSValue* ptr = [NSValue valueWithPointer: self];
     if ([MouseTerm_ivars objectForKey: ptr] == nil)
     {
+        struct parse_context *ppc = malloc(sizeof(struct parse_context));
+        ppc->state = PS_GROUND;
+        ppc->osc_state = OPS_IGNORE;
+        ppc->action = 0;
+        ppc->current_param = 0;
+        ppc->params_index = 0;
+        ppc->osc52Buffer = nil;
+
         NSMutableDictionary* dict = [NSMutableDictionary dictionary];
         [MouseTerm_ivars setObject: dict forKey: ptr];
         [dict setObject: [NSNumber numberWithBool: NO]
@@ -26,8 +33,8 @@
                  forKey: @"appCursorMode"];
         [dict setObject: [NSNumber numberWithBool: NO]
                  forKey: @"isMouseDown"];
-        [dict setObject: [[[MTParserState alloc] init] autorelease]
-                 forKey: @"parserState"];
+        [dict setObject: [NSValue valueWithPointer:ppc]
+                 forKey: @"parseContext"];
         [dict setObject: [[[NSMutableArray alloc] init] autorelease]
                  forKey: @"windowTitleStack"];
         [dict setObject: [[[NSMutableArray alloc] init] autorelease]
@@ -222,31 +229,23 @@
                                               length: allLength]];
 }
 
-- (void) MouseTerm_setParserState: (MTParserState*) parserState
+- (struct parse_context*) MouseTerm_getParseContext
 {
     NSValue *ptr = [self MouseTerm_initVars];
-    [[MouseTerm_ivars objectForKey: ptr] setObject: parserState
-                                            forKey: @"parserState"];
-}
-
-- (MTParserState*) MouseTerm_getParserState
-{
-    NSValue *ptr = [self MouseTerm_initVars];
-    return [[MouseTerm_ivars objectForKey: ptr] objectForKey: @"parserState"];
+    return [[[MouseTerm_ivars objectForKey: ptr] objectForKey: @"parseContext"] pointerValue];
 }
 
 - (void) MouseTerm_writeData: (NSData*) data
 {
-    if ([self MouseTerm_getParserState].handleSda &&
-        !strncmp([data bytes], PDA_RESPONSE, PDA_RESPONSE_LEN))
-        return;
-
     [self MouseTerm_writeData: data];
 }
 
 // Deletes instance variables
 - (void) MouseTerm_dealloc
 {
+    NSValue* ptr = [NSValue valueWithPointer: self];
+    struct parse_context *ppc = [[[MouseTerm_ivars objectForKey: ptr] objectForKey: @"parseContext"] pointerValue];
+    free(ppc);
     [MouseTerm_ivars removeObjectForKey: [NSValue valueWithPointer: self]];
     [self MouseTerm_dealloc];
 }
