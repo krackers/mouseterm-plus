@@ -1,6 +1,5 @@
 CC=gcc
 LD=$(CC)
-RL=ragel
 
 ARCH=
 ARCHES=$(foreach arch,$(ARCH),-arch $(arch))
@@ -27,8 +26,6 @@ SIMBLDIR=$(HOME)/Library/Application\ Support/SIMBL/Plugins
 TERMINALAPP=/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal
 
 default: all
-MTParser.m: MTParser.rl
-	$(RL) -C -o MTParser.m MTParser.rl
 %.o: %.m
 	$(CC) -c $(CFLAGS) $< -o $@
 $(TARGET): $(OBJS)
@@ -71,7 +68,6 @@ dist: $(TARGET)
 		-volname $(NAME) $(DMG)
 	rm -rf $(NAME)
 clean:
-	rm -f *.o MTParser.m
 	rm -rf $(BUNDLE) $(NAME)
 	rm -f $(DMG) Terminal.classdump Terminal.otx
 install: $(TARGET) uninstall
