@@ -19,7 +19,12 @@
         ppc->action = 0;
         ppc->current_param = 0;
         ppc->params_index = 0;
-        ppc->osc52Buffer = nil;
+        ppc->buffer = nil;
+
+        NSDictionary *tcapMap = [NSDictionary dictionaryWithObjectsAndKeys:
+          @"323536", @"436f",
+          @"1B4F41", @"6b75",
+          @"1B4F42", @"6b64", nil];
 
         NSMutableDictionary* dict = [NSMutableDictionary dictionary];
         [MouseTerm_ivars setObject: dict forKey: ptr];
@@ -35,6 +40,8 @@
                  forKey: @"isMouseDown"];
         [dict setObject: [NSValue valueWithPointer:ppc]
                  forKey: @"parseContext"];
+        [dict setObject: tcapMap
+                 forKey: @"tcapMap"];
         [dict setObject: [[[NSMutableArray alloc] init] autorelease]
                  forKey: @"windowTitleStack"];
         [dict setObject: [[[NSMutableArray alloc] init] autorelease]
@@ -211,8 +218,8 @@
     // ref: http://blog.livedoor.jp/jgoamakf/archives/51160286.html
     NSString *str = [self MouseTerm_readFromPasteBoard];
     char *sourceCString = (char*)[str UTF8String];
-    const char prefix[] = "\x1b]52;c;"; // OSC52 from Clipboard
-    const char postfix[] = "\x1b\\"; // ST
+    const char prefix[] = "\033]52;c;"; // OSC52 from Clipboard
+    const char postfix[] = "\033\\"; // ST
 
     int sourceLength = strlen(sourceCString);
     int resultLength = apr_base64_encode_len(sourceLength);
@@ -229,10 +236,24 @@
                                               length: allLength]];
 }
 
+- (void) MouseTerm_tcapQuery: (NSString*) query
+{
+    NSString *answer;
+    NSValue *ptr = [self MouseTerm_initVars];
+    NSString *cap = [[[MouseTerm_ivars objectForKey: ptr] objectForKey:@"tcapMap"] objectForKey:query];
+
+    if (cap) {
+        answer = [NSString stringWithFormat:@"\033P1+r%@=%@\033\\", query, cap];
+    } else {
+        answer = @"\033P0+r\033\\";
+    }
+    [(TTShell*)self writeData: [answer dataUsingEncoding:NSASCIIStringEncoding]];
+}
+
 - (struct parse_context*) MouseTerm_getParseContext
 {
     NSValue *ptr = [self MouseTerm_initVars];
-    return [[[MouseTerm_ivars objectForKey: ptr] objectForKey: @"parseContext"] pointerValue];
+    return [[[MouseTerm_ivars objectForKey: ptr] objectForKey:@"parseContext"] pointerValue];
 }
 
 - (void) MouseTerm_writeData: (NSData*) data
