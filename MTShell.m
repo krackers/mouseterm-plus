@@ -6,6 +6,108 @@
 #import "MouseTerm.h"
 #import "MTShell.h"
 
+NSString *convertToHexString(NSString *src)
+{
+    char const *raw = [src UTF8String];
+    NSMutableString *ms = [[NSMutableString alloc] init];
+    int i;
+    for (i = 0; i < src.length; ++i) {
+        [ms appendString:[NSString stringWithFormat:@"%02x", raw[i]]];
+    }
+    return ms;
+}
+
+NSDictionary * generateTcapMap()
+{
+    NSMutableDictionary* result = [NSMutableDictionary dictionary];
+    NSDictionary *tcapRawMap = [NSDictionary dictionaryWithObjectsAndKeys:
+        @"MouseTerm-Plus", @"TN",
+        // max_colors: maximum number of colors on screen
+        @"256", @"Co",
+        @"256", @"colors",
+        // enter_blink_mode: turn on blinking
+        @"\x1b[5m", @"blink",
+        @"\x1b[5m", @"mb",
+        // enter_bold_mode: turn on bold (extra bright) mode
+        @"\x1b[1m", @"bold",
+        @"\x1b[1m", @"md",
+        // enter_underline_mode: begin underline mode
+        @"\x1b[4m", @"us",
+        @"\x1b[4m", @"smul",
+        // exit_underline_mode: exit underline mode
+        @"\x1b[24m", @"ue",
+        @"\x1b[24m", @"rmul",
+        // key_backspace: backspace key
+        @"\177", @"kbs",
+        @"\177", @"kb",
+        // key_up: up-arrow key
+        @"\x1bOA", @"kcuu1",
+        @"\x1bOA", @"ku",
+        // key_down: down-arrow key
+        @"\x1bOB", @"kcud1",
+        @"\x1bOB", @"kd",
+        // key_right: right-arrow key
+        @"\x1bOC", @"kcuf1",
+        @"\x1bOC", @"kr",
+        // key_left: left-arrow key
+        @"\x1bOD", @"kcub1",
+        @"\x1bOD", @"kl",
+        // key_sright: shifted right-arrow key
+        @"\x1b[1;2C", @"kRIT",
+        @"\x1b[1;2C", @"%i",
+        // key_sleft: shifted left-arrow key
+        @"\x1b[1;2D", @"kLFT",
+        @"\x1b[1;2D", @"#4",
+        // key_f1: F1 function key
+        @"\x1bOP", @"kf1",
+        @"\x1bOP", @"k1",
+        // key_f2: F2 function key
+        @"\x1bOQ", @"kf2",
+        @"\x1bOQ", @"k2",
+        // key_f3: F3 function key
+        @"\x1bOR", @"kf3",
+        @"\x1bOR", @"k3",
+        // key_f4: F4 function key
+        @"\x1bOS", @"kf4",
+        @"\x1bOS", @"k4",
+        // key_f5: F5 function key
+        @"\x1b[15~", @"kf5",
+        @"\x1b[15~", @"k5",
+        // key_f6: F6 function key
+        @"\x1b[17~", @"kf6",
+        @"\x1b[17~", @"k6",
+        // key_f7: F7 function key
+        @"\x1b[18~", @"kf7",
+        @"\x1b[18~", @"k7",
+        // key_f8: F8 function key
+        @"\x1b[19~", @"kf8",
+        @"\x1b[19~", @"k8",
+        // key_f9: F9 function key
+        @"\x1b[20~", @"kf9",
+        @"\x1b[20~", @"k9",
+        // key_f10: F10 function key
+        @"\x1b[21~", @"kf10",
+        @"\x1b[21~", @"k;",
+        // key_f11: F11 function key
+        @"\x1b[23~", @"kf11",
+        @"\x1b[23~", @"F1",
+        // key_f12: F12 function key
+        @"\x1b[24~", @"kf12",
+        @"\x1b[24~", @"F2",
+        nil];
+    NSArray *keyArray =  [tcapRawMap allKeys];
+    int count = [keyArray count];
+    for (int i = 0; i < count; i++) {
+        NSString *key = [keyArray objectAtIndex:i];
+        NSString *hexkey = convertToHexString(key);
+        NSString *hexvalue = convertToHexString([tcapRawMap objectForKey:key]);
+        [result setObject: hexvalue forKey: hexkey];
+        [result setObject: hexvalue forKey: [hexkey uppercaseString]];
+    }
+    return result;
+}
+
+
 @implementation NSObject (MTShell)
 
 - (NSValue*) MouseTerm_initVars
@@ -19,7 +121,7 @@
         ppc->action = 0;
         ppc->current_param = 0;
         ppc->params_index = 0;
-        ppc->osc52Buffer = nil;
+        ppc->buffer = nil;
 
         NSMutableDictionary* dict = [NSMutableDictionary dictionary];
         [MouseTerm_ivars setObject: dict forKey: ptr];
@@ -35,6 +137,8 @@
                  forKey: @"isMouseDown"];
         [dict setObject: [NSValue valueWithPointer:ppc]
                  forKey: @"parseContext"];
+        [dict setObject: generateTcapMap()
+                 forKey: @"tcapMap"];
         [dict setObject: [[[NSMutableArray alloc] init] autorelease]
                  forKey: @"windowTitleStack"];
         [dict setObject: [[[NSMutableArray alloc] init] autorelease]
@@ -211,8 +315,8 @@
     // ref: http://blog.livedoor.jp/jgoamakf/archives/51160286.html
     NSString *str = [self MouseTerm_readFromPasteBoard];
     char *sourceCString = (char*)[str UTF8String];
-    const char prefix[] = "\x1b]52;c;"; // OSC52 from Clipboard
-    const char postfix[] = "\x1b\\"; // ST
+    const char prefix[] = "\033]52;c;"; // OSC52 from Clipboard
+    const char postfix[] = "\033\\"; // ST
 
     int sourceLength = strlen(sourceCString);
     int resultLength = apr_base64_encode_len(sourceLength);
@@ -229,10 +333,24 @@
                                               length: allLength]];
 }
 
+- (void) MouseTerm_tcapQuery: (NSString*) query
+{
+    NSString *answer;
+    NSValue *ptr = [self MouseTerm_initVars];
+    NSString *cap = [[[MouseTerm_ivars objectForKey: ptr] objectForKey:@"tcapMap"] objectForKey:query];
+
+    if (cap) {
+        answer = [NSString stringWithFormat:@"\033P1+r%@=%@\033\\", query, cap];
+    } else {
+        answer = @"\033P0+r\033\\";
+    }
+    [(TTShell*)self writeData: [answer dataUsingEncoding:NSASCIIStringEncoding]];
+}
+
 - (struct parse_context*) MouseTerm_getParseContext
 {
     NSValue *ptr = [self MouseTerm_initVars];
-    return [[[MouseTerm_ivars objectForKey: ptr] objectForKey: @"parseContext"] pointerValue];
+    return [[[MouseTerm_ivars objectForKey: ptr] objectForKey:@"parseContext"] pointerValue];
 }
 
 - (void) MouseTerm_writeData: (NSData*) data

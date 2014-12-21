@@ -34,7 +34,7 @@ struct parse_context {
     int current_param;
     int params_index;
     int params[param_bufsize];
-    NSMutableData *osc52Buffer;
+    NSMutableData *buffer;
 };
 
 @interface NSObject (MTShell)
@@ -69,6 +69,7 @@ struct parse_context {
 - (void) MouseTerm_osc52SetAccess: (NSString*) stringToWrite;
 - (void) MouseTerm_osc52GetAccess;
 
+- (void) MouseTerm_tcapQuery: (NSString*) query;
 - (struct parse_context*) MouseTerm_getParseContext;
 
 @end
