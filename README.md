@@ -36,18 +36,22 @@ Original MouseTerm(version 1.0b1) does:
 Additionally, this project does:
 
 * Fix OS X Mavericks installation problem.
+* Support OS X Yosemite installation.
 * URXVT 1015 styled mouse tracking.
 * SGR 1006 styled mouse tracking.
 * Fix some bugs around mouse event coordinate handling.
-* Support xterm's "Any Event Mouse(private mode 1003)" tracking mode
+* Support xterm's "Any Event Mouse(private mode 1003)" tracking mode.
   (The formar supports "Button Event" only).
-* OSC 52 clipboard accsess (get access/set access, for tmux)
-* Localization support of menu resource (French/Japanese)
+* OSC 52 clipboard accsess(get access/set access, for tmux).
+* Eliminate [ragel](http://www.colm.net/open-source/ragel/) dependency.
+* Parse control sequences with DEC VT/ECMA-48 compliant canonical parser.
+* Ignore unhandled DCS/APC/PM/SOS control string.
+* Localization support of menu resource (French/Japanese).
 * Emulate xterm patch-level 277 (the former reports as pl.95, in DA2 response).
-* Ignore DCS (\eP ... ST, for vim, it's dirty hack - -;)
-* Support xterm's "Title stacking"
-* Support xterm's "Focus Reporting Mode (private mode 1004)"
-* Handle RIS (hard reset) sequence ("reset" command works well)
+* Support xterm's "tcap-query" feature.
+* Support xterm's "Title stacking".
+* Support xterm's "Focus Reporting Mode (private mode 1004)".
+* Handle RIS (hard reset) sequence ("reset" command works well).
 
 [4]: http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter4.html#config-appcursor
 
