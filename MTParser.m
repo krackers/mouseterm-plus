@@ -818,8 +818,10 @@ int MTParser_execute(char* data, int len, id obj)
                 ppc->state = PS_ESCAPE;
                 break;
             case 0x20 ... 0x7f:
+                *ppc->p = '\0';
                 break;
             default:
+                *ppc->p = '\0';
                 break;
             }
             break;
