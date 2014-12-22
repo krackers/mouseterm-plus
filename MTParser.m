@@ -1,5 +1,6 @@
 
 #import <Cocoa/Cocoa.h>
+#import <Carbon/Carbon.h>
 #import "MTParser.h"
 #import "MTShell.h"
 #import "MTView.h"
@@ -21,8 +22,8 @@ static void dcs_end(struct parse_context *ppc, MTShell *shell)
 {
     switch (ppc->action) {
     case '+' << 8 | 'q':
-        [shell MouseTerm_tcapQuery:[[NSString alloc] initWithData:ppc->buffer
-                                                         encoding:NSASCIIStringEncoding]];
+        [shell MouseTerm_tcapQuery: [[NSString alloc] initWithData: ppc->buffer
+                                                          encoding: NSASCIIStringEncoding]];
         break;
     default:
         break;
@@ -86,14 +87,14 @@ static void osc_end(struct parse_context *ppc, MTShell *shell)
 {
     if (ppc->osc_state == OPS_PASSTHROUGH) {
         if (ppc->buffer) {
-            NSString *str= [[NSString alloc] initWithData:ppc->buffer
-                                                 encoding:NSASCIIStringEncoding];
-            if ([str isEqualToString:@"?"]) {
+            NSString *str= [[NSString alloc] initWithData: ppc->buffer
+                                                 encoding: NSASCIIStringEncoding];
+            if ([str isEqualToString: @"?"]) {
                 if ([NSView MouseTerm_getBase64PasteEnabled]) {
                     [shell MouseTerm_osc52GetAccess];
                 }
             } else {
-                [shell MouseTerm_osc52SetAccess:str];
+                [shell MouseTerm_osc52SetAccess: str];
             }
             [ppc->buffer release];
             ppc->buffer = nil;
@@ -212,6 +213,8 @@ static void disable_extended_mode(struct parse_context *ppc, MTShell *shell)
             [shell MouseTerm_setFocusMode: NO];
             break;
         case 1006:
+            [shell MouseTerm_setMouseProtocol: NORMAL_PROTOCOL];
+            break;
         case 1015:
             [shell MouseTerm_setMouseProtocol: NORMAL_PROTOCOL];
             break;
@@ -268,9 +271,78 @@ static void esc_dispatch(struct parse_context *ppc, MTShell *shell)
     }
 }
 
+static char ime_source_id_buf[1024];
+static char const *ime_source_id = NULL;
+
+static void ime_save(void)
+{
+    TISInputSourceRef source = TISCopyCurrentKeyboardInputSource();
+    NSString *inputSourceID = TISGetInputSourceProperty(source, kTISPropertyInputSourceID);
+    strcpy(ime_source_id_buf, [inputSourceID UTF8String]);
+    ime_source_id_buf[inputSourceID.length] = '\0';
+    ime_source_id = (char const *)ime_source_id_buf;
+    CFRelease(source);
+}
+
+static void ime_restore(void)
+{
+    if (ime_source_id) {
+        NSString *inputSourceID = [NSString stringWithUTF8String:ime_source_id];
+        NSDictionary *properties = [NSDictionary dictionaryWithObject:inputSourceID
+                                                               forKey:(NSString *)kTISPropertyInputSourceID];
+        if (properties) {
+            NSArray *inputSources = [(NSArray *)TISCreateInputSourceList((CFDictionaryRef)properties, true) autorelease];
+            if ([inputSources count] > 0) {
+                TISInputSourceRef source = (TISInputSourceRef)[inputSources objectAtIndex:0];
+                if (source) {
+                    TISSelectInputSource(source);
+                }
+            }
+        }
+    }
+}
+
+static void ime_enable(void)
+{
+    CFStringRef locale_id = (CFStringRef)[[NSLocale currentLocale] localeIdentifier];
+    TISInputSourceRef source = TISCopyInputSourceForLanguage(locale_id); 
+    if (source) {
+        TISSelectInputSource(source); 
+        CFRelease(source);
+    }
+}
+
+static void ime_disable(void)
+{
+    TISInputSourceRef source = TISCopyCurrentASCIICapableKeyboardInputSource();
+    TISSelectInputSource(source); 
+    CFRelease(source);
+}
+
 static void csi_dispatch(struct parse_context *ppc, MTShell *shell)
 {
+
     switch (ppc->action) {
+    case ('<' << 8) | 'r':  // TTIMERS
+        ime_restore();
+        *ppc->p = '\x7f';
+        break;
+    case ('<' << 8) | 's':  // TTIMESV
+        ime_save();
+        *ppc->p = '\x7f';
+        break;
+    case ('<' << 8) | 't':  // TTIMEST
+        if (ppc->params_index == 0)
+            ppc->params[0] = 0;
+        switch (ppc->params[0]) {
+        case 1:
+            ime_enable();
+            break;
+        case 0:
+            ime_disable();
+            break;
+        }
+        break;
     case ('>' << 8) | 'c':
         [(TTShell*) shell writeData: [NSData dataWithBytes: SDA_RESPONSE
                                                     length: SDA_RESPONSE_LEN]];
