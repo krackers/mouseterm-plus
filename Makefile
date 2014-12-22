@@ -1,6 +1,5 @@
 CC=gcc
 LD=$(CC)
-RL=ragel
 
 ARCH=
 ARCHES=$(foreach arch,$(ARCH),-arch $(arch))
@@ -13,10 +12,10 @@ endif
 OPTLEVEL=2
 CFLAGS+=-std=c99 -O$(OPTLEVEL) -Wall -mmacosx-version-min=$(OSXVER) $(ARCHES)
 #LDFLAGS+=-bundle -framework Cocoa -laprutil-1 -lapr-1
-LDFLAGS+=-bundle -laprutil-1 -lapr-1 /System/Library/Frameworks/Cocoa.framework/Versions/Current/Cocoa
+LDFLAGS+=-bundle -laprutil-1 -lapr-1 -framework Cocoa
 
 OBJS=JRSwizzle.o MouseTerm.m MTAppPrefsController.o MTParser.o \
-	MTParserState.o MTProfile.o MTShell.o \
+	MTProfile.o MTShell.o \
 	MTTabController.o MTView.o
 NAME=MouseTerm
 BUNDLE=$(NAME).bundle
@@ -27,8 +26,6 @@ SIMBLDIR=$(HOME)/Library/Application\ Support/SIMBL/Plugins
 TERMINALAPP=/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal
 
 default: all
-MTParser.m: MTParser.rl
-	$(RL) -C -o MTParser.m MTParser.rl
 %.o: %.m
 	$(CC) -c $(CFLAGS) $< -o $@
 $(TARGET): $(OBJS)
@@ -71,9 +68,10 @@ dist: $(TARGET)
 		-volname $(NAME) $(DMG)
 	rm -rf $(NAME)
 clean:
-	rm -f *.o MTParser.m
+	rm -f *.o
 	rm -rf $(BUNDLE) $(NAME)
 	rm -f $(DMG) Terminal.classdump Terminal.otx
+
 install: $(TARGET) uninstall
 	mkdir -p $(SIMBLDIR)
 	cp -R $(BUNDLE) $(SIMBLDIR)
