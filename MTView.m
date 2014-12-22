@@ -18,7 +18,7 @@ static BOOL base64PasteEnabled = YES;
                            release: (BOOL) release
 {
     // get mouse position, the origin coodinate is (1, 1).
-    Position pos = [self MouseTerm_currentPosition: event]; 
+    Position pos = [self MouseTerm_currentPosition: event];
     unsigned int x = pos.x;
     unsigned int y = pos.y;
     char cb = button;
@@ -44,11 +44,11 @@ static BOOL base64PasteEnabled = YES;
         snprintf(buf, BUFFER_LENGTH, "\e[%d;%d;%dM", cb, x, y);
         len = strlen(buf);
         break;
-   
+
     case SGR_PROTOCOL:
         if (release) // release
             snprintf(buf, BUFFER_LENGTH, "\e[<%d;%d;%dm", cb, x, y);
-        else 
+        else
             snprintf(buf, BUFFER_LENGTH, "\e[<%d;%d;%dM", cb, x, y);
         len = strlen(buf);
         break;
@@ -170,8 +170,8 @@ static BOOL base64PasteEnabled = YES;
     // so we have to compensate for that.
     pos.y -= scrollback;
     pos.y += 1; // origin offset +1
-    // pos.x may not indicate correct coordinate value if the tail 
-    // cells of line buffer are empty, so we calculate it from the cell size. 
+    // pos.x may not indicate correct coordinate value if the tail
+    // cells of line buffer are empty, so we calculate it from the cell size.
     CGSize size = [(TTView*) self cellSize];
     pos.x = (linecount_t)round(viewloc.x / size.width);
 
@@ -489,7 +489,7 @@ ignored:
 
 - (BOOL) MouseTerm_windowDidBecomeKey: (id) arg1
 {
-    NSData* data = [NSData dataWithBytes: "\x1b[I" length: 3];
+    NSData* data = [NSData dataWithBytes: "\033[I" length: 3];
     MTShell* shell = [[(TTView*) self controller] shell];
     if ([shell MouseTerm_getFocusMode]) {
         [(TTShell*) shell writeData: data];
@@ -499,7 +499,7 @@ ignored:
 
 - (BOOL) MouseTerm_windowDidResignKey: (id) arg1
 {
-    NSData* data = [NSData dataWithBytes: "\x1b[O" length: 3];
+    NSData* data = [NSData dataWithBytes: "\033[O" length: 3];
     MTShell* shell = [[(TTView*) self controller] shell];
     if ([shell MouseTerm_getFocusMode]) {
         [(TTShell*) shell writeData: data];
@@ -509,7 +509,7 @@ ignored:
 
 - (BOOL) MouseTerm_becomeFirstResponder
 {
-    NSData* data = [NSData dataWithBytes: "\x1b[I" length: 3];
+    NSData* data = [NSData dataWithBytes: "\033[I" length: 3];
     MTShell* shell = [[(TTView*) self controller] shell];
     if ([shell MouseTerm_getFocusMode]) {
         [(TTShell*) shell writeData: data];
@@ -519,7 +519,7 @@ ignored:
 
 - (BOOL) MouseTerm_resignFirstResponder
 {
-    NSData* data = [NSData dataWithBytes: "\x1b[O" length: 3];
+    NSData* data = [NSData dataWithBytes: "\033[O" length: 3];
     MTShell* shell = [[(TTView*) self controller] shell];
     if ([shell MouseTerm_getFocusMode]) {
         [(TTShell*) shell writeData: data];
