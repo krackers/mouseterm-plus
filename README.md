@@ -37,17 +37,18 @@ Additionally, this project does:
 
 * Fix OS X Mavericks installation problem.
 * Support OS X Yosemite installation.
-* URXVT 1015 styled mouse tracking.
-* SGR 1006 styled mouse tracking.
+* URXVT 1015 styled mouse tracking(already backported into original source).
+* SGR 1006 styled mouse tracking(already backported into original source).
 * Fix some bugs around mouse event coordinate handling.
 * Support xterm's "Any Event Mouse(private mode 1003)" tracking mode.
   (The formar supports "Button Event" only).
 * OSC 52 clipboard accsess(get access/set access, for tmux).
 * Eliminate [ragel](http://www.colm.net/open-source/ragel/) dependency.
 * Parse control sequences with DEC VT/ECMA-48 compliant canonical parser.
+* Handle "multiple-parameterized" control sequences(e.g. "\e[?1000;1006h") correctly.
 * Ignore unhandled DCS/APC/PM/SOS control string.
 * Localization support of menu resource (French/Japanese).
-* Emulate xterm patch-level 277 (the former reports as pl.95, in DA2 response).
+* Report original DA2 response ("\033[>19796;10000;2c").
 * Support xterm's "tcap-query" feature.
 * Support xterm's "Title stacking".
 * Support xterm's "Focus Reporting Mode (private mode 1004)".

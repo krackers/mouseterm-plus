@@ -17,7 +17,8 @@ typedef enum
 
 // Control codes
 
-#define SDA_RESPONSE "\033[>32;277;2c"
+// MT(0x4d54 => 19796) ver 1.0.0(10000)
+#define SDA_RESPONSE "\033[>19796;10000;2c"
 #define SDA_RESPONSE_LEN (sizeof(SDA_RESPONSE) - 1)
 
 // Normal control codes
