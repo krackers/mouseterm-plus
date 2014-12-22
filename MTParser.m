@@ -105,7 +105,7 @@ static void osc_end(struct parse_context *ppc, MTShell *shell)
 static void terminate_string(struct parse_context *ppc, MTShell *shell)
 {
     switch (ppc->action) {
-    case 0x5c:
+    case 0x5d:
         osc_end(ppc, shell);
         break;
     case 0x00:
@@ -818,8 +818,10 @@ int MTParser_execute(char* data, int len, id obj)
                 ppc->state = PS_ESCAPE;
                 break;
             case 0x20 ... 0x7f:
+                *ppc->p = '\0';
                 break;
             default:
+                *ppc->p = '\0';
                 break;
             }
             break;

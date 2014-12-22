@@ -26,7 +26,7 @@
 
 - (BOOL) MouseTerm_becomeFirstResponder
 {
-    NSData* data = [NSData dataWithBytes: "\x1b[I" length: 3];
+    NSData* data = [NSData dataWithBytes: "\033[I" length: 3];
     MTShell* shell = [(TTTabController*) self shell];
     [(TTShell*) shell writeData: data];
     return YES;
@@ -34,7 +34,7 @@
 
 - (BOOL) MouseTerm_resignFirstResponder
 {
-    NSData* data = [NSData dataWithBytes: "\x1b[O" length: 3];
+    NSData* data = [NSData dataWithBytes: "\033[O" length: 3];
     MTShell* shell = [(TTTabController*) self shell];
     [(TTShell*) shell writeData: data];
     return YES;
