@@ -105,7 +105,7 @@ static void osc_end(struct parse_context *ppc, MTShell *shell)
 static void terminate_string(struct parse_context *ppc, MTShell *shell)
 {
     switch (ppc->action) {
-    case 0x5c:
+    case 0x5d:
         osc_end(ppc, shell);
         break;
     case 0x00:
