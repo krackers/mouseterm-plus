@@ -271,6 +271,11 @@ static void esc_dispatch(struct parse_context *ppc, MTShell *shell)
 static void csi_dispatch(struct parse_context *ppc, MTShell *shell)
 {
     switch (ppc->action) {
+    case 'c':
+        [(TTShell*) shell writeData: [NSData dataWithBytes: PDA_RESPONSE
+                                                    length: PDA_RESPONSE_LEN]];
+        *ppc->p = 0x7f;
+        break;
     case ('>' << 8) | 'c':
         [(TTShell*) shell writeData: [NSData dataWithBytes: SDA_RESPONSE
                                                     length: SDA_RESPONSE_LEN]];
