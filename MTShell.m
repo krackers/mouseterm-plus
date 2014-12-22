@@ -317,17 +317,20 @@ NSDictionary * generateTcapMap()
     char *sourceCString = (char*)[str UTF8String];
     const char prefix[] = "\033]52;c;"; // OSC52 from Clipboard
     const char postfix[] = "\033\\"; // ST
+    size_t prefix_len = sizeof(prefix) - 1;
+    size_t postfix_len = sizeof(postfix) - 1;
 
     int sourceLength = strlen(sourceCString);
     int resultLength = apr_base64_encode_len(sourceLength);
-    int allLength = sizeof(prefix) + resultLength + sizeof(postfix);
+    int allLength = prefix_len + resultLength + postfix_len;
     char *encodedBuffer = (char*)malloc(allLength);
     char *it = encodedBuffer;
-    memcpy(it, prefix, sizeof(prefix));
-    it += sizeof(prefix);
+
+    memcpy(it, prefix, prefix_len);
+    it += prefix_len;
     apr_base64_encode(it, sourceCString, sourceLength);
     it += resultLength;
-    memcpy(it, postfix, sizeof(postfix));
+    memcpy(it, postfix, postfix_len);
 
     [(TTShell*)self writeData: [NSData dataWithBytes: encodedBuffer
                                               length: allLength]];
