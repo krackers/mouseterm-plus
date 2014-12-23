@@ -1,6 +1,5 @@
 CC=gcc
 LD=$(CC)
-RL=ragel
 
 ARCH=
 ARCHES=$(foreach arch,$(ARCH),-arch $(arch))
@@ -12,12 +11,12 @@ endif
 
 OPTLEVEL=2
 CFLAGS+=-std=c99 -O$(OPTLEVEL) -Wall -mmacosx-version-min=$(OSXVER) $(ARCHES)
-#LDFLAGS+=-bundle -framework Cocoa -laprutil-1 -lapr-1
-LDFLAGS+=-bundle -laprutil-1 -lapr-1 /System/Library/Frameworks/Cocoa.framework/Versions/Current/Cocoa
+LDFLAGS+=-bundle -laprutil-1 -lapr-1 -framework Cocoa
 
-OBJS=JRSwizzle.o MouseTerm.m MTAppPrefsController.o MTParser.o \
-	MTParserState.o MTProfile.o MTShell.o \
+OBJS=JRSwizzle.o MouseTerm.o MTAppPrefsController.o MTParser.o \
+	MTProfile.o MTShell.o \
 	MTTabController.o MTView.o
+
 NAME=MouseTerm
 BUNDLE=$(NAME).bundle
 DMG=$(NAME).dmg
@@ -27,10 +26,9 @@ SIMBLDIR=$(HOME)/Library/Application\ Support/SIMBL/Plugins
 TERMINALAPP=/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal
 
 default: all
-MTParser.m: MTParser.rl
-	$(RL) -C -o MTParser.m MTParser.rl
 %.o: %.m
 	$(CC) -c $(CFLAGS) $< -o $@
+
 $(TARGET): $(OBJS)
 	mkdir -p $(BUNDLE)/Contents/MacOS
 	$(LD) $(CFLAGS) $(LDFLAGS) -o $@ $^
@@ -65,15 +63,16 @@ dist: $(TARGET)
 	osacompile -o $(NAME)/Uninstall.app Uninstall.scpt
 	cp -R $(DMGFILES) $(NAME)
 	cp README.md $(NAME)/README.txt
-	cp -r Makefile *.h *.m *.lproj *.md *.plist *.rl *.scpt *.txt utils \
+	cp -rf Makefile *.h *.m *.lproj *.md *.plist *.scpt *.txt utils \
 		$(NAME)/src
 	hdiutil create -fs HFS+ -imagekey zlib-level=9 -srcfolder $(NAME) \
 		-volname $(NAME) $(DMG)
 	rm -rf $(NAME)
 clean:
-	rm -f *.o MTParser.m
+	rm -f *.o
 	rm -rf $(BUNDLE) $(NAME)
 	rm -f $(DMG) Terminal.classdump Terminal.otx
+
 install: $(TARGET) uninstall
 	mkdir -p $(SIMBLDIR)
 	cp -R $(BUNDLE) $(SIMBLDIR)
@@ -86,10 +85,8 @@ test: install
 
 classdump:
 	class-dump $(TERMINALAPP) > Terminal.classdump
+
 otx:
 	otx $(TERMINALAPP) > Terminal.otx
-
-upload: dist
-	scp $(DMG) zuse:/var/www/misc/Mouseterm-Plus.dmg
 
 .PHONY: all dist clean install test classdump otx

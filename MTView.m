@@ -5,6 +5,67 @@
 #import "MTView.h"
 #import "Mouse.h"
 #import "Terminal.h"
+#import "MouseTerm.h"
+
+@implementation NSObject (TTLogicalScreen)
+
+- (NSValue*) MouseTerm_initVars2
+{
+    NSValue* ptr = [NSValue valueWithPointer: self];
+    if ([MouseTerm_ivars objectForKey: ptr] == nil)
+    {
+        NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+        [MouseTerm_ivars setObject: dict forKey: ptr];
+        [dict setObject: [NSNumber numberWithInt: NO]
+                 forKey: @"emojiFix"];
+    }
+    return ptr;
+}
+
+- (void) MouseTerm_setNaturalEmojiWidth: (BOOL) emojiFix
+{
+    NSValue* ptr = [NSValue valueWithPointer: self];
+    if ([MouseTerm_ivars objectForKey: ptr] == nil)
+    {
+        NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+        [MouseTerm_ivars setObject: dict forKey: ptr];
+        [dict setObject: [NSNumber numberWithInt: emojiFix]
+                 forKey: @"emojiFix"];
+    } else {
+        [[MouseTerm_ivars objectForKey: ptr]
+            setObject: [NSNumber numberWithBool: emojiFix]
+               forKey: @"emojiFix"];
+    }
+}
+
+- (BOOL) MouseTerm_getNaturalEmojiWidth
+{
+    NSValue* ptr = [NSValue valueWithPointer: self];
+    if ([MouseTerm_ivars objectForKey: ptr] == nil)
+    {
+        return NO;
+    }
+    return [(NSNumber*) [[MouseTerm_ivars objectForKey: ptr]
+                            objectForKey: @"emojiFix"] boolValue];
+}
+
+- (unsigned long long)MouseTerm_logicalWidthForCharacter:(int)code
+{
+    if ((code & 0x1f0000) == 0x10000)
+        if ([self MouseTerm_getNaturalEmojiWidth])
+            return 2;
+    return [self MouseTerm_logicalWidthForCharacter:code];
+}
+
+- (unsigned long long)MouseTerm_displayWidthForCharacter:(int)code
+{
+    if ((code & 0x1f0000) == 0x10000)
+        if ([self MouseTerm_getNaturalEmojiWidth])
+            return 2;
+    return [self MouseTerm_displayWidthForCharacter:code];
+}
+
+@end
 
 @implementation NSView (MTView)
 
@@ -18,7 +79,7 @@ static BOOL base64PasteEnabled = YES;
                            release: (BOOL) release
 {
     // get mouse position, the origin coodinate is (1, 1).
-    Position pos = [self MouseTerm_currentPosition: event]; 
+    Position pos = [self MouseTerm_currentPosition: event];
     unsigned int x = pos.x;
     unsigned int y = pos.y;
     char cb = button;
@@ -44,11 +105,11 @@ static BOOL base64PasteEnabled = YES;
         snprintf(buf, BUFFER_LENGTH, "\e[%d;%d;%dM", cb, x, y);
         len = strlen(buf);
         break;
-   
+
     case SGR_PROTOCOL:
         if (release) // release
             snprintf(buf, BUFFER_LENGTH, "\e[<%d;%d;%dm", cb, x, y);
-        else 
+        else
             snprintf(buf, BUFFER_LENGTH, "\e[<%d;%d;%dM", cb, x, y);
         len = strlen(buf);
         break;
@@ -170,8 +231,8 @@ static BOOL base64PasteEnabled = YES;
     // so we have to compensate for that.
     pos.y -= scrollback;
     pos.y += 1; // origin offset +1
-    // pos.x may not indicate correct coordinate value if the tail 
-    // cells of line buffer are empty, so we calculate it from the cell size. 
+    // pos.x may not indicate correct coordinate value if the tail
+    // cells of line buffer are empty, so we calculate it from the cell size.
     CGSize size = [(TTView*) self cellSize];
     pos.x = (linecount_t)round(viewloc.x / size.width);
 
@@ -489,7 +550,7 @@ ignored:
 
 - (BOOL) MouseTerm_windowDidBecomeKey: (id) arg1
 {
-    NSData* data = [NSData dataWithBytes: "\x1b[I" length: 3];
+    NSData* data = [NSData dataWithBytes: "\033[I" length: 3];
     MTShell* shell = [[(TTView*) self controller] shell];
     if ([shell MouseTerm_getFocusMode]) {
         [(TTShell*) shell writeData: data];
@@ -499,7 +560,7 @@ ignored:
 
 - (BOOL) MouseTerm_windowDidResignKey: (id) arg1
 {
-    NSData* data = [NSData dataWithBytes: "\x1b[O" length: 3];
+    NSData* data = [NSData dataWithBytes: "\033[O" length: 3];
     MTShell* shell = [[(TTView*) self controller] shell];
     if ([shell MouseTerm_getFocusMode]) {
         [(TTShell*) shell writeData: data];
@@ -509,7 +570,7 @@ ignored:
 
 - (BOOL) MouseTerm_becomeFirstResponder
 {
-    NSData* data = [NSData dataWithBytes: "\x1b[I" length: 3];
+    NSData* data = [NSData dataWithBytes: "\033[I" length: 3];
     MTShell* shell = [[(TTView*) self controller] shell];
     if ([shell MouseTerm_getFocusMode]) {
         [(TTShell*) shell writeData: data];
@@ -519,7 +580,7 @@ ignored:
 
 - (BOOL) MouseTerm_resignFirstResponder
 {
-    NSData* data = [NSData dataWithBytes: "\x1b[O" length: 3];
+    NSData* data = [NSData dataWithBytes: "\033[O" length: 3];
     MTShell* shell = [[(TTView*) self controller] shell];
     if ([shell MouseTerm_getFocusMode]) {
         [(TTShell*) shell writeData: data];
