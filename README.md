@@ -54,6 +54,7 @@ Additionally, this project does:
 * Support xterm's "Title stacking".
 * Support xterm's "Focus Reporting Mode (private mode 1004)".
 * Handle RIS (hard reset) sequence ("reset" command works well).
+* Add extended mode 8810: "Emoji width fix".
 
 [4]: http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter4.html#config-appcursor
 
