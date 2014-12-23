@@ -94,6 +94,9 @@ NSDictionary * generateTcapMap()
         // key_f12: F12 function key
         @"\033[24~", @"kf12",
         @"\033[24~", @"F2",
+        // key_mouse: Mouse event has occurred
+        @"\033[<", @"kmous",
+        @"\033[<", @"Km",
         nil];
     NSArray *keyArray =  [tcapRawMap allKeys];
     int count = [keyArray count];
