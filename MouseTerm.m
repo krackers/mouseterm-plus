@@ -136,6 +136,10 @@ NSMutableDictionary* MouseTerm_ivars = nil;
             @selector(MouseTerm_setValue:forKey:));
     SWIZZLE(profile, @selector(propertyListRepresentation),
             @selector(MouseTerm_propertyListRepresentation));
+    SWIZZLE(logicalScreen, @selector(logicalWidthForCharacter:),
+            @selector(MouseTerm_logicalWidthForCharacter:));
+    SWIZZLE(logicalScreen, @selector(displayWidthForCharacter:),
+            @selector(MouseTerm_displayWidthForCharacter:));
 
     [self insertMenuItem];
 }
