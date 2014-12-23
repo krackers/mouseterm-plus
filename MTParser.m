@@ -187,6 +187,9 @@ static void enable_extended_mode(struct parse_context *ppc, MTShell *shell)
         case 1015:
             [shell MouseTerm_setMouseProtocol: URXVT_PROTOCOL];
             break;
+        case 8810:
+            [[[shell controller] logicalScreen] MouseTerm_setNaturalEmojiWidth: YES];
+            break;
         default:
             break;
         }
@@ -214,6 +217,9 @@ static void disable_extended_mode(struct parse_context *ppc, MTShell *shell)
         case 1006:
         case 1015:
             [shell MouseTerm_setMouseProtocol: NORMAL_PROTOCOL];
+            break;
+        case 8810:
+            [[[shell controller] logicalScreen] MouseTerm_setNaturalEmojiWidth: NO];
             break;
         default:
             break;
