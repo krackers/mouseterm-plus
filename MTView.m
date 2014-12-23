@@ -5,6 +5,67 @@
 #import "MTView.h"
 #import "Mouse.h"
 #import "Terminal.h"
+#import "MouseTerm.h"
+
+@implementation NSObject (TTLogicalScreen)
+
+- (NSValue*) MouseTerm_initVars2
+{
+    NSValue* ptr = [NSValue valueWithPointer: self];
+    if ([MouseTerm_ivars objectForKey: ptr] == nil)
+    {
+        NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+        [MouseTerm_ivars setObject: dict forKey: ptr];
+        [dict setObject: [NSNumber numberWithInt: NO]
+                 forKey: @"emojiFix"];
+    }
+    return ptr;
+}
+
+- (void) MouseTerm_setNaturalEmojiWidth: (BOOL) emojiFix
+{
+    NSValue* ptr = [NSValue valueWithPointer: self];
+    if ([MouseTerm_ivars objectForKey: ptr] == nil)
+    {
+        NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+        [MouseTerm_ivars setObject: dict forKey: ptr];
+        [dict setObject: [NSNumber numberWithInt: emojiFix]
+                 forKey: @"emojiFix"];
+    } else {
+        [[MouseTerm_ivars objectForKey: ptr]
+            setObject: [NSNumber numberWithBool: emojiFix]
+               forKey: @"emojiFix"];
+    }
+}
+
+- (BOOL) MouseTerm_getNaturalEmojiWidth
+{
+    NSValue* ptr = [NSValue valueWithPointer: self];
+    if ([MouseTerm_ivars objectForKey: ptr] == nil)
+    {
+        return NO;
+    }
+    return [(NSNumber*) [[MouseTerm_ivars objectForKey: ptr]
+                            objectForKey: @"emojiFix"] boolValue];
+}
+
+- (unsigned long long)MouseTerm_logicalWidthForCharacter:(int)code
+{
+    if ((code & 0x1f0000) == 0x10000)
+        if ([self MouseTerm_getNaturalEmojiWidth])
+            return 2;
+    return [self MouseTerm_logicalWidthForCharacter:code];
+}
+
+- (unsigned long long)MouseTerm_displayWidthForCharacter:(int)code
+{
+    if ((code & 0x1f0000) == 0x10000)
+        if ([self MouseTerm_getNaturalEmojiWidth])
+            return 2;
+    return [self MouseTerm_displayWidthForCharacter:code];
+}
+
+@end
 
 @implementation NSView (MTView)
 

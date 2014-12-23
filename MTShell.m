@@ -131,6 +131,8 @@ NSDictionary * generateTcapMap()
                  forKey: @"mouseMode"];
         [dict setObject: [NSNumber numberWithInt: NORMAL_PROTOCOL]
                  forKey: @"mouseProtocol"];
+        [dict setObject: [NSNumber numberWithInt: NO]
+                 forKey: @"emojiFix"];
         [dict setObject: [NSNumber numberWithBool: NO]
                  forKey: @"appCursorMode"];
         [dict setObject: [NSNumber numberWithBool: NO]
