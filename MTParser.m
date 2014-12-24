@@ -266,6 +266,11 @@ static void pop_title(MTShell *shell, int param)
 static void esc_dispatch(struct parse_context *ppc, MTShell *shell)
 {
     switch (ppc->action) {
+    case 'Z':
+        [(TTShell*) shell writeData: [NSData dataWithBytes: PDA_RESPONSE
+                                                    length: PDA_RESPONSE_LEN]];
+        *ppc->p = 0x7f;
+        break;
     case 'c':
         handle_ris(ppc, shell);
         break;
