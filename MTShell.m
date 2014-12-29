@@ -118,7 +118,8 @@ NSDictionary * generateTcapMap()
     NSValue* ptr = [NSValue valueWithPointer: self];
     if ([MouseTerm_ivars objectForKey: ptr] == nil)
     {
-        struct parse_context *ppc = malloc(sizeof(struct parse_context));
+        NSMutableData *data = [[[NSMutableData alloc] initWithLength:sizeof(struct parse_context)] autorelease];
+        struct parse_context *ppc = (struct parse_context *)[data bytes];
         ppc->state = PS_GROUND;
         ppc->osc_state = OPS_IGNORE;
         ppc->action = 0;
@@ -140,7 +141,7 @@ NSDictionary * generateTcapMap()
                  forKey: @"appCursorMode"];
         [dict setObject: [NSNumber numberWithBool: NO]
                  forKey: @"isMouseDown"];
-        [dict setObject: [NSValue valueWithPointer:ppc]
+        [dict setObject: data
                  forKey: @"parseContext"];
         [dict setObject: generateTcapMap()
                  forKey: @"tcapMap"];
@@ -358,7 +359,7 @@ NSDictionary * generateTcapMap()
 - (struct parse_context*) MouseTerm_getParseContext
 {
     NSValue *ptr = [self MouseTerm_initVars];
-    return [[[MouseTerm_ivars objectForKey: ptr] objectForKey:@"parseContext"] pointerValue];
+    return (struct parse_context*)[[[MouseTerm_ivars objectForKey: ptr] objectForKey:@"parseContext"] bytes];
 }
 
 - (void) MouseTerm_writeData: (NSData*) data
@@ -369,9 +370,8 @@ NSDictionary * generateTcapMap()
 // Deletes instance variables
 - (void) MouseTerm_dealloc
 {
-    NSValue* ptr = [NSValue valueWithPointer: self];
-    struct parse_context *ppc = [[[MouseTerm_ivars objectForKey: ptr] objectForKey: @"parseContext"] pointerValue];
-    free(ppc);
+    struct parse_context *context = [self MouseTerm_getParseContext];
+    [context->buffer release];
     [MouseTerm_ivars removeObjectForKey: [NSValue valueWithPointer: self]];
     [self MouseTerm_dealloc];
 }
