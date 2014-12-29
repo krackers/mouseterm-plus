@@ -119,6 +119,7 @@ static void terminate_string(struct parse_context *ppc, MTShell *shell)
 static void init_param(struct parse_context *ppc)
 {
     ppc->params_index = 0;
+    ppc->current_param = 0;
 }
 
 static void push(struct parse_context *ppc)
@@ -266,6 +267,13 @@ static void pop_title(MTShell *shell, int param)
 static void esc_dispatch(struct parse_context *ppc, MTShell *shell)
 {
     switch (ppc->action) {
+#if 0
+    case 'Z':
+        [(TTShell*) shell writeData: [NSData dataWithBytes: PDA_RESPONSE
+                                                    length: PDA_RESPONSE_LEN]];
+        *ppc->p = 0x7f;
+        break;
+#endif
     case 'c':
         handle_ris(ppc, shell);
         break;
@@ -473,6 +481,7 @@ int MTParser_execute(char* data, int len, id obj)
                 ppc->state = PS_CSI_PARAM;
                 break;
             case 0x3c ... 0x3f:
+                init_param(ppc);
                 collect(ppc);
                 ppc->state = PS_CSI_PARAM;
                 break;
@@ -792,6 +801,7 @@ int MTParser_execute(char* data, int len, id obj)
                 break;
             case 0x07:
                 osc_end(ppc, (MTShell *)obj);
+                ppc->state = PS_GROUND;
                 break;
             case 0x08 ... 0x17:
                 break;

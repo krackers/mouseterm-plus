@@ -1,11 +1,24 @@
 2014-12-29  Hayaki Saito <user@zuse.jp>
 
+  * MTParser.m: Fix a bug caused by lack of parameter state initialization
+  (issue #2)
+
+  * MTParser.m: Fix a state transition bug around OSC teminator
+
+  * MTShell.m: Use NSMutableData instead of a pair of malloc/free
+
+  * Info.plist: Fix version typo
+
   * MTParser.m, README.md: Quick fix for tmux DA1 handling progmem(Thanks to
   @benoitc).
 
 2014-12-24  Hayaki Saito <user@zuse.jp>
 
+  * MTParser.m: Override DECID(ESC Z)
+
   * README.md: Conflicts: Makefile README.md
+
+  * README.md: Fix a typo
 
 2014-12-23  Hayaki Saito <user@zuse.jp>
 
@@ -19,6 +32,49 @@
   8810: treat emoji as double width characters
 
   * MTShell.m: Add kmous to termcap entries
+
+  * MTParser.m, Mouse.h, README.md: Report customized DA1 response
+
+  * Makefile: Makefile tweak
+
+2014-12-22  Hayaki Saito <user@zuse.jp>
+
+  * MTShell.m, MTTabController.m, MTView.m: Fix style issue
+
+  * MTShell.m: Fix NULL injection error of OSC52 read access
+
+  * MTParser.m: Handle OSC terminator correctly
+
+  * Mouse.h, README.md: Change DA2 response
+
+2014-12-21  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m: Ignore PM/APC/SOS
+
+  * Makefile: Makefile tweak
+
+  * Mouse.h: Drop unused definitions
+
+  * MTShell.m: Generate hex-encoded tcap map on initialize time
+
+  * MTParser.m, MTShell.h, MTShell.m: Initial support of tcap-query
+
+  * MTParser.h, MTParser.m, MTParserState.h, MTParserState.m, MTShell.h,
+  MTShell.m, MTTabController.m: Drop class MTParserState
+
+2014-12-20  Hayaki Saito <user@zuse.jp>
+
+  * .gitignore, MTParser.m, MTParser.rl, Makefile: Don't use ragel and rewrite
+  MTParser.rl with hand-made parser
+
+  * MTParser.rl: Suppress warnings(unused-const-variable)
+
+2014-12-23  Hayaki Saito <user@zuse.jp>
+
+  * MTShell.m: Add kmous to termcap entries
+
+  * MTParser.m, MTShell.m, MTView.h, MTView.m, MouseTerm.m: Add extend mode
+  8810: treat emoji as double width characters
 
   * MTParser.m, Mouse.h, README.md: Report customized DA1 response
 
