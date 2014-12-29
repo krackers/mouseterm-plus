@@ -48,7 +48,6 @@ Additionally, this project does:
 * Handle "multiple-parameterized" control sequences(e.g. "\e[?1000;1006h") correctly.
 * Ignore unhandled DCS/APC/PM/SOS control string.
 * Localization support of menu resource (French/Japanese).
-* Report customized DA1 response ("\033[>1;2;22c").
 * Report original DA2 response ("\033[>19796;10000;2c").
 * Support xterm's "tcap-query" feature.
 * Support xterm's "Title stacking".
