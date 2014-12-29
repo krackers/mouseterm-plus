@@ -119,6 +119,7 @@ static void terminate_string(struct parse_context *ppc, MTShell *shell)
 static void init_param(struct parse_context *ppc)
 {
     ppc->params_index = 0;
+    ppc->current_param = 0;
 }
 
 static void push(struct parse_context *ppc)
@@ -473,6 +474,7 @@ int MTParser_execute(char* data, int len, id obj)
                 ppc->state = PS_CSI_PARAM;
                 break;
             case 0x3c ... 0x3f:
+                init_param(ppc);
                 collect(ppc);
                 ppc->state = PS_CSI_PARAM;
                 break;
