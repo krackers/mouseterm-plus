@@ -799,6 +799,7 @@ int MTParser_execute(char* data, int len, id obj)
                 break;
             case 0x07:
                 osc_end(ppc, (MTShell *)obj);
+                ppc->state = PS_GROUND;
                 break;
             case 0x08 ... 0x17:
                 break;
