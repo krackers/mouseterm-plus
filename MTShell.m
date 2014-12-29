@@ -9,8 +9,7 @@
 - (NSValue*) MouseTerm_initVars
 {
     NSValue* ptr = [NSValue valueWithPointer: self];
-    if ([MouseTerm_ivars objectForKey: ptr] == nil)
-    {
+    if ([MouseTerm_ivars objectForKey: ptr] == nil) {
         NSMutableDictionary* dict = [NSMutableDictionary dictionary];
         [MouseTerm_ivars setObject: dict forKey: ptr];
         [dict setObject: [NSNumber numberWithInt: NO_MODE]
@@ -23,6 +22,8 @@
                  forKey: @"isMouseDown"];
         [dict setObject: [[[MTParserState alloc] init] autorelease]
                  forKey: @"parserState"];
+        [dict setObject: [[[NSMutableData alloc] initWithLength:sizeof(struct parse_context)] autorelease]
+                 forKey: @"parseContext"];
     }
     return ptr;
 }
@@ -97,6 +98,12 @@
 {
     NSValue *ptr = [self MouseTerm_initVars];
     return [[MouseTerm_ivars objectForKey: ptr] objectForKey: @"parserState"];
+}
+
+- (struct parse_context*) MouseTerm_getParseContext
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    return (struct parse_context*)[[[MouseTerm_ivars objectForKey: ptr] objectForKey:@"parseContext"] bytes];
 }
 
 - (void) MouseTerm_writeData: (NSData*) data
