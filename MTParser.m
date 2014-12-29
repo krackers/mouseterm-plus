@@ -12,9 +12,9 @@ static void dcs_start(struct parse_context *ppc)
     ppc->buffer = [[NSMutableData alloc] init];
 }
 
-static void dcs_put(struct parse_context *ppc)
+static void dcs_put(struct parse_context *ppc, char const *p)
 {
-    [ppc->buffer appendBytes: ppc->p length: 1];
+    [ppc->buffer appendBytes: p length: 1];
 }
 
 static void dcs_end(struct parse_context *ppc, MTShell *shell)
@@ -29,21 +29,21 @@ static void dcs_end(struct parse_context *ppc, MTShell *shell)
     }
 }
 
-static void osc_start(struct parse_context *ppc)
+static void osc_start(struct parse_context *ppc, char const *p)
 {
     ppc->current_param = 0;
-    ppc->action = *ppc->p;
+    ppc->action = *p;
     ppc->osc_state = OPS_COMMAND;
 }
 
-static void osc_put(struct parse_context *ppc)
+static void osc_put(struct parse_context *ppc, char const *p)
 {
     switch (ppc->osc_state) {
     case OPS_COMMAND:
-        switch (*ppc->p) {
+        switch (*p) {
         case 0x30 ... 0x39:
             if (ppc->current_param < 6554)
-                ppc->current_param = ppc->current_param * 10 + *ppc->p - 0x30;
+                ppc->current_param = ppc->current_param * 10 + *p - 0x30;
             break;
         case 0x3b:
             if (ppc->current_param == 52) {
@@ -58,7 +58,7 @@ static void osc_put(struct parse_context *ppc)
         }
         break;
     case OPS_SELECTION:
-        switch (*ppc->p) {
+        switch (*p) {
         case 0x30 ... 0x37:
         case 0x63:
         case 0x70:
@@ -74,7 +74,7 @@ static void osc_put(struct parse_context *ppc)
         }
         break;
     case OPS_PASSTHROUGH:
-        [ppc->buffer appendBytes: ppc->p length: 1];
+        [ppc->buffer appendBytes: p length: 1];
         break;
     case OPS_IGNORE:
     default:
@@ -129,10 +129,10 @@ static void push(struct parse_context *ppc)
     ppc->current_param = 0;
 }
 
-static void param(struct parse_context *ppc)
+static void param(struct parse_context *ppc, char const *p)
 {
     if (ppc->current_param < 6554)
-        ppc->current_param = ppc->current_param * 10 + *ppc->p - 0x30;
+        ppc->current_param = ppc->current_param * 10 + *p - 0x30;
 }
 
 static void init_action(struct parse_context *ppc)
@@ -140,9 +140,9 @@ static void init_action(struct parse_context *ppc)
     ppc->action = 0;
 }
 
-static void collect(struct parse_context *ppc)
+static void collect(struct parse_context *ppc, char const *p)
 {
-    ppc->action = ppc->action << 8 | *ppc->p;
+    ppc->action = ppc->action << 8 | *p;
     if (ppc->action > 0x40 << 24) {
         ppc->action = (-1);
     }
@@ -264,14 +264,14 @@ static void pop_title(MTShell *shell, int param)
     }
 }
 
-static void esc_dispatch(struct parse_context *ppc, MTShell *shell)
+static void esc_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
 {
     switch (ppc->action) {
 #if 0
     case 'Z':
         [(TTShell*) shell writeData: [NSData dataWithBytes: PDA_RESPONSE
                                                     length: PDA_RESPONSE_LEN]];
-        *ppc->p = 0x7f;
+        *p = 0x7f;
         break;
 #endif
     case 'c':
@@ -282,20 +282,20 @@ static void esc_dispatch(struct parse_context *ppc, MTShell *shell)
     }
 }
 
-static void csi_dispatch(struct parse_context *ppc, MTShell *shell)
+static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
 {
     switch (ppc->action) {
 #if 0
     case 'c':
         [(TTShell*) shell writeData: [NSData dataWithBytes: PDA_RESPONSE
                                                     length: PDA_RESPONSE_LEN]];
-        *ppc->p = 0x7f;
+        *p = 0x7f;
         break;
 #endif
     case ('>' << 8) | 'c':
         [(TTShell*) shell writeData: [NSData dataWithBytes: SDA_RESPONSE
                                                     length: SDA_RESPONSE_LEN]];
-        *ppc->p = 0x7f;
+        *p = 0x7f;
         break;
     case ('?' << 8) | 'h':
         enable_extended_mode(ppc, shell);
@@ -330,17 +330,17 @@ static void csi_dispatch(struct parse_context *ppc, MTShell *shell)
 
 int MTParser_execute(char* data, int len, id obj)
 {
-
+    char *p = data;
     MTShell *shell = (MTShell *)obj;
     struct parse_context *ppc = [shell MouseTerm_getParseContext];
     if (!ppc) {
         return 0;
     }
 
-    for (ppc->p = data; ppc->p != data + len; ++ppc->p) {
+    for (p = data; p != data + len; ++p) {
         switch (ppc->state) {
         case PS_GROUND:
-            switch (*ppc->p) {
+            switch (*p) {
             case 0x1b:
                 ppc->state = PS_ESCAPE;
                 break;
@@ -349,7 +349,7 @@ int MTParser_execute(char* data, int len, id obj)
             }
             break;
         case PS_ESCAPE:
-            switch (*ppc->p) {
+            switch (*p) {
             case 0x00 ... 0x17:
                 break;
             case 0x18:
@@ -395,7 +395,7 @@ int MTParser_execute(char* data, int len, id obj)
                 ppc->state = PS_GROUND;
                 break;
             case 0x5d:
-                osc_start(ppc);
+                osc_start(ppc, p);
                 ppc->state = PS_OSC_STRING;
                 break;
             case 0x5e ... 0x5f:
@@ -404,8 +404,8 @@ int MTParser_execute(char* data, int len, id obj)
                 break;
             case 0x60 ... 0x7e:
                 init_action(ppc);
-                collect(ppc);
-                esc_dispatch(ppc, (MTShell *)obj);
+                collect(ppc, p);
+                esc_dispatch(ppc, p, shell);
                 ppc->state = PS_GROUND;
                 break;
             case 0x7f:
@@ -415,7 +415,7 @@ int MTParser_execute(char* data, int len, id obj)
             }
             break;
         case PS_ESCAPE_INTERMEDIATE:
-            switch (*ppc->p) {
+            switch (*p) {
             case 0x00 ... 0x17:
                 break;
             case 0x18:
@@ -432,11 +432,11 @@ int MTParser_execute(char* data, int len, id obj)
             case 0x1c ... 0x1f:
                 break;
             case 0x20 ... 0x2f:
-                collect(ppc);
+                collect(ppc, p);
                 break;
             case 0x30 ... 0x7e:
-                collect(ppc);
-                esc_dispatch(ppc, (MTShell *)obj);
+                collect(ppc, p);
+                esc_dispatch(ppc, p, shell);
                 ppc->state = PS_GROUND;
                 break;
             case 0x7f:
@@ -446,7 +446,7 @@ int MTParser_execute(char* data, int len, id obj)
             }
             break;
         case PS_CSI_ENTRY:
-            switch (*ppc->p) {
+            switch (*p) {
             case 0x00 ... 0x17:
                 break;
             case 0x18:
@@ -464,12 +464,12 @@ int MTParser_execute(char* data, int len, id obj)
                 break;
             case 0x20 ... 0x2f:
                 init_param(ppc);
-                collect(ppc);
+                collect(ppc, p);
                 ppc->state = PS_CSI_INTERMEDIATE;
                 break;
             case 0x30 ... 0x39:
                 init_param(ppc);
-                param(ppc);
+                param(ppc, p);
                 ppc->state = PS_CSI_PARAM;
                 break;
             case 0x3a:
@@ -482,13 +482,13 @@ int MTParser_execute(char* data, int len, id obj)
                 break;
             case 0x3c ... 0x3f:
                 init_param(ppc);
-                collect(ppc);
+                collect(ppc, p);
                 ppc->state = PS_CSI_PARAM;
                 break;
             case 0x40 ... 0x7e:
                 init_param(ppc);
-                collect(ppc);
-                csi_dispatch(ppc, (MTShell *)obj);
+                collect(ppc, p);
+                csi_dispatch(ppc, p, shell);
                 ppc->state = PS_GROUND;
                 break;
             case 0x7f:
@@ -498,7 +498,7 @@ int MTParser_execute(char* data, int len, id obj)
             }
             break;
         case PS_CSI_PARAM:
-            switch (*ppc->p) {
+            switch (*p) {
             case 0x00 ... 0x17:
                 break;
             case 0x18:
@@ -515,11 +515,11 @@ int MTParser_execute(char* data, int len, id obj)
             case 0x1c ... 0x1f:
                 break;
             case 0x20 ... 0x2f:
-                collect(ppc);
+                collect(ppc, p);
                 ppc->state = PS_CSI_INTERMEDIATE;
                 break;
             case 0x30 ... 0x39:
-                param(ppc);
+                param(ppc, p);
                 break;
             case 0x3a:
                 ppc->state = PS_CSI_IGNORE;
@@ -532,8 +532,8 @@ int MTParser_execute(char* data, int len, id obj)
                 break;
             case 0x40 ... 0x7e:
                 push(ppc);
-                collect(ppc);
-                csi_dispatch(ppc, (MTShell *)obj);
+                collect(ppc, p);
+                csi_dispatch(ppc, p, shell);
                 ppc->state = PS_GROUND;
                 break;
             case 0x7f:
@@ -543,7 +543,7 @@ int MTParser_execute(char* data, int len, id obj)
             }
             break;
         case PS_CSI_INTERMEDIATE:
-            switch (*ppc->p) {
+            switch (*p) {
             case 0x00 ... 0x17:
                 break;
             case 0x18:
@@ -560,14 +560,14 @@ int MTParser_execute(char* data, int len, id obj)
             case 0x1c ... 0x1f:
                 break;
             case 0x20 ... 0x2f:
-                collect(ppc);
+                collect(ppc, p);
                 break;
             case 0x30 ... 0x3f:
                 ppc->state = PS_CSI_IGNORE;
                 break;
             case 0x40 ... 0x7e:
-                collect(ppc);
-                csi_dispatch(ppc, (MTShell *)obj);
+                collect(ppc, p);
+                csi_dispatch(ppc, p, shell);
                 ppc->state = PS_GROUND;
                 break;
             case 0x7f:
@@ -577,7 +577,7 @@ int MTParser_execute(char* data, int len, id obj)
             }
             break;
         case PS_CSI_IGNORE:
-            switch (*ppc->p) {
+            switch (*p) {
             case 0x00 ... 0x17:
                 break;
             case 0x18:
@@ -605,7 +605,7 @@ int MTParser_execute(char* data, int len, id obj)
             }
             break;
         case PS_DCS_ENTRY:
-            switch (*ppc->p) {
+            switch (*p) {
             case 0x00 ... 0x17:
                 break;
             case 0x18:
@@ -623,35 +623,36 @@ int MTParser_execute(char* data, int len, id obj)
                 break;
             case 0x20 ... 0x2f:
                 init_param(ppc);
-                collect(ppc);
-                *ppc->p = '\0';
+                collect(ppc, p);
+                *p = '\0';
                 ppc->state = PS_DCS_INTERMEDIATE;
                 break;
             case 0x30 ... 0x39:
                 init_param(ppc);
-                param(ppc);
-                *ppc->p = '\0';
+                param(ppc, p);
+                *p = '\0';
                 ppc->state = PS_DCS_PARAM;
                 break;
             case 0x3a:
-                *ppc->p = '\0';
+                *p = '\0';
                 ppc->state = PS_DCS_IGNORE;
                 break;
             case 0x3b:
                 init_param(ppc);
                 push(ppc);
-                *ppc->p = '\0';
+                *p = '\0';
                 ppc->state = PS_DCS_PARAM;
                 break;
             case 0x3c ... 0x3f:
-                collect(ppc);
-                *ppc->p = '\0';
+                init_param(ppc);
+                collect(ppc, p);
+                *p = '\0';
                 ppc->state = PS_DCS_PARAM;
                 break;
             case 0x40 ... 0x7e:
                 init_param(ppc);
-                collect(ppc);
-                *ppc->p = '\0';
+                collect(ppc, p);
+                *p = '\0';
                 ppc->state = PS_DCS_PASSTHROUGH;
                 break;
             case 0x7f:
@@ -661,7 +662,7 @@ int MTParser_execute(char* data, int len, id obj)
             }
             break;
         case PS_DCS_PARAM:
-            switch (*ppc->p) {
+            switch (*p) {
             case 0x00 ... 0x17:
                 break;
             case 0x18:
@@ -678,31 +679,31 @@ int MTParser_execute(char* data, int len, id obj)
             case 0x1c ... 0x1f:
                 break;
             case 0x20 ... 0x2f:
-                collect(ppc);
-                *ppc->p = '\0';
+                collect(ppc, p);
+                *p = '\0';
                 ppc->state = PS_DCS_INTERMEDIATE;
                 break;
             case 0x30 ... 0x39:
-                param(ppc);
-                *ppc->p = '\0';
+                param(ppc, p);
+                *p = '\0';
                 ppc->state = PS_DCS_PARAM;
                 break;
             case 0x3a:
-                *ppc->p = '\0';
+                *p = '\0';
                 ppc->state = PS_DCS_IGNORE;
                 break;
             case 0x3b:
                 push(ppc);
-                *ppc->p = '\0';
+                *p = '\0';
                 ppc->state = PS_DCS_PARAM;
                 break;
             case 0x3c ... 0x3f:
-                *ppc->p = '\0';
+                *p = '\0';
                 ppc->state = PS_DCS_IGNORE;
                 break;
             case 0x40 ... 0x7e:
-                collect(ppc);
-                *ppc->p = '\0';
+                collect(ppc, p);
+                *p = '\0';
                 ppc->state = PS_DCS_PASSTHROUGH;
                 break;
             case 0x7f:
@@ -712,7 +713,7 @@ int MTParser_execute(char* data, int len, id obj)
             }
             break;
         case PS_DCS_INTERMEDIATE:
-            switch (*ppc->p) {
+            switch (*p) {
             case 0x00 ... 0x17:
                 break;
             case 0x18:
@@ -729,16 +730,16 @@ int MTParser_execute(char* data, int len, id obj)
             case 0x1c ... 0x1f:
                 break;
             case 0x20 ... 0x2f:
-                collect(ppc);
-                *ppc->p = '\0';
+                collect(ppc, p);
+                *p = '\0';
                 break;
             case 0x30 ... 0x3f:
-                *ppc->p = '\0';
+                *p = '\0';
                 ppc->state = PS_DCS_IGNORE;
                 break;
             case 0x40 ... 0x7e:
-                collect(ppc);
-                *ppc->p = '\0';
+                collect(ppc, p);
+                *p = '\0';
                 ppc->state = PS_DCS_PASSTHROUGH;
                 break;
             case 0x7f:
@@ -748,7 +749,7 @@ int MTParser_execute(char* data, int len, id obj)
             }
             break;
         case PS_DCS_PASSTHROUGH:
-            switch (*ppc->p) {
+            switch (*p) {
             case 0x00 ... 0x17:
                 break;
             case 0x18:
@@ -763,8 +764,8 @@ int MTParser_execute(char* data, int len, id obj)
                 ppc->state = PS_ESCAPE;
                 break;
             case 0x20 ... 0x7e:
-                dcs_put(ppc);
-                *ppc->p = '\0';
+                dcs_put(ppc, p);
+                *p = '\0';
                 break;
             case 0x7f:
                 break;
@@ -773,7 +774,7 @@ int MTParser_execute(char* data, int len, id obj)
             }
             break;
         case PS_DCS_IGNORE:
-            switch (*ppc->p) {
+            switch (*p) {
             case 0x00 ... 0x17:
                 break;
             case 0x18:
@@ -788,15 +789,15 @@ int MTParser_execute(char* data, int len, id obj)
                 ppc->state = PS_ESCAPE;
                 break;
             case 0x20 ... 0x7f:
-                *ppc->p = '\0';
+                *p = '\0';
                 break;
             default:
-                *ppc->p = '\0';
+                *p = '\0';
                 break;
             }
             break;
         case PS_OSC_STRING:
-            switch (*ppc->p) {
+            switch (*p) {
             case 0x00 ... 0x06:
                 break;
             case 0x07:
@@ -819,14 +820,14 @@ int MTParser_execute(char* data, int len, id obj)
                 ppc->state = PS_ESCAPE;
                 break;
             case 0x20 ... 0x7f:
-                osc_put(ppc);
+                osc_put(ppc, p);
                 break;
             default:
                 break;
             }
             break;
         case PS_SOS_PM_APC_STRING:
-            switch (*ppc->p) {
+            switch (*p) {
             case 0x00 ... 0x17:
                 break;
             case 0x18:
@@ -841,10 +842,10 @@ int MTParser_execute(char* data, int len, id obj)
                 ppc->state = PS_ESCAPE;
                 break;
             case 0x20 ... 0x7f:
-                *ppc->p = '\0';
+                *p = '\0';
                 break;
             default:
-                *ppc->p = '\0';
+                *p = '\0';
                 break;
             }
             break;

@@ -118,15 +118,6 @@ NSDictionary * generateTcapMap()
     NSValue* ptr = [NSValue valueWithPointer: self];
     if ([MouseTerm_ivars objectForKey: ptr] == nil)
     {
-        NSMutableData *data = [[[NSMutableData alloc] initWithLength:sizeof(struct parse_context)] autorelease];
-        struct parse_context *ppc = (struct parse_context *)[data bytes];
-        ppc->state = PS_GROUND;
-        ppc->osc_state = OPS_IGNORE;
-        ppc->action = 0;
-        ppc->current_param = 0;
-        ppc->params_index = 0;
-        ppc->buffer = nil;
-
         NSMutableDictionary* dict = [NSMutableDictionary dictionary];
         [MouseTerm_ivars setObject: dict forKey: ptr];
         [dict setObject: [NSNumber numberWithBool: NO]
@@ -141,7 +132,7 @@ NSDictionary * generateTcapMap()
                  forKey: @"appCursorMode"];
         [dict setObject: [NSNumber numberWithBool: NO]
                  forKey: @"isMouseDown"];
-        [dict setObject: data
+        [dict setObject: [[[NSMutableData alloc] initWithLength:sizeof(struct parse_context)] autorelease]
                  forKey: @"parseContext"];
         [dict setObject: generateTcapMap()
                  forKey: @"tcapMap"];

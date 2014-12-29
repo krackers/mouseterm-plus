@@ -18,10 +18,10 @@ enum parse_state {
 };
 
 enum osc_parse_state {
+    OPS_IGNORE      = 0,
     OPS_COMMAND     = 1,
     OPS_SELECTION   = 2,
     OPS_PASSTHROUGH = 3,
-    OPS_IGNORE      = 4,
 };
 
 static int const param_bufsize = 256;
@@ -29,7 +29,6 @@ static int const param_bufsize = 256;
 struct parse_context {
     int state;
     int osc_state;
-    char *p;
     int action;
     int current_param;
     int params_index;
