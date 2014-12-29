@@ -1,6 +1,5 @@
 #import <Cocoa/Cocoa.h>
 
-@class MTParserState;
 enum parse_state {
     PS_GROUND              =  0,
     PS_ESCAPE              =  1,
@@ -44,9 +43,6 @@ struct parse_context {
 
 - (void) MouseTerm_setIsMouseDown: (BOOL) isMouseDown;
 - (BOOL) MouseTerm_getIsMouseDown;
-
-- (void) MouseTerm_setParserState: (MTParserState*) parserState;
-- (MTParserState*) MouseTerm_getParserState;
 
 - (struct parse_context*) MouseTerm_getParseContext;
 
