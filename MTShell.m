@@ -1,7 +1,6 @@
 #import <Cocoa/Cocoa.h>
 #import "Mouse.h"
 #import "MouseTerm.h"
-#import "MTParserState.h"
 #import "MTShell.h"
 
 @implementation NSObject (MTShell)
@@ -20,8 +19,6 @@
                  forKey: @"appCursorMode"];
         [dict setObject: [NSNumber numberWithBool: NO]
                  forKey: @"isMouseDown"];
-        [dict setObject: [[[MTParserState alloc] init] autorelease]
-                 forKey: @"parserState"];
         [dict setObject: [[[NSMutableData alloc] initWithLength:sizeof(struct parse_context)] autorelease]
                  forKey: @"parseContext"];
     }
@@ -87,19 +84,6 @@
                             objectForKey: @"isMouseDown"] boolValue];
 }
 
-- (void) MouseTerm_setParserState: (MTParserState*) parserState
-{
-    NSValue *ptr = [self MouseTerm_initVars];
-    [[MouseTerm_ivars objectForKey: ptr] setObject: parserState
-                                            forKey: @"parserState"];
-}
-
-- (MTParserState*) MouseTerm_getParserState
-{
-    NSValue *ptr = [self MouseTerm_initVars];
-    return [[MouseTerm_ivars objectForKey: ptr] objectForKey: @"parserState"];
-}
-
 - (struct parse_context*) MouseTerm_getParseContext
 {
     NSValue *ptr = [self MouseTerm_initVars];
@@ -108,10 +92,6 @@
 
 - (void) MouseTerm_writeData: (NSData*) data
 {
-    if ([self MouseTerm_getParserState].handleSda &&
-        !strncmp([data bytes], PDA_RESPONSE, PDA_RESPONSE_LEN))
-        return;
-
     [self MouseTerm_writeData: data];
 }
 

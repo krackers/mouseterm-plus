@@ -1,7 +1,6 @@
 #import <Cocoa/Cocoa.h>
 #import "Mouse.h"
 #import "MTParser.h"
-#import "MTParserState.h"
 #import "MTShell.h"
 #import "MTTabController.h"
 #import "Terminal.h"
