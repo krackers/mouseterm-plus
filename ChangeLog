@@ -1,9 +1,24 @@
+2014-12-29  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m, README.md: Quick fix for tmux DA1 handling progmem(Thanks to
+  @benoitc).
+
+2014-12-24  Hayaki Saito <user@zuse.jp>
+
+  * README.md: Conflicts: Makefile README.md
+
 2014-12-23  Hayaki Saito <user@zuse.jp>
 
-  * MTShell.m: Add kmous to termcap entries
+  * Info.plist: Update Info.plist
+
+  * Makefile: Makefile tweak
+
+  * ChangeLog: Add ChangeLog
 
   * MTParser.m, MTShell.m, MTView.h, MTView.m, MouseTerm.m: Add extend mode
   8810: treat emoji as double width characters
+
+  * MTShell.m: Add kmous to termcap entries
 
   * MTParser.m, Mouse.h, README.md: Report customized DA1 response
 
