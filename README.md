@@ -17,7 +17,7 @@ Download
 
 Installer package with source code is available:
 
-[http://zuse.jp/misc/MouseTerm-Plus.dmg](http://zuse.jp/misc/MouseTerm-Plus.dmg)
+[https://github.com/saitoha/mouseterm-plus/releases](https://github.com/saitoha/mouseterm-plus/releases)
 
 Status
 ------
@@ -41,7 +41,7 @@ Additionally, this project does:
 * SGR 1006 styled mouse tracking(already backported into original source).
 * Fix some bugs around mouse event coordinate handling.
 * Support xterm's "Any Event Mouse(private mode 1003)" tracking mode.
-  (The formar supports "Button Event" only).
+  (The formar supports "Normal Event/Button Event" only).
 * OSC 52 clipboard accsess(get access/set access, for tmux).
 * Eliminate [ragel](http://www.colm.net/open-source/ragel/) dependency.
 * Parse control sequences with DEC VT/ECMA-48 compliant canonical parser.
