@@ -53,6 +53,9 @@ struct parse_context {
 - (void) MouseTerm_setCoordinateType: (int) coordinateType;
 - (int) MouseTerm_getCoordinateType;
 
+- (void) MouseTerm_setEventFilter: (int) eventFilter;
+- (int) MouseTerm_getEventFilter;
+
 - (void) MouseTerm_setAppCursorMode: (BOOL) appCursorMode;
 - (BOOL) MouseTerm_getAppCursorMode;
 

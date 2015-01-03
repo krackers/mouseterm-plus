@@ -965,6 +965,20 @@ NSDictionary* generateX11ColorNameMap()
                             objectForKey: @"coordinateType"] intValue];
 }
 
+- (void) MouseTerm_setEventFilter: (int) eventFilter
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    [[MouseTerm_ivars objectForKey: ptr]
+        setObject: [NSNumber numberWithInt: eventFilter] forKey: @"eventFilter"];
+}
+
+- (int) MouseTerm_getEventFilter
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    return [(NSNumber*) [[MouseTerm_ivars objectForKey: ptr]
+                            objectForKey: @"eventFilter"] intValue];
+}
+
 - (void) MouseTerm_setAppCursorMode: (BOOL) appCursorMode
 {
     NSValue *ptr = [self MouseTerm_initVars];

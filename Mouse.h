@@ -24,6 +24,13 @@ typedef enum
     PIXEL_COORDINATE = 1,
 } CoordinateType;
 
+typedef enum
+{
+    REQUEST_EVENT     = 0x0,
+    BUTTONDOWN_EVENT  = 0x1,
+    BUTTONUP_EVENT    = 0x2,
+} LocatorEventFilter;
+
 // Control codes
 
 #define PDA_RESPONSE "\033[1;2;22c"

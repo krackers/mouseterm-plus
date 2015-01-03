@@ -670,6 +670,8 @@ static void esc_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
 
 static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
 {
+    int i;
+
     switch (ppc->action) {
 #if 0
     case 'c':
@@ -689,7 +691,7 @@ static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
     case ('?' << 8) | 'l':
         disable_extended_mode(ppc, shell);
         break;
-    case ('\'' << 8) | 'z':
+    case ('\'' << 8) | 'z':  /* DECELR */
         if (ppc->params_index < 1)
             ppc->params[0] = 0;
         if (ppc->params_index < 2)
@@ -715,6 +717,22 @@ static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
         default:
             [shell MouseTerm_setCoordinateType: CELL_COORDINATE];
             break;
+        }
+        break;
+    case ('\'' << 8) | '{':  /* DECSLE */
+        for (i = 0; i < ppc->params_index; ++i) {
+            switch (ppc->params[i]) {
+            case 1:
+                [shell MouseTerm_setEventFilter: [shell MouseTerm_getEventFilter] | BUTTONDOWN_EVENT];
+                break;
+            case 2:
+                [shell MouseTerm_setEventFilter: [shell MouseTerm_getEventFilter] | BUTTONUP_EVENT];
+                break;
+            case 0:
+            default:
+                [shell MouseTerm_setEventFilter: REQUEST_EVENT];
+                break;
+            }
         }
         break;
     case 't':
