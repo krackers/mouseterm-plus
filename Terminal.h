@@ -59,6 +59,8 @@ typedef struct
 - (void) clearTextSelection;
 - (struct CGSize)cellSize;
 - (void)copy:(id)arg1;
+- (id)adjustedColorWithColor:(id)arg1 withBackgroundColor:(id)arg2 force:(BOOL)arg3;
+- (id)colorForANSIColor:(unsigned int)index;
 @end
 
 @interface TTProfileArrayController:

@@ -4,6 +4,108 @@
 #import "MTShell.h"
 #import "MTView.h"
 
+static int
+parse_x_colorspec(char const *spec, int *red, int *green, int *blue)
+{
+    int v;
+
+    /* This is the new and preferred way */
+    if (strncmp(spec, "rgb:", 4) == 0) {
+        switch (strlen(spec + 4)) {
+        case 5:
+            if (sscanf(spec + 4, "%01x/%01x/%01x", red, green, blue) != 3)
+                return (-1);
+            *red <<= 12;
+            *green <<= 12;
+            *blue <<= 12;
+            break;
+        case 8:
+            if (sscanf(spec + 4, "%02x/%02x/%02x", red, green, blue) != 3)
+                return (-1);
+            *red <<= 8;
+            *green <<= 8;
+            *blue <<= 8;
+            break;
+        case 14:
+            if (sscanf(spec + 4, "%04x/%04x/%04x", red, green, blue) != 3)
+                return (-1);
+            break;
+        default:
+            return (-1);
+        }
+    } else if (spec[0] == '#') {
+        if (sscanf(spec + 1, "%x", &v) != 1)
+            return (-1);
+        switch (strlen(spec + 1)) {
+        case 3:
+            *red   = (v & 0xf00) << 4;
+            *green = (v & 0x0f0) << 8;
+            *blue  = (v & 0x00f) << 12;
+            break;
+        case 6:
+            *red   = (v & 0xff0000) >> 8;
+            *green = (v & 0x00ff00);
+            *blue  = (v & 0x0000ff) << 8;
+            break;
+        default:
+            return (-1);
+        }
+    } else {
+        return (-1);
+    }
+
+    return 0;
+}
+
+
+static void osc4_get(MTShell *shell, int n)
+{
+    CGFloat components[8];
+    int r, g, b;
+    TTView *view = (TTView *)[[[shell controller] activePane] view];
+    NSColor *color = [view MouseTerm_colorForANSIColor: 1000 + n];
+
+    if (n > 255 || n < 0)
+        return;
+    if (![color isKindOfClass:[NSColor class]])
+        return;
+    color = [color colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
+    [color getComponents: components];
+    r = components[0] * 256 * 257;
+    g = components[1] * 256 * 257;
+    b = components[2] * 256 * 257;
+    if (r > 0xffff)
+        r = 0xffff;
+    if (g > 0xffff)
+        g = 0xffff;
+    if (b > 0xffff)
+        b = 0xffff;
+    NSString *spec = [NSString stringWithFormat: @"\033]4;%d;rgb:%04x/%04x/%04x\033\\", n, r, g, b];
+    [(TTShell*) shell writeData: [NSData dataWithBytes: [spec UTF8String]
+                                                length: spec.length]];
+}
+
+
+static void osc4_set(MTShell *shell, int n, char const *p)
+{
+    int r, g, b;
+
+    if (n > 255 || n < 0)
+        return;
+    if (parse_x_colorspec(p, &r, &g, &b) != 0)
+        return;
+    NSLog([NSString stringWithFormat: @"[MouseTerm] rgb:%04x/%04x/%04x", r, g, b]);
+    NSMutableDictionary *palette = [shell MouseTerm_getPalette];
+    if (palette) {
+        NSColor *color = [NSColor colorWithRed: (float)r / (1 << 16)
+                                         green: (float)g / (1 << 16)
+                                          blue: (float)b / (1 << 16)
+                                         alpha: 1.0f];
+        [palette setObject:color forKey: [NSNumber numberWithInt:n]];
+    }
+}
+
+
 static void dcs_start(struct parse_context *ppc)
 {
     ppc->current_param = 0;
@@ -21,8 +123,8 @@ static void dcs_end(struct parse_context *ppc, MTShell *shell)
 {
     switch (ppc->action) {
     case '+' << 8 | 'q':
-        [shell MouseTerm_tcapQuery:[[NSString alloc] initWithData:ppc->buffer
-                                                         encoding:NSASCIIStringEncoding]];
+        [shell MouseTerm_tcapQuery:[[[NSString alloc] initWithData: ppc->buffer
+                                                          encoding: NSASCIIStringEncoding] autorelease]];
         break;
     default:
         break;
@@ -46,10 +148,18 @@ static void osc_put(struct parse_context *ppc, char const *p)
                 ppc->current_param = ppc->current_param * 10 + *p - 0x30;
             break;
         case 0x3b:
-            if (ppc->current_param == 52) {
+            switch (ppc->current_param) {
+            case 4:
+                [ppc->buffer release];
+                ppc->buffer = [[NSMutableData alloc] init];
+                ppc->osc_state = OPS_PASSTHROUGH;
+                break;
+            case 52:
                 ppc->osc_state = OPS_SELECTION;
-            } else {
+                break;
+            default:
                 ppc->osc_state = OPS_IGNORE;
+                break;
             }
             break;
         default:
@@ -84,21 +194,45 @@ static void osc_put(struct parse_context *ppc, char const *p)
 
 static void osc_end(struct parse_context *ppc, MTShell *shell)
 {
-    if (ppc->osc_state == OPS_PASSTHROUGH) {
+    switch (ppc->osc_state) {
+    case OPS_PASSTHROUGH:
         if (ppc->buffer) {
-            NSString *str= [[NSString alloc] initWithData:ppc->buffer
-                                                 encoding:NSASCIIStringEncoding];
-            if ([str isEqualToString:@"?"]) {
-                if ([NSView MouseTerm_getBase64PasteEnabled]) {
-                    [shell MouseTerm_osc52GetAccess];
+            NSString *str= [[[NSString alloc] initWithData: ppc->buffer
+                                                  encoding: NSASCIIStringEncoding] autorelease];
+            char *p;
+            int n;
+            switch (ppc->current_param) {
+            case 4:
+                p = [str UTF8String];
+                if (sscanf(p, "%d;", &n) == 1) {
+                    while (*p)
+                        if (*p++ == 0x3b)
+                            break;
+                    if (*p == '?')
+                        osc4_get(shell, n);
+                    else
+                        osc4_set(shell, n, p);
                 }
-            } else {
-                [shell MouseTerm_osc52SetAccess:str];
+                break;
+            case 52:
+                if ([str isEqualToString:@"?"]) {
+                    if ([NSView MouseTerm_getBase64PasteEnabled]) {
+                        [shell MouseTerm_osc52GetAccess];
+                    }
+                } else {
+                    [shell MouseTerm_osc52SetAccess: str];
+                }
+                break;
+            default:
+                break;
             }
             [ppc->buffer release];
             ppc->buffer = nil;
         }
         ppc->action = 0;
+        break;
+    default:
+        break;
     }
 }
 

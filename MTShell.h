@@ -69,6 +69,7 @@ struct parse_context {
 - (void) MouseTerm_osc52GetAccess;
 
 - (void) MouseTerm_tcapQuery: (NSString*) query;
+- (NSMutableDictionary*) MouseTerm_getPalette;
 - (struct parse_context*) MouseTerm_getParseContext;
 
 @end
