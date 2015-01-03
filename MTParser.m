@@ -90,17 +90,19 @@ static void osc4_set(MTShell *shell, int n, char const *p)
 {
     int r, g, b;
     NSMutableDictionary *palette = [shell MouseTerm_getPalette];
+    TTView *view = (TTView *)[[[shell controller] activePane] view];
 
     if (n > 255 || n < 0)
         return;
     if (parse_x_colorspec(p, &r, &g, &b) != 0)
         return;
-    NSLog(@"[MouseTerm] rgb:%04x/%04x/%04x", r, g, b);
     if (palette) {
+        NSColor *original_color = [view MouseTerm_colorForANSIColor: 1000 + n];
+        original_color = [original_color colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
         NSColor *color = [NSColor colorWithRed: (float)r / (1 << 16)
                                          green: (float)g / (1 << 16)
                                           blue: (float)b / (1 << 16)
-                                         alpha: 1.0f];
+                                         alpha: [original_color alphaComponent]];
         [palette setObject:color forKey: [NSNumber numberWithInt:n]];
     }
 }
@@ -159,7 +161,6 @@ static void osc10_set(MTShell *shell, char const *p)
 
     if (parse_x_colorspec(p, &r, &g, &b) != 0)
         return;
-    NSLog(@"[MouseTerm] rgb:%04x/%04x/%04x", r, g, b);
     if (palette) {
         if (![palette objectForKey: @"normaltext"])
             [palette setObject: original_color
@@ -167,7 +168,7 @@ static void osc10_set(MTShell *shell, char const *p)
         NSColor *color = [NSColor colorWithRed: (float)r / (1 << 16)
                                          green: (float)g / (1 << 16)
                                           blue: (float)b / (1 << 16)
-                                         alpha: 1.0f];
+                                         alpha: [original_color alphaComponent]];
         [[shell controller] setScriptNormalTextColor:color];
     }
 }
@@ -213,7 +214,6 @@ static void osc11_set(MTShell *shell, char const *p)
 
     if (parse_x_colorspec(p, &r, &g, &b) != 0)
         return;
-    NSLog(@"[MouseTerm] rgb:%04x/%04x/%04x", r, g, b);
     if (palette) {
         if (![palette objectForKey: @"background"])
             [palette setObject: original_color
@@ -221,7 +221,7 @@ static void osc11_set(MTShell *shell, char const *p)
         NSColor *color = [NSColor colorWithRed: (float)r / (1 << 16)
                                          green: (float)g / (1 << 16)
                                           blue: (float)b / (1 << 16)
-                                         alpha: 1.0f];
+                                         alpha: [original_color alphaComponent]];
         [[shell controller] setScriptBackgroundColor:color];
     }
 }
@@ -268,7 +268,6 @@ static void osc12_set(MTShell *shell, char const *p)
 
     if (parse_x_colorspec(p, &r, &g, &b) != 0)
         return;
-    NSLog(@"[MouseTerm] rgb:%04x/%04x/%04x", r, g, b);
     if (palette) {
         if (![palette objectForKey: @"cursor"])
             [palette setObject: original_color
@@ -276,7 +275,7 @@ static void osc12_set(MTShell *shell, char const *p)
         NSColor *color = [NSColor colorWithRed: (float)r / (1 << 16)
                                          green: (float)g / (1 << 16)
                                           blue: (float)b / (1 << 16)
-                                         alpha: 1.0f];
+                                         alpha: [original_color alphaComponent]];
         [[shell controller] setScriptCursorColor:color];
     }
 }
