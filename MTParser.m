@@ -89,19 +89,41 @@ static void osc4_get(MTShell *shell, int n)
 static void osc4_set(MTShell *shell, int n, char const *p)
 {
     int r, g, b;
+    NSMutableDictionary *palette = [shell MouseTerm_getPalette];
 
     if (n > 255 || n < 0)
         return;
     if (parse_x_colorspec(p, &r, &g, &b) != 0)
         return;
     NSLog([NSString stringWithFormat: @"[MouseTerm] rgb:%04x/%04x/%04x", r, g, b]);
-    NSMutableDictionary *palette = [shell MouseTerm_getPalette];
     if (palette) {
         NSColor *color = [NSColor colorWithRed: (float)r / (1 << 16)
                                          green: (float)g / (1 << 16)
                                           blue: (float)b / (1 << 16)
                                          alpha: 1.0f];
         [palette setObject:color forKey: [NSNumber numberWithInt:n]];
+    }
+}
+
+
+static void osc4_reset(MTShell *shell, int n)
+{
+    NSMutableDictionary *palette = [shell MouseTerm_getPalette];
+
+    if (n > 255 || n < 0)
+        return;
+    if (palette) {
+        [palette removeObjectForKey: [NSNumber numberWithInt:n]];
+    }
+}
+
+
+static void osc4_resetall(MTShell *shell)
+{
+    NSMutableDictionary *palette = [shell MouseTerm_getPalette];
+
+    if (palette) {
+        [palette removeAllObjects];
     }
 }
 
@@ -150,6 +172,7 @@ static void osc_put(struct parse_context *ppc, char const *p)
         case 0x3b:
             switch (ppc->current_param) {
             case 4:
+            case 104:
                 [ppc->buffer release];
                 ppc->buffer = [[NSMutableData alloc] init];
                 ppc->osc_state = OPS_PASSTHROUGH;
@@ -203,7 +226,7 @@ static void osc_end(struct parse_context *ppc, MTShell *shell)
             int n;
             switch (ppc->current_param) {
             case 4:
-                p = [str UTF8String];
+                p = (char *)[str UTF8String];
                 if (sscanf(p, "%d;", &n) == 1) {
                     while (*p)
                         if (*p++ == 0x3b)
@@ -212,6 +235,19 @@ static void osc_end(struct parse_context *ppc, MTShell *shell)
                         osc4_get(shell, n);
                     else
                         osc4_set(shell, n, p);
+                }
+                break;
+            case 104:
+                p = (char *)[str UTF8String];
+                if (*p == '\0' || (*p == ';' && *p == '\0')) {
+                    osc4_resetall(shell);
+                } else {
+                    while (sscanf(p, "%d;", &n) == 1) {
+                        osc4_reset(shell, n);
+                        while (*p)
+                            if (*p++ == 0x3b)
+                                break;
+                    }
                 }
                 break;
             case 52:
