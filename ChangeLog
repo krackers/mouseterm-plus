@@ -1,3 +1,34 @@
+2015-01-04  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m: Make sure to redraw the view after the palette state is changed
+
+  * MTParser.m, MTShell.h, MTShell.m: Parse X11 color names with a lookup table
+
+2015-01-03  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m, MTView.m: Minor fixes
+
+  * MTParser.m: Update x11 color spec parser to parse #RRRGGGBBB/#RRRRGGGGBBBB
+  format
+
+  * MTParser.m: Respect alpha component of original color(OSC4/10/11/12)
+
+  * MTParser.m: Fix a memory leak problem
+
+  * MTParser.m: Implement xterm's OSC 12/112
+
+  * MTParser.m, MTView.m, Terminal.h: Implement xterm's OSC 10/11/110/111
+
+  * MTParser.m: Implement xterm's OSC104 feature
+
+  * MTParser.m, MTShell.h, MTShell.m, MTView.h, MTView.m, MouseTerm.m,
+  Terminal.h: Implement xterm's OSC4 feature
+
+2014-12-30  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m, MTShell.h, MTShell.m: Drop unnecessary member of struct
+  parse_context
+
 2014-12-29  Hayaki Saito <user@zuse.jp>
 
   * MTParser.m: Fix a bug caused by lack of parameter state initialization
