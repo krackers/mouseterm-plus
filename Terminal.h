@@ -47,6 +47,14 @@ typedef struct
 - (MTShell*) shell;
 - (MTProfile*) profile;
 - (TTOutputDecoder*) encodingConverter;
+- (void)setScriptBoldTextColor:(id)arg1;
+- (id)scriptBoldTextColor;
+- (void)setScriptNormalTextColor:(id)arg1;
+- (id)scriptNormalTextColor;
+- (void)setScriptBackgroundColor:(id)arg1;
+- (id)scriptBackgroundColor;
+- (void)setScriptCursorColor:(id)arg1;
+- (id)scriptCursorColor;
 @property(readonly) TTPane *activePane; // @synthesize activePane;
 @end
 
@@ -59,6 +67,8 @@ typedef struct
 - (void) clearTextSelection;
 - (struct CGSize)cellSize;
 - (void)copy:(id)arg1;
+- (id)adjustedColorWithColor:(id)arg1 withBackgroundColor:(id)arg2 force:(BOOL)arg3;
+- (id)colorForANSIColor:(unsigned int)index;
 @end
 
 @interface TTProfileArrayController:

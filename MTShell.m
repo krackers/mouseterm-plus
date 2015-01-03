@@ -132,6 +132,8 @@ NSDictionary * generateTcapMap()
                  forKey: @"appCursorMode"];
         [dict setObject: [NSNumber numberWithBool: NO]
                  forKey: @"isMouseDown"];
+        [dict setObject: [NSMutableDictionary dictionary]
+                 forKey: @"colorPalette"];
         [dict setObject: [[[NSMutableData alloc] initWithLength:sizeof(struct parse_context)] autorelease]
                  forKey: @"parseContext"];
         [dict setObject: generateTcapMap()
@@ -345,6 +347,12 @@ NSDictionary * generateTcapMap()
         answer = @"\033P0+r\033\\";
     }
     [(TTShell*)self writeData: [answer dataUsingEncoding:NSASCIIStringEncoding]];
+}
+
+- (NSMutableDictionary*) MouseTerm_getPalette
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    return [[MouseTerm_ivars objectForKey: ptr] objectForKey:@"colorPalette"];
 }
 
 - (struct parse_context*) MouseTerm_getParseContext

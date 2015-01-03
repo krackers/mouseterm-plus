@@ -26,7 +26,6 @@ NSMutableDictionary* MouseTerm_ivars = nil;
         {                                                               \
             NSLog(@"[MouseTerm] ERROR: Failed to swizzle [%@ %@]: %@",  \
                   cls, NSStringFromSelector(sel1), err);                \
-            return;                                                     \
         }                                                               \
     } while (0)
 
@@ -140,7 +139,12 @@ NSMutableDictionary* MouseTerm_ivars = nil;
             @selector(MouseTerm_logicalWidthForCharacter:));
     SWIZZLE(logicalScreen, @selector(displayWidthForCharacter:),
             @selector(MouseTerm_displayWidthForCharacter:));
-
+    SWIZZLE(view, @selector(colorForANSIColor:),
+            @selector(MouseTerm_colorForANSIColor:));
+    SWIZZLE(view, @selector(colorForANSIColor:adjustedRelativeToColor:),
+            @selector(MouseTerm_colorForANSIColor:adjustedRelativeToColor:));
+    SWIZZLE(view, @selector(colorForExtendedANSIColor:adjustedRelativeToColor:withProfile:),
+            @selector(MouseTerm_colorForExtendedANSIColor:adjustedRelativeToColor:withProfile:));
     [self insertMenuItem];
 }
 
