@@ -79,6 +79,7 @@ static BOOL base64PasteEnabled = YES;
     MTShell *shell = [[(TTView*)self controller] shell];
     NSMutableDictionary *palette = [(MTShell*)shell MouseTerm_getPalette];
     int n;
+
     if (palette) {
         if (index < 17) {
             n = index - 1;
@@ -88,7 +89,6 @@ static BOOL base64PasteEnabled = YES;
             n = index - 1000;
         }
         colour = [palette objectForKey:[NSNumber numberWithInt:n]];
-NSLog([NSString stringWithFormat: @"[MouseTerm] normal: %d", (int)index]);
         if (colour) {
             return colour;
         }
@@ -102,6 +102,7 @@ NSLog([NSString stringWithFormat: @"[MouseTerm] normal: %d", (int)index]);
     MTShell *shell = [[(TTView*) self controller] shell];
     NSMutableDictionary *palette = [(MTShell*)shell MouseTerm_getPalette];
     int n;
+
     if (palette) {
         if (index < 17) {
             n = index - 1;
@@ -111,7 +112,6 @@ NSLog([NSString stringWithFormat: @"[MouseTerm] normal: %d", (int)index]);
             n = index - 1000;
         }
         colour = [palette objectForKey:[NSNumber numberWithInt:n]];
-NSLog([NSString stringWithFormat: @"[MouseTerm] adjust: %d", (int)index]);
     }
     if (colour)
     {
@@ -131,6 +131,7 @@ NSLog([NSString stringWithFormat: @"[MouseTerm] adjust: %d", (int)index]);
     MTShell *shell = [[(TTView*) self controller] shell];
     NSMutableDictionary *palette = [(MTShell*)shell MouseTerm_getPalette];
     int n;
+
     if (palette) {
         if (index < 17) {
             n = index - 1;
@@ -140,7 +141,6 @@ NSLog([NSString stringWithFormat: @"[MouseTerm] adjust: %d", (int)index]);
             n = index - 1000;
         }
         colour = [palette objectForKey: [NSNumber numberWithInt:n]];
-NSLog([NSString stringWithFormat: @"[MouseTerm] extended: %d", (int)index]);
         if (colour)
         {
             colour = [(TTView *)self adjustedColorWithColor: colour

@@ -95,7 +95,7 @@ static void osc4_set(MTShell *shell, int n, char const *p)
         return;
     if (parse_x_colorspec(p, &r, &g, &b) != 0)
         return;
-    NSLog([NSString stringWithFormat: @"[MouseTerm] rgb:%04x/%04x/%04x", r, g, b]);
+    NSLog(@"[MouseTerm] rgb:%04x/%04x/%04x", r, g, b);
     if (palette) {
         NSColor *color = [NSColor colorWithRed: (float)r / (1 << 16)
                                          green: (float)g / (1 << 16)
@@ -113,7 +113,7 @@ static void osc4_reset(MTShell *shell, int n)
     if (n > 255 || n < 0)
         return;
     if (palette) {
-        [palette removeObjectForKey: [NSNumber numberWithInt:n]];
+        [palette removeObjectForKey: [NSNumber numberWithInt: n]];
     }
 }
 
@@ -121,12 +121,120 @@ static void osc4_reset(MTShell *shell, int n)
 static void osc4_resetall(MTShell *shell)
 {
     NSMutableDictionary *palette = [shell MouseTerm_getPalette];
+    int n;
 
+    if (palette)
+        for (n = 0; n < 256; ++n)
+            [palette removeObjectForKey: [NSNumber numberWithInt: n]];
+}
+
+static void osc10_get(MTShell *shell)
+{
+    CGFloat components[8];
+    int r, g, b;
+    NSColor *color = [[[shell controller] profile] scriptNormalTextColor];
+
+    if (![color isKindOfClass:[NSColor class]])
+        return;
+    [color getComponents: components];
+    r = components[0] * 256 * 257;
+    g = components[1] * 256 * 257;
+    b = components[2] * 256 * 257;
+    if (r > 0xffff)
+        r = 0xffff;
+    if (g > 0xffff)
+        g = 0xffff;
+    if (b > 0xffff)
+        b = 0xffff;
+    NSString *spec = [NSString stringWithFormat: @"\033]10;rgb:%04x/%04x/%04x\033\\", r, g, b];
+    [(TTShell*) shell writeData: [NSData dataWithBytes: [spec UTF8String]
+                                                length: spec.length]];
+}
+
+static void osc10_set(MTShell *shell, char const *p)
+{
+    int r, g, b;
+    NSMutableDictionary *palette = [shell MouseTerm_getPalette];
+    NSColor *original_color = [[shell controller] scriptNormalTextColor];
+
+    if (parse_x_colorspec(p, &r, &g, &b) != 0)
+        return;
+    NSLog(@"[MouseTerm] rgb:%04x/%04x/%04x", r, g, b);
     if (palette) {
-        [palette removeAllObjects];
+        if (![palette objectForKey: @"normaltext"])
+            [palette setObject: original_color
+                        forKey: @"normaltext"];
+        NSColor *color = [NSColor colorWithRed: (float)r / (1 << 16)
+                                         green: (float)g / (1 << 16)
+                                          blue: (float)b / (1 << 16)
+                                         alpha: 1.0f];
+        [[shell controller] setScriptNormalTextColor:color];
     }
 }
 
+static void osc10_reset(MTShell *shell)
+{
+    NSMutableDictionary *palette = [shell MouseTerm_getPalette];
+    NSColor *color = [palette objectForKey: @"normaltext"];
+    if (color) {
+        [palette removeObjectForKey: @"normaltext"];
+        [[shell controller] setScriptNormalTextColor:color];
+    }
+}
+
+static void osc11_get(MTShell *shell)
+{
+    CGFloat components[8];
+    int r, g, b;
+    NSColor *color = [[[shell controller] profile] scriptBackgroundColor];
+
+    if (![color isKindOfClass: [NSColor class]])
+        return;
+    [color getComponents: components];
+    r = components[0] * 256 * 257;
+    g = components[1] * 256 * 257;
+    b = components[2] * 256 * 257;
+    if (r > 0xffff)
+        r = 0xffff;
+    if (g > 0xffff)
+        g = 0xffff;
+    if (b > 0xffff)
+        b = 0xffff;
+    NSString *spec = [NSString stringWithFormat: @"\033]10;rgb:%04x/%04x/%04x\033\\", r, g, b];
+    [(TTShell*) shell writeData: [NSData dataWithBytes: [spec UTF8String]
+                                                length: spec.length]];
+}
+
+static void osc11_set(MTShell *shell, char const *p)
+{
+    int r, g, b;
+    NSMutableDictionary *palette = [shell MouseTerm_getPalette];
+    NSColor *original_color = [[shell controller] scriptBackgroundColor];
+
+    if (parse_x_colorspec(p, &r, &g, &b) != 0)
+        return;
+    NSLog(@"[MouseTerm] rgb:%04x/%04x/%04x", r, g, b);
+    if (palette) {
+        if (![palette objectForKey: @"background"])
+            [palette setObject: original_color
+                        forKey: @"background"];
+        NSColor *color = [NSColor colorWithRed: (float)r / (1 << 16)
+                                         green: (float)g / (1 << 16)
+                                          blue: (float)b / (1 << 16)
+                                         alpha: 1.0f];
+        [[shell controller] setScriptBackgroundColor:color];
+    }
+}
+
+static void osc11_reset(MTShell *shell)
+{
+    NSMutableDictionary *palette = [shell MouseTerm_getPalette];
+    NSColor *color = [palette objectForKey: @"background"];
+    if (color) {
+        [palette removeObjectForKey: @"background"];
+        [[shell controller] setScriptBackgroundColor:color];
+    }
+}
 
 static void dcs_start(struct parse_context *ppc)
 {
@@ -172,7 +280,11 @@ static void osc_put(struct parse_context *ppc, char const *p)
         case 0x3b:
             switch (ppc->current_param) {
             case 4:
+            case 10:
+            case 11:
             case 104:
+            case 110:
+            case 111:
                 [ppc->buffer release];
                 ppc->buffer = [[NSMutableData alloc] init];
                 ppc->osc_state = OPS_PASSTHROUGH;
@@ -217,54 +329,79 @@ static void osc_put(struct parse_context *ppc, char const *p)
 
 static void osc_end(struct parse_context *ppc, MTShell *shell)
 {
+    NSString *str = nil;
+    char *p;
+    int n;
+
     switch (ppc->osc_state) {
+    case OPS_COMMAND:
     case OPS_PASSTHROUGH:
-        if (ppc->buffer) {
-            NSString *str= [[[NSString alloc] initWithData: ppc->buffer
-                                                  encoding: NSASCIIStringEncoding] autorelease];
-            char *p;
-            int n;
-            switch (ppc->current_param) {
-            case 4:
-                p = (char *)[str UTF8String];
-                if (sscanf(p, "%d;", &n) == 1) {
+        str= [[[NSString alloc] initWithData: ppc->buffer
+                                    encoding: NSASCIIStringEncoding] autorelease];
+        switch (ppc->current_param) {
+        case 4:
+            p = (char *)[str UTF8String];
+            while (sscanf(p, "%d;", &n) == 1)
+            {
+                while (*p)
+                    if (*p++ == 0x3b)
+                        break;
+                if (*p == '?')
+                    osc4_get(shell, n);
+                else
+                    osc4_set(shell, n, p);
+                while (*p)
+                    if (*p++ == 0x3b)
+                        break;
+            }
+            break;
+        case 10:
+            p = (char *)[str UTF8String];
+            if (*p == '?')
+                osc10_get(shell);
+            else
+                osc10_set(shell, p);
+            break;
+        case 11:
+            p = (char *)[str UTF8String];
+            if (*p == '?')
+                osc11_get(shell);
+            else
+                osc11_set(shell, p);
+            break;
+        case 104:
+            p = (char *)[str UTF8String];
+            if (*p == '\0' || (*p == ';' && *p == '\0')) {
+                osc4_resetall(shell);
+            } else {
+                while (sscanf(p, "%d;", &n) == 1) {
+                    osc4_reset(shell, n);
                     while (*p)
                         if (*p++ == 0x3b)
                             break;
-                    if (*p == '?')
-                        osc4_get(shell, n);
-                    else
-                        osc4_set(shell, n, p);
                 }
-                break;
-            case 104:
-                p = (char *)[str UTF8String];
-                if (*p == '\0' || (*p == ';' && *p == '\0')) {
-                    osc4_resetall(shell);
-                } else {
-                    while (sscanf(p, "%d;", &n) == 1) {
-                        osc4_reset(shell, n);
-                        while (*p)
-                            if (*p++ == 0x3b)
-                                break;
-                    }
-                }
-                break;
-            case 52:
-                if ([str isEqualToString:@"?"]) {
-                    if ([NSView MouseTerm_getBase64PasteEnabled]) {
-                        [shell MouseTerm_osc52GetAccess];
-                    }
-                } else {
-                    [shell MouseTerm_osc52SetAccess: str];
-                }
-                break;
-            default:
-                break;
             }
-            [ppc->buffer release];
-            ppc->buffer = nil;
+            break;
+        case 110:
+            osc10_reset(shell);
+            break;
+        case 111:
+            osc11_reset(shell);
+            break;
+        case 52:
+            if ([str isEqualToString:@"?"]) {
+                if ([NSView MouseTerm_getBase64PasteEnabled]) {
+                    [shell MouseTerm_osc52GetAccess];
+                }
+            } else {
+                [shell MouseTerm_osc52SetAccess: str];
+            }
+            break;
+        default:
+            break;
         }
+        [ppc->buffer release];
+        ppc->buffer = nil;
         ppc->action = 0;
         break;
     default:

@@ -47,6 +47,14 @@ typedef struct
 - (MTShell*) shell;
 - (MTProfile*) profile;
 - (TTOutputDecoder*) encodingConverter;
+- (void)setScriptBoldTextColor:(id)arg1;
+- (id)scriptBoldTextColor;
+- (void)setScriptNormalTextColor:(id)arg1;
+- (id)scriptNormalTextColor;
+- (void)setScriptBackgroundColor:(id)arg1;
+- (id)scriptBackgroundColor;
+- (void)setScriptCursorColor:(id)arg1;
+- (id)scriptCursorColor;
 @property(readonly) TTPane *activePane; // @synthesize activePane;
 @end
 
