@@ -22,7 +22,8 @@ Installer package with source code is available:
 Status
 ------
 
-MouseTerm-Plus is currently beta quality software. it still needs testing.
+MouseTerm-Plus added some fixes to original MouseTerm and implemented a lot of tweaks
+that includes various features unrelated to mouse emulation.
 
 Original MouseTerm(version 1.0b1) does:
 
@@ -36,46 +37,64 @@ Original MouseTerm(version 1.0b1) does:
 Additionally, this project does:
 
 * Fix OS X Mavericks installation problem.
-* Support OS X Yosemite installation.
-* URXVT 1015 styled mouse tracking(already backported into original source).
-* SGR 1006 styled mouse tracking(already backported into original source).
 * Fix some bugs around mouse event coordinate handling.
-* Support xterm's "Any Event Mouse(private mode 1003)" tracking mode.
-  (The formar supports "Normal Event/Button Event" only).
+* Handle RIS (hard reset) sequence (*reset(1)* command works well).
+* Support OS X Yosemite installation.
+* Support *URXVT 1015 styled mouse tracking*(already backported into original source).
+  [MinEd][5] uses it.
+* Support *SGR 1006 styled mouse tracking*(already backported into original source).
+  Recent various terminal applications use it.
+* Support xterm's *"Any Event Mouse(private mode 1003)"* tracking mode.
+  [MinEd][5] uses it.
+* Support xterm's *"Focus Reporting Mode (private mode 1004)"*.
+  Used by [MinEd][5].
+* Support xterm's *"Title stacking"* feature.
+  Used by [tmux][6], [MinEd][5].
+* Support xterm's *"tcap-query"* feature.
+  [Vim][7] uses it.
+  You no longer need not set *$TERM* to *'xterm-256color'* to use xterm's 256 color extension in vim.
 * Support xterm's palette operation sequences: OSC 4/104.
-  This features complement missing terminfo capabilities 'ccc' and 'initc'.
+  This features complement missing terminfo capabilities *'ccc'* and *'initc'*.
   It is rude of Terminal.app to declare 'xterm-256color' although it does not have these capabilities.
-* Support xterm's foreground/background text color operation sequences: OSC 10/11/110/111.
-* Support xterm's cursor color operation sequences: OSC 12/122.
-  tmux uses it at startup time.
-* OSC 52 clipboard accsess(get access/set access).
-  tmux uses it by default for clipboard access.
+  [MinEd][5] uses this feature.
+* Support xterm's *foreground text color operation sequences*: OSC 10/110.
+  Used by [MinEd][5].
+* Support xterm's *background text color operation sequences*: OSC 11/111.
+  Used by [Emacs][8], [MinEd][5].
+* Support xterm's *cursor color operation sequences*: OSC 12/122.
+  [tmux][6] uses it at startup time.
+* Support *"PASTE64"*: OSC 52 clipboard accsess(get access/set access).
+  [tmux][6] uses it by default for accessing to clipboard.
   Some terminal emulators such as iTerm2 also have this feature(set access only).
   But they have some problems caused by buffer size restriction.
   The OSC 52 implementation of MouseTerm-Plus does not have buffer size restriction, just like XTerm.
-* Eliminate [ragel](http://www.colm.net/open-source/ragel/) dependency.
+* Report original DA2 response ("\033\[>19796;10000;2c").
+* Eliminate [ragel][9] dependency.
 * Parse control sequences with DEC VT/ECMA-48 compliant canonical parser.
 * Handle "multiple-parameterized" control sequences(e.g. "\e[?1000;1006h") correctly.
 * Ignore unhandled DCS/APC/PM/SOS control string.
 * Localization support of menu resource (French/Japanese).
-* Report original DA2 response ("\033[>19796;10000;2c").
-* Support xterm's "tcap-query" feature.
-* Support xterm's "Title stacking".
-* Support xterm's "Focus Reporting Mode (private mode 1004)".
-  tmux uses it.
-* Handle RIS (hard reset) sequence ("reset" command works well).
-* Add extended mode 8810: "Emoji width fix".
+* Add extended mode 8810: *"Emoji width fix"*.
 
 [4]: http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter4.html#config-appcursor
+[5]: http://towo.net/mined/
+[6]: http://tmux.sourceforge.net/
+[7]: http://www.vim.org/
+[8]: http://www.gnu.org/software/emacs/
+[9]: http://www.colm.net/open-source/ragel/
+
 
 Thanks
 ======
 
 Thanks to the original developper [Brodie Rao][5], and [Tom Feist][6] and [Scott Kroll][7] for their contributions.
+[Benoit Chesneau][13] reported some bugs to MouseTerm-Plus.
 
-[5]: http://brodierao.com/
-[6]: http://github.com/shabble
-[7]: http://github.com/skroll
+[10]: http://brodierao.com/
+[11]: http://github.com/shabble
+[12]: http://github.com/skroll
+[13]: https://github.com/benoitc
+
 
 -------
 
@@ -124,8 +143,8 @@ file:
                                    (interactive)
                                    (scroll-up 1))))
 
-[8]: http://www.gnu.org/software/emacs/
-[9]: http://www.vim.org/
+[14]: http://www.gnu.org/software/emacs/
+[15]: http://www.vim.org/
 
 
 Development
