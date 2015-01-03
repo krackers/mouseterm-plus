@@ -5,7 +5,7 @@
 #import "MTView.h"
 
 static int
-parse_x_colorspec(char const *spec, int *red, int *green, int *blue)
+parse_x_colorspec(MTShell *shell, char const *spec, int *red, int *green, int *blue)
 {
     unsigned long long v;
     char const *p;
@@ -75,7 +75,13 @@ parse_x_colorspec(char const *spec, int *red, int *green, int *blue)
             return (-1);
         }
     } else {
-        return (-1);
+        NSMutableDictionary *colorNameMap = [shell MouseTerm_getColorNameMap];
+        NSColor *color = [colorNameMap objectForKey: [[NSString stringWithUTF8String: spec] lowercaseString]];
+        if (!color)
+            return (-1);
+        *red = (int)([color redComponent] * 0xffff);
+        *green = (int)([color greenComponent] * 0xffff);
+        *blue = (int)([color blueComponent] * 0xffff);
     }
 
     return 0;
@@ -110,7 +116,7 @@ static void osc4_set(MTShell *shell, int n, char const *p)
 
     if (n > 255 || n < 0)
         return;
-    if (parse_x_colorspec(p, &r, &g, &b) != 0)
+    if (parse_x_colorspec(shell, p, &r, &g, &b) != 0)
         return;
     if (palette) {
         NSColor *original_color = [view MouseTerm_colorForANSIColor: 1000 + n];
@@ -170,7 +176,7 @@ static void osc10_set(MTShell *shell, char const *p)
     NSMutableDictionary *palette = [shell MouseTerm_getPalette];
     NSColor *original_color = [[shell controller] scriptNormalTextColor];
 
-    if (parse_x_colorspec(p, &r, &g, &b) != 0)
+    if (parse_x_colorspec(shell, p, &r, &g, &b) != 0)
         return;
     if (palette) {
         NSColor *color = [NSColor colorWithRed: (float)r / (1 << 16)
@@ -210,7 +216,7 @@ static void osc11_set(MTShell *shell, char const *p)
     NSMutableDictionary *palette = [shell MouseTerm_getPalette];
     NSColor *original_color = [[shell controller] scriptBackgroundColor];
 
-    if (parse_x_colorspec(p, &r, &g, &b) != 0)
+    if (parse_x_colorspec(shell, p, &r, &g, &b) != 0)
         return;
     if (palette) {
         if (![palette objectForKey: @"background"])
@@ -258,7 +264,7 @@ static void osc12_set(MTShell *shell, char const *p)
     NSMutableDictionary *palette = [shell MouseTerm_getPalette];
     NSColor *original_color = [[shell controller] scriptCursorColor];
 
-    if (parse_x_colorspec(p, &r, &g, &b) != 0)
+    if (parse_x_colorspec(shell, p, &r, &g, &b) != 0)
         return;
     if (palette) {
         if (![palette objectForKey: @"cursor"])

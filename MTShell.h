@@ -70,6 +70,7 @@ struct parse_context {
 
 - (void) MouseTerm_tcapQuery: (NSString*) query;
 - (NSMutableDictionary*) MouseTerm_getPalette;
+- (NSMutableDictionary*) MouseTerm_getColorNameMap;
 - (struct parse_context*) MouseTerm_getParseContext;
 
 @end
