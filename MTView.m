@@ -73,6 +73,94 @@ static BOOL mouseEnabled = YES;
 static BOOL base64CopyEnabled = YES;
 static BOOL base64PasteEnabled = YES;
 
+- (id) MouseTerm_colorForANSIColor:(unsigned int)index;
+{
+    id colour = nil;
+    MTShell *shell = [[(TTView*)self controller] shell];
+    NSMutableDictionary *palette = [(MTShell*)shell MouseTerm_getPalette];
+    int n;
+
+    if (palette) {
+        if (index < 17) {
+            n = index - 1;
+        } else if (index < 1000) {
+            n = index;
+        } else {
+            n = index - 1000;
+        }
+        colour = [palette objectForKey:[NSNumber numberWithInt: n]];
+        if (colour) {
+            return colour;
+        }
+    }
+    return [self MouseTerm_colorForANSIColor: index];
+}
+
+- (id) MouseTerm_colorForANSIColor:(unsigned int)index adjustedRelativeToColor:(id)bgColor;
+{
+    id colour = nil;
+    MTShell *shell = [[(TTView*) self controller] shell];
+    NSMutableDictionary *palette = [(MTShell*)shell MouseTerm_getPalette];
+    int n;
+
+    if (palette) {
+        if (index == 0) {
+            if (bgColor) {
+                n = -1;
+            } else {
+                n = -3;
+            }
+        } else if (index < 17) {
+            n = index - 1;
+        } else if (index < 1000) {
+            n = index;
+        } else {
+            n = index - 1000;
+        }
+        colour = [palette objectForKey:[NSNumber numberWithInt: n]];
+    }
+    if (colour)
+    {
+        colour = [(TTView *)self adjustedColorWithColor: colour
+                                    withBackgroundColor: bgColor
+                                                  force: YES];
+        return colour;
+    }
+    colour = [self MouseTerm_colorForANSIColor: index
+                       adjustedRelativeToColor: bgColor];
+    return colour;
+}
+
+- (id) MouseTerm_colorForExtendedANSIColor:(unsigned long long)index adjustedRelativeToColor:(id)bgColor withProfile:(id)profile
+{
+    id colour = nil;
+    MTShell *shell = [[(TTView*) self controller] shell];
+    NSMutableDictionary *palette = [(MTShell*)shell MouseTerm_getPalette];
+    int n;
+
+    if (palette) {
+        if (index < 17) {
+            n = index - 1;
+        } else if (index < 1000) {
+            n = index;
+        } else {
+            n = index - 1000;
+        }
+        colour = [palette objectForKey: [NSNumber numberWithInt: n]];
+        if (colour)
+        {
+            colour = [(TTView *)self adjustedColorWithColor: colour
+                                        withBackgroundColor: bgColor
+                                                      force: YES];
+            return colour;
+        }
+    }
+    colour = [self MouseTerm_colorForExtendedANSIColor: index
+                               adjustedRelativeToColor: bgColor
+                                           withProfile: profile];
+    return colour;
+}
+
 - (NSData*) MouseTerm_codeForEvent: (NSEvent*) event
                             button: (MouseButton) button
                             motion: (BOOL) motion
