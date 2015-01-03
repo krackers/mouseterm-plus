@@ -42,7 +42,17 @@ Additionally, this project does:
 * Fix some bugs around mouse event coordinate handling.
 * Support xterm's "Any Event Mouse(private mode 1003)" tracking mode.
   (The formar supports "Normal Event/Button Event" only).
-* OSC 52 clipboard accsess(get access/set access, for tmux).
+* Support xterm's palette operation sequences: OSC 4/104.
+  This features complement missing terminfo capabilities 'ccc' and 'initc'.
+  It is rude of Terminal.app to declare 'xterm-256color' although it does not have these capabilities.
+* Support xterm's foreground/background text color operation sequences: OSC 10/11/110/111.
+* Support xterm's cursor color operation sequences: OSC 12/122.
+  tmux uses it at startup time.
+* OSC 52 clipboard accsess(get access/set access).
+  tmux uses it by default for clipboard access.
+  Some terminal emulators such as iTerm2 also have this feature(set access only).
+  But they have some problems caused by buffer size restriction.
+  The OSC 52 implementation of MouseTerm-Plus does not have buffer size restriction, just like XTerm.
 * Eliminate [ragel](http://www.colm.net/open-source/ragel/) dependency.
 * Parse control sequences with DEC VT/ECMA-48 compliant canonical parser.
 * Handle "multiple-parameterized" control sequences(e.g. "\e[?1000;1006h") correctly.
@@ -52,6 +62,7 @@ Additionally, this project does:
 * Support xterm's "tcap-query" feature.
 * Support xterm's "Title stacking".
 * Support xterm's "Focus Reporting Mode (private mode 1004)".
+  tmux uses it.
 * Handle RIS (hard reset) sequence ("reset" command works well).
 * Add extended mode 8810: "Emoji width fix".
 
