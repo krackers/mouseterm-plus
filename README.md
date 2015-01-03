@@ -61,7 +61,7 @@ Additionally, this project does:
   Used by [MinEd][5].
 * Support xterm's *background text color operation sequences*: OSC 11/111.
   Used by [Emacs][8], [MinEd][5].
-* Support xterm's *cursor color operation sequences*: OSC 12/122.
+* Support xterm's *cursor color operation sequences*: OSC 12/112.
   [tmux][6] uses it at startup time.
 * Support *"PASTE64"*: OSC 52 clipboard accsess(get access/set access).
   [tmux][6] uses it by default for accessing to clipboard.
