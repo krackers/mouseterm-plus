@@ -1,19 +1,28 @@
 // Possible mouse modes
 typedef enum
 {
-    NO_MODE = 0,
-    NORMAL_MODE,
-    HILITE_MODE,
-    BUTTON_MODE,
-    ALL_MODE
+    NO_MODE                  = 0,
+    X10_MODE                 = 1,
+    NORMAL_MODE              = 2,
+    HILITE_MODE              = 3,
+    BUTTON_MODE              = 4,
+    ALL_MODE                 = 5,
+    DEC_LOCATOR_MODE         = 6,
+    DEC_LOCATOR_ONESHOT_MODE = 7,
 } MouseMode;
 
 typedef enum
 {
     NORMAL_PROTOCOL = 0,
-    URXVT_PROTOCOL,
-    SGR_PROTOCOL
+    URXVT_PROTOCOL  = 1,
+    SGR_PROTOCOL    = 2,
 } MouseProtocol;
+
+typedef enum
+{
+    CELL_COORDINATE  = 0,
+    PIXEL_COORDINATE = 1,
+} CoordinateType;
 
 // Control codes
 
@@ -35,12 +44,12 @@ typedef enum
 // X11 mouse button values
 typedef enum
 {
-    MOUSE_BUTTON1 = 0,
-    MOUSE_BUTTON3 = 1,
-    MOUSE_BUTTON2 = 2,
-    MOUSE_RELEASE = 3,
-    MOUSE_WHEEL_UP = 64,
-    MOUSE_WHEEL_DOWN = 65
+    MOUSE_BUTTON1    =  0,
+    MOUSE_BUTTON3    =  1,
+    MOUSE_BUTTON2    =  2,
+    MOUSE_RELEASE    =  3,
+    MOUSE_WHEEL_UP   = 64,
+    MOUSE_WHEEL_DOWN = 65,
 } MouseButton;
 
 // X11 mouse reporting responses

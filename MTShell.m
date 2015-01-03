@@ -912,7 +912,7 @@ NSDictionary* generateX11ColorNameMap()
 {
     NSValue *ptr = [self MouseTerm_initVars];
     [[MouseTerm_ivars objectForKey: ptr]
-        setObject: [NSNumber numberWithBool:focusMode] forKey: @"focusMode"];
+        setObject: [NSNumber numberWithBool: focusMode] forKey: @"focusMode"];
 }
 
 - (BOOL) MouseTerm_getFocusMode
@@ -926,7 +926,7 @@ NSDictionary* generateX11ColorNameMap()
 {
     NSValue *ptr = [self MouseTerm_initVars];
     [[MouseTerm_ivars objectForKey: ptr]
-        setObject: [NSNumber numberWithInt:mouseMode] forKey: @"mouseMode"];
+        setObject: [NSNumber numberWithInt: mouseMode] forKey: @"mouseMode"];
 }
 
 - (int) MouseTerm_getMouseMode
@@ -940,7 +940,7 @@ NSDictionary* generateX11ColorNameMap()
 {
     NSValue *ptr = [self MouseTerm_initVars];
     [[MouseTerm_ivars objectForKey: ptr]
-        setObject: [NSNumber numberWithInt:mouseProtocol]
+        setObject: [NSNumber numberWithInt: mouseProtocol]
            forKey: @"mouseProtocol"];
 }
 
@@ -949,6 +949,20 @@ NSDictionary* generateX11ColorNameMap()
     NSValue *ptr = [self MouseTerm_initVars];
     return [(NSNumber*) [[MouseTerm_ivars objectForKey: ptr]
                             objectForKey: @"mouseProtocol"] intValue];
+}
+
+- (void) MouseTerm_setCoordinateType: (int) coordinateType
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    [[MouseTerm_ivars objectForKey: ptr]
+        setObject: [NSNumber numberWithInt: coordinateType] forKey: @"coordinateType"];
+}
+
+- (int) MouseTerm_getCoordinateType
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    return [(NSNumber*) [[MouseTerm_ivars objectForKey: ptr]
+                            objectForKey: @"coordinateType"] intValue];
 }
 
 - (void) MouseTerm_setAppCursorMode: (BOOL) appCursorMode

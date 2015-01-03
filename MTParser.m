@@ -689,6 +689,34 @@ static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
     case ('?' << 8) | 'l':
         disable_extended_mode(ppc, shell);
         break;
+    case ('\'' << 8) | 'z':
+        if (ppc->params_index < 1)
+            ppc->params[0] = 0;
+        if (ppc->params_index < 2)
+            ppc->params[1] = 0;
+        switch (ppc->params[0]) {
+        case 1:
+            [shell MouseTerm_setMouseMode: DEC_LOCATOR_MODE];
+            break;
+        case 2:
+            [shell MouseTerm_setMouseMode: DEC_LOCATOR_ONESHOT_MODE];
+            break;
+        case 0:
+        default:
+            [shell MouseTerm_setMouseMode: NO_MODE];
+            break;
+        }
+        switch (ppc->params[1]) {
+        case 1:
+            [shell MouseTerm_setMouseMode: PIXEL_COORDINATE];
+            break;
+        case 2:
+        case 0:
+        default:
+            [shell MouseTerm_setCoordinateType: CELL_COORDINATE];
+            break;
+        }
+        break;
     case 't':
         if (ppc->params_index > 0) {
             switch (ppc->params[0]) {
