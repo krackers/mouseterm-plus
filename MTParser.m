@@ -7,36 +7,50 @@
 static int
 parse_x_colorspec(char const *spec, int *red, int *green, int *blue)
 {
-    int v;
+    unsigned long long v;
+    char const *p;
+    int components[3];
+    int index = 0;
+    int component;
+    char *endptr;
 
-    /* This is the new and preferred way */
     if (strncmp(spec, "rgb:", 4) == 0) {
-        switch (strlen(spec + 4)) {
-        case 5:
-            if (sscanf(spec + 4, "%01x/%01x/%01x", red, green, blue) != 3)
-                return (-1);
-            *red <<= 12;
-            *green <<= 12;
-            *blue <<= 12;
-            break;
-        case 8:
-            if (sscanf(spec + 4, "%02x/%02x/%02x", red, green, blue) != 3)
-                return (-1);
-            *red <<= 8;
-            *green <<= 8;
-            *blue <<= 8;
-            break;
-        case 14:
-            if (sscanf(spec + 4, "%04x/%04x/%04x", red, green, blue) != 3)
-                return (-1);
-            break;
-        default:
-            return (-1);
+        p = spec + 4;
+        while (p) {
+            component = strtoul(p, &endptr, 16);
+            if (component == ULONG_MAX)
+                break;
+            if (endptr - p == 0)
+                break;
+            if (endptr - p > 4)
+                break;
+            components[index++] = component << ((4 - (endptr - p)) * 4);
+            p = endptr;
+            if (index == 3)
+                break;
+            if (*p == '\0')
+                break;
+            if (*p != '/')
+                break;
+            ++p;
         }
-    } else if (spec[0] == '#') {
-        if (sscanf(spec + 1, "%x", &v) != 1)
+        if (*p == '\0' || *p == '/')
             return (-1);
-        switch (strlen(spec + 1)) {
+        if (index != 3)
+            return (-1);
+        *red = components[0];
+        *green = components[1];
+        *blue = components[2];
+    } else if (*spec == '#') {
+        p = spec + 1;
+        v = strtoull(p, &endptr, 16);
+        if (v == ULLONG_MAX)
+            return (-1);
+        if (*endptr != '\0')
+            return (-1);
+        if (endptr - p > 12)
+            return (-1);
+        switch (endptr - p) {
         case 3:
             *red   = (v & 0xf00) << 4;
             *green = (v & 0x0f0) << 8;
@@ -46,6 +60,16 @@ parse_x_colorspec(char const *spec, int *red, int *green, int *blue)
             *red   = (v & 0xff0000) >> 8;
             *green = (v & 0x00ff00);
             *blue  = (v & 0x0000ff) << 8;
+            break;
+        case 9:
+            *red   = (v & 0xfff000000) >> 20;
+            *green = (v & 0x000fff000) >> 8;
+            *blue  = (v & 0x000000fff) << 4;
+            break;
+        case 12:
+            *red   = (v & 0xffff00000000) >> 32;
+            *green = (v & 0x0000ffff0000) >> 16;
+            *blue  = (v & 0x00000000ffff);
             break;
         default:
             return (-1);
