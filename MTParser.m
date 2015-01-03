@@ -236,6 +236,61 @@ static void osc11_reset(MTShell *shell)
     }
 }
 
+
+static void osc12_get(MTShell *shell)
+{
+    CGFloat components[8];
+    int r, g, b;
+    NSColor *color = [[[shell controller] profile] scriptCursorColor];
+
+    if (![color isKindOfClass: [NSColor class]])
+        return;
+    [color getComponents: components];
+    r = components[0] * 256 * 257;
+    g = components[1] * 256 * 257;
+    b = components[2] * 256 * 257;
+    if (r > 0xffff)
+        r = 0xffff;
+    if (g > 0xffff)
+        g = 0xffff;
+    if (b > 0xffff)
+        b = 0xffff;
+    NSString *spec = [NSString stringWithFormat: @"\033]10;rgb:%04x/%04x/%04x\033\\", r, g, b];
+    [(TTShell*) shell writeData: [NSData dataWithBytes: [spec UTF8String]
+                                                length: spec.length]];
+}
+
+static void osc12_set(MTShell *shell, char const *p)
+{
+    int r, g, b;
+    NSMutableDictionary *palette = [shell MouseTerm_getPalette];
+    NSColor *original_color = [[shell controller] scriptCursorColor];
+
+    if (parse_x_colorspec(p, &r, &g, &b) != 0)
+        return;
+    NSLog(@"[MouseTerm] rgb:%04x/%04x/%04x", r, g, b);
+    if (palette) {
+        if (![palette objectForKey: @"cursor"])
+            [palette setObject: original_color
+                        forKey: @"cursor"];
+        NSColor *color = [NSColor colorWithRed: (float)r / (1 << 16)
+                                         green: (float)g / (1 << 16)
+                                          blue: (float)b / (1 << 16)
+                                         alpha: 1.0f];
+        [[shell controller] setScriptCursorColor:color];
+    }
+}
+
+static void osc12_reset(MTShell *shell)
+{
+    NSMutableDictionary *palette = [shell MouseTerm_getPalette];
+    NSColor *color = [palette objectForKey: @"cursor"];
+    if (color) {
+        [palette removeObjectForKey: @"cursor"];
+        [[shell controller] setScriptCursorColor:color];
+    }
+}
+
 static void dcs_start(struct parse_context *ppc)
 {
     ppc->current_param = 0;
@@ -282,9 +337,11 @@ static void osc_put(struct parse_context *ppc, char const *p)
             case 4:
             case 10:
             case 11:
+            case 12:
             case 104:
             case 110:
             case 111:
+            case 112:
                 [ppc->buffer release];
                 ppc->buffer = [[NSMutableData alloc] init];
                 ppc->osc_state = OPS_PASSTHROUGH;
@@ -369,6 +426,13 @@ static void osc_end(struct parse_context *ppc, MTShell *shell)
             else
                 osc11_set(shell, p);
             break;
+        case 12:
+            p = (char *)[str UTF8String];
+            if (*p == '?')
+                osc12_get(shell);
+            else
+                osc12_set(shell, p);
+            break;
         case 104:
             p = (char *)[str UTF8String];
             if (*p == '\0' || (*p == ';' && *p == '\0')) {
@@ -387,6 +451,9 @@ static void osc_end(struct parse_context *ppc, MTShell *shell)
             break;
         case 111:
             osc11_reset(shell);
+            break;
+        case 112:
+            osc12_reset(shell);
             break;
         case 52:
             if ([str isEqualToString:@"?"]) {
