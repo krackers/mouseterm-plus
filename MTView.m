@@ -88,7 +88,7 @@ static BOOL base64PasteEnabled = YES;
         } else {
             n = index - 1000;
         }
-        colour = [palette objectForKey:[NSNumber numberWithInt:n]];
+        colour = [palette objectForKey:[NSNumber numberWithInt: n]];
         if (colour) {
             return colour;
         }
@@ -104,14 +104,20 @@ static BOOL base64PasteEnabled = YES;
     int n;
 
     if (palette) {
-        if (index < 17) {
+        if (index == 0) {
+            if (bgColor) {
+                n = -1;
+            } else {
+                n = -3;
+            }
+        } else if (index < 17) {
             n = index - 1;
         } else if (index < 1000) {
             n = index;
         } else {
             n = index - 1000;
         }
-        colour = [palette objectForKey:[NSNumber numberWithInt:n]];
+        colour = [palette objectForKey:[NSNumber numberWithInt: n]];
     }
     if (colour)
     {
@@ -140,7 +146,7 @@ static BOOL base64PasteEnabled = YES;
         } else {
             n = index - 1000;
         }
-        colour = [palette objectForKey: [NSNumber numberWithInt:n]];
+        colour = [palette objectForKey: [NSNumber numberWithInt: n]];
         if (colour)
         {
             colour = [(TTView *)self adjustedColorWithColor: colour

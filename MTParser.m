@@ -81,7 +81,6 @@ parse_x_colorspec(char const *spec, int *red, int *green, int *blue)
     return 0;
 }
 
-
 static void osc4_get(MTShell *shell, int n)
 {
     CGFloat components[8];
@@ -95,20 +94,13 @@ static void osc4_get(MTShell *shell, int n)
         return;
     color = [color colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
     [color getComponents: components];
-    r = components[0] * 256 * 257;
-    g = components[1] * 256 * 257;
-    b = components[2] * 256 * 257;
-    if (r > 0xffff)
-        r = 0xffff;
-    if (g > 0xffff)
-        g = 0xffff;
-    if (b > 0xffff)
-        b = 0xffff;
+    r = components[0] * 0xffff;
+    g = components[1] * 0xffff;
+    b = components[2] * 0xffff;
     NSString *spec = [NSString stringWithFormat: @"\033]4;%d;rgb:%04x/%04x/%04x\033\\", n, r, g, b];
     [(TTShell*) shell writeData: [NSData dataWithBytes: [spec UTF8String]
                                                 length: spec.length]];
 }
-
 
 static void osc4_set(MTShell *shell, int n, char const *p)
 {
@@ -127,10 +119,9 @@ static void osc4_set(MTShell *shell, int n, char const *p)
                                          green: (float)g / (1 << 16)
                                           blue: (float)b / (1 << 16)
                                          alpha: [original_color alphaComponent]];
-        [palette setObject:color forKey: [NSNumber numberWithInt:n]];
+        [palette setObject:color forKey: [NSNumber numberWithInt: n]];
     }
 }
-
 
 static void osc4_reset(MTShell *shell, int n)
 {
@@ -142,7 +133,6 @@ static void osc4_reset(MTShell *shell, int n)
         [palette removeObjectForKey: [NSNumber numberWithInt: n]];
     }
 }
-
 
 static void osc4_resetall(MTShell *shell)
 {
@@ -158,20 +148,17 @@ static void osc10_get(MTShell *shell)
 {
     CGFloat components[8];
     int r, g, b;
-    NSColor *color = [[[shell controller] profile] scriptNormalTextColor];
+    NSMutableDictionary *palette = [shell MouseTerm_getPalette];
+    NSColor *color = [palette objectForKey: [NSNumber numberWithInt: -1]];
+    if (!color)
+        color = [[shell controller] scriptNormalTextColor];
 
     if (![color isKindOfClass:[NSColor class]])
         return;
     [color getComponents: components];
-    r = components[0] * 256 * 257;
-    g = components[1] * 256 * 257;
-    b = components[2] * 256 * 257;
-    if (r > 0xffff)
-        r = 0xffff;
-    if (g > 0xffff)
-        g = 0xffff;
-    if (b > 0xffff)
-        b = 0xffff;
+    r = components[0] * 0xffff;
+    g = components[1] * 0xffff;
+    b = components[2] * 0xffff;
     NSString *spec = [NSString stringWithFormat: @"\033]10;rgb:%04x/%04x/%04x\033\\", r, g, b];
     [(TTShell*) shell writeData: [NSData dataWithBytes: [spec UTF8String]
                                                 length: spec.length]];
@@ -186,45 +173,32 @@ static void osc10_set(MTShell *shell, char const *p)
     if (parse_x_colorspec(p, &r, &g, &b) != 0)
         return;
     if (palette) {
-        if (![palette objectForKey: @"normaltext"])
-            [palette setObject: original_color
-                        forKey: @"normaltext"];
         NSColor *color = [NSColor colorWithRed: (float)r / (1 << 16)
                                          green: (float)g / (1 << 16)
                                           blue: (float)b / (1 << 16)
                                          alpha: [original_color alphaComponent]];
-        [[shell controller] setScriptNormalTextColor:color];
+        [palette setObject: color forKey: [NSNumber numberWithInt: -1]];
     }
 }
 
 static void osc10_reset(MTShell *shell)
 {
     NSMutableDictionary *palette = [shell MouseTerm_getPalette];
-    NSColor *color = [palette objectForKey: @"normaltext"];
-    if (color) {
-        [palette removeObjectForKey: @"normaltext"];
-        [[shell controller] setScriptNormalTextColor:color];
-    }
+    [palette removeObjectForKey: [NSNumber numberWithInt: -1]];
 }
 
 static void osc11_get(MTShell *shell)
 {
     CGFloat components[8];
     int r, g, b;
-    NSColor *color = [[[shell controller] profile] scriptBackgroundColor];
+    NSColor *color = [[shell controller] scriptBackgroundColor];
 
     if (![color isKindOfClass: [NSColor class]])
         return;
     [color getComponents: components];
-    r = components[0] * 256 * 257;
-    g = components[1] * 256 * 257;
-    b = components[2] * 256 * 257;
-    if (r > 0xffff)
-        r = 0xffff;
-    if (g > 0xffff)
-        g = 0xffff;
-    if (b > 0xffff)
-        b = 0xffff;
+    r = components[0] * 0xffff;
+    g = components[1] * 0xffff;
+    b = components[2] * 0xffff;
     NSString *spec = [NSString stringWithFormat: @"\033]10;rgb:%04x/%04x/%04x\033\\", r, g, b];
     [(TTShell*) shell writeData: [NSData dataWithBytes: [spec UTF8String]
                                                 length: spec.length]];
@@ -265,20 +239,14 @@ static void osc12_get(MTShell *shell)
 {
     CGFloat components[8];
     int r, g, b;
-    NSColor *color = [[[shell controller] profile] scriptCursorColor];
+    NSColor *color = [[shell controller] scriptCursorColor];
 
     if (![color isKindOfClass: [NSColor class]])
         return;
     [color getComponents: components];
-    r = components[0] * 256 * 257;
-    g = components[1] * 256 * 257;
-    b = components[2] * 256 * 257;
-    if (r > 0xffff)
-        r = 0xffff;
-    if (g > 0xffff)
-        g = 0xffff;
-    if (b > 0xffff)
-        b = 0xffff;
+    r = components[0] * 0xffff;
+    g = components[1] * 0xffff;
+    b = components[2] * 0xffff;
     NSString *spec = [NSString stringWithFormat: @"\033]10;rgb:%04x/%04x/%04x\033\\", r, g, b];
     [(TTShell*) shell writeData: [NSData dataWithBytes: [spec UTF8String]
                                                 length: spec.length]];
