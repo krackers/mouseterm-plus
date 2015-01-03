@@ -21,8 +21,8 @@ static void dcs_end(struct parse_context *ppc, MTShell *shell)
 {
     switch (ppc->action) {
     case '+' << 8 | 'q':
-        [shell MouseTerm_tcapQuery:[[NSString alloc] initWithData:ppc->buffer
-                                                         encoding:NSASCIIStringEncoding]];
+        [shell MouseTerm_tcapQuery:[[[NSString alloc] initWithData: ppc->buffer
+                                                          encoding: NSASCIIStringEncoding] autorelease]];
         break;
     default:
         break;
