@@ -126,28 +126,30 @@ static void osc4_set(MTShell *shell, int n, char const *p)
                                           blue: (float)b / (1 << 16)
                                          alpha: [original_color alphaComponent]];
         [palette setObject:color forKey: [NSNumber numberWithInt: n]];
+        [view setNeedsDisplay: YES];
     }
 }
 
 static void osc4_reset(MTShell *shell, int n)
 {
     NSMutableDictionary *palette = [shell MouseTerm_getPalette];
+    TTView *view = (TTView *)[[[shell controller] activePane] view];
 
     if (n > 255 || n < 0)
         return;
-    if (palette) {
-        [palette removeObjectForKey: [NSNumber numberWithInt: n]];
-    }
+    [palette removeObjectForKey: [NSNumber numberWithInt: n]];
+    [view setNeedsDisplay: YES];
 }
 
 static void osc4_resetall(MTShell *shell)
 {
     NSMutableDictionary *palette = [shell MouseTerm_getPalette];
+    TTView *view = (TTView *)[[[shell controller] activePane] view];
     int n;
 
-    if (palette)
-        for (n = 0; n < 256; ++n)
-            [palette removeObjectForKey: [NSNumber numberWithInt: n]];
+    for (n = 0; n < 256; ++n)
+        [palette removeObjectForKey: [NSNumber numberWithInt: n]];
+    [view setNeedsDisplay: YES];
 }
 
 static void osc10_get(MTShell *shell)
@@ -175,6 +177,7 @@ static void osc10_set(MTShell *shell, char const *p)
     int r, g, b;
     NSMutableDictionary *palette = [shell MouseTerm_getPalette];
     NSColor *original_color = [[shell controller] scriptNormalTextColor];
+    TTView *view = (TTView *)[[[shell controller] activePane] view];
 
     if (parse_x_colorspec(shell, p, &r, &g, &b) != 0)
         return;
@@ -184,13 +187,16 @@ static void osc10_set(MTShell *shell, char const *p)
                                           blue: (float)b / (1 << 16)
                                          alpha: [original_color alphaComponent]];
         [palette setObject: color forKey: [NSNumber numberWithInt: -1]];
+        [view setNeedsDisplay: YES];
     }
 }
 
 static void osc10_reset(MTShell *shell)
 {
     NSMutableDictionary *palette = [shell MouseTerm_getPalette];
+    TTView *view = (TTView *)[[[shell controller] activePane] view];
     [palette removeObjectForKey: [NSNumber numberWithInt: -1]];
+    [view setNeedsDisplay: YES];
 }
 
 static void osc11_get(MTShell *shell)
@@ -215,6 +221,7 @@ static void osc11_set(MTShell *shell, char const *p)
     int r, g, b;
     NSMutableDictionary *palette = [shell MouseTerm_getPalette];
     NSColor *original_color = [[shell controller] scriptBackgroundColor];
+    TTView *view = (TTView *)[[[shell controller] activePane] view];
 
     if (parse_x_colorspec(shell, p, &r, &g, &b) != 0)
         return;
@@ -227,6 +234,7 @@ static void osc11_set(MTShell *shell, char const *p)
                                           blue: (float)b / (1 << 16)
                                          alpha: [original_color alphaComponent]];
         [[shell controller] setScriptBackgroundColor:color];
+        [view setNeedsDisplay: YES];
     }
 }
 
@@ -234,9 +242,12 @@ static void osc11_reset(MTShell *shell)
 {
     NSMutableDictionary *palette = [shell MouseTerm_getPalette];
     NSColor *color = [palette objectForKey: @"background"];
+    TTView *view = (TTView *)[[[shell controller] activePane] view];
+
     if (color) {
         [palette removeObjectForKey: @"background"];
         [[shell controller] setScriptBackgroundColor:color];
+        [view setNeedsDisplay: YES];
     }
 }
 
@@ -263,6 +274,7 @@ static void osc12_set(MTShell *shell, char const *p)
     int r, g, b;
     NSMutableDictionary *palette = [shell MouseTerm_getPalette];
     NSColor *original_color = [[shell controller] scriptCursorColor];
+    TTView *view = (TTView *)[[[shell controller] activePane] view];
 
     if (parse_x_colorspec(shell, p, &r, &g, &b) != 0)
         return;
@@ -275,6 +287,7 @@ static void osc12_set(MTShell *shell, char const *p)
                                           blue: (float)b / (1 << 16)
                                          alpha: [original_color alphaComponent]];
         [[shell controller] setScriptCursorColor:color];
+        [view setNeedsDisplay: YES];
     }
 }
 
@@ -282,9 +295,11 @@ static void osc12_reset(MTShell *shell)
 {
     NSMutableDictionary *palette = [shell MouseTerm_getPalette];
     NSColor *color = [palette objectForKey: @"cursor"];
+    TTView *view = (TTView *)[[[shell controller] activePane] view];
     if (color) {
         [palette removeObjectForKey: @"cursor"];
         [[shell controller] setScriptCursorColor:color];
+        [view setNeedsDisplay: YES];
     }
 }
 
