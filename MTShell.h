@@ -1,4 +1,5 @@
 #import <Cocoa/Cocoa.h>
+#import "Terminal.h"
 
 enum parse_state {
     PS_GROUND              =  0,
@@ -73,4 +74,6 @@ struct parse_context {
 - (NSMutableDictionary*) MouseTerm_getColorNameMap;
 - (struct parse_context*) MouseTerm_getParseContext;
 
+- (void) MouseTerm_cachePosition: (Position*) pos;
+- (BOOL) MouseTerm_positionIsChanged: (Position*) pos;
 @end
