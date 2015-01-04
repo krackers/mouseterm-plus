@@ -1,4 +1,5 @@
 #import <Cocoa/Cocoa.h>
+#import "Terminal.h"
 
 enum parse_state {
     PS_GROUND              =  0,
@@ -50,6 +51,12 @@ struct parse_context {
 - (void) MouseTerm_setMouseProtocol: (int) mouseProtocol;
 - (int) MouseTerm_getMouseProtocol;
 
+- (void) MouseTerm_setCoordinateType: (int) coordinateType;
+- (int) MouseTerm_getCoordinateType;
+
+- (void) MouseTerm_setEventFilter: (int) eventFilter;
+- (int) MouseTerm_getEventFilter;
+
 - (void) MouseTerm_setAppCursorMode: (BOOL) appCursorMode;
 - (BOOL) MouseTerm_getAppCursorMode;
 
@@ -59,8 +66,8 @@ struct parse_context {
 - (void) MouseTerm_pushTabTitle;
 - (void) MouseTerm_popTabTitle;
 
-- (void) MouseTerm_setIsMouseDown: (BOOL) isMouseDown;
-- (BOOL) MouseTerm_getIsMouseDown;
+- (void) MouseTerm_setMouseState: (int) state;
+- (int) MouseTerm_getMouseState;
 
 - (BOOL) MouseTerm_writeToPasteBoard: (NSString*) stringToWrite;
 - (NSString*) MouseTerm_readFromPasteBoard;
@@ -73,4 +80,6 @@ struct parse_context {
 - (NSMutableDictionary*) MouseTerm_getColorNameMap;
 - (struct parse_context*) MouseTerm_getParseContext;
 
+- (void) MouseTerm_cachePosition: (Position*) pos;
+- (BOOL) MouseTerm_positionIsChanged: (Position*) pos;
 @end

@@ -1,7 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import <apr-1/apr.h>
 #import <apr-1/apr_base64.h>
-#import "terminal.h"
+#import "Terminal.h"
 #import "Mouse.h"
 #import "MouseTerm.h"
 #import "MTShell.h"
@@ -9,7 +9,7 @@
 NSString* convertToHexString(NSString *src)
 {
     char const *raw = [src UTF8String];
-    NSMutableString *ms = [[NSMutableString alloc] init];
+    NSMutableString *ms = [[[NSMutableString alloc] init] autorelease];
     int i;
     for (i = 0; i < src.length; ++i) {
         [ms appendString:[NSString stringWithFormat:@"%02x", raw[i]]];
@@ -890,8 +890,8 @@ NSDictionary* generateX11ColorNameMap()
                  forKey: @"emojiFix"];
         [dict setObject: [NSNumber numberWithBool: NO]
                  forKey: @"appCursorMode"];
-        [dict setObject: [NSNumber numberWithBool: NO]
-                 forKey: @"isMouseDown"];
+        [dict setObject: [NSNumber numberWithInt: 0]
+                 forKey: @"mouseState"];
         [dict setObject: [NSMutableDictionary dictionary]
                  forKey: @"colorPalette"];
         [dict setObject: [[[NSMutableData alloc] initWithLength:sizeof(struct parse_context)] autorelease]
@@ -912,7 +912,7 @@ NSDictionary* generateX11ColorNameMap()
 {
     NSValue *ptr = [self MouseTerm_initVars];
     [[MouseTerm_ivars objectForKey: ptr]
-        setObject: [NSNumber numberWithBool:focusMode] forKey: @"focusMode"];
+        setObject: [NSNumber numberWithBool: focusMode] forKey: @"focusMode"];
 }
 
 - (BOOL) MouseTerm_getFocusMode
@@ -926,7 +926,8 @@ NSDictionary* generateX11ColorNameMap()
 {
     NSValue *ptr = [self MouseTerm_initVars];
     [[MouseTerm_ivars objectForKey: ptr]
-        setObject: [NSNumber numberWithInt:mouseMode] forKey: @"mouseMode"];
+        setObject: [NSNumber numberWithInt: mouseMode] forKey: @"mouseMode"];
+    [self MouseTerm_cachePosition: nil];
 }
 
 - (int) MouseTerm_getMouseMode
@@ -940,8 +941,9 @@ NSDictionary* generateX11ColorNameMap()
 {
     NSValue *ptr = [self MouseTerm_initVars];
     [[MouseTerm_ivars objectForKey: ptr]
-        setObject: [NSNumber numberWithInt:mouseProtocol]
+        setObject: [NSNumber numberWithInt: mouseProtocol]
            forKey: @"mouseProtocol"];
+    [self MouseTerm_cachePosition: nil];
 }
 
 - (int) MouseTerm_getMouseProtocol
@@ -949,6 +951,34 @@ NSDictionary* generateX11ColorNameMap()
     NSValue *ptr = [self MouseTerm_initVars];
     return [(NSNumber*) [[MouseTerm_ivars objectForKey: ptr]
                             objectForKey: @"mouseProtocol"] intValue];
+}
+
+- (void) MouseTerm_setCoordinateType: (int) coordinateType
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    [[MouseTerm_ivars objectForKey: ptr]
+        setObject: [NSNumber numberWithInt: coordinateType] forKey: @"coordinateType"];
+}
+
+- (int) MouseTerm_getCoordinateType
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    return [(NSNumber*) [[MouseTerm_ivars objectForKey: ptr]
+                            objectForKey: @"coordinateType"] intValue];
+}
+
+- (void) MouseTerm_setEventFilter: (int) eventFilter
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    [[MouseTerm_ivars objectForKey: ptr]
+        setObject: [NSNumber numberWithInt: eventFilter] forKey: @"eventFilter"];
+}
+
+- (int) MouseTerm_getEventFilter
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    return [(NSNumber*) [[MouseTerm_ivars objectForKey: ptr]
+                            objectForKey: @"eventFilter"] intValue];
 }
 
 - (void) MouseTerm_setAppCursorMode: (BOOL) appCursorMode
@@ -1024,19 +1054,19 @@ NSDictionary* generateX11ColorNameMap()
     }
 }
 
-- (void) MouseTerm_setIsMouseDown: (BOOL) isMouseDown
+- (void) MouseTerm_setMouseState: (int) state
 {
     NSValue *ptr = [self MouseTerm_initVars];
     [[MouseTerm_ivars objectForKey: ptr]
-        setObject: [NSNumber numberWithBool:isMouseDown]
-           forKey: @"isMouseDown"];
+        setObject: [NSNumber numberWithInt:state]
+           forKey: @"mouseState"];
 }
 
-- (BOOL) MouseTerm_getIsMouseDown
+- (int) MouseTerm_getMouseState
 {
     NSValue *ptr = [self MouseTerm_initVars];
     return [(NSNumber*) [[MouseTerm_ivars objectForKey: ptr]
-                            objectForKey: @"isMouseDown"] boolValue];
+                            objectForKey: @"mouseState"] intValue];
 }
 
 - (BOOL) MouseTerm_writeToPasteBoard: (NSString*) stringToWrite
@@ -1132,6 +1162,29 @@ NSDictionary* generateX11ColorNameMap()
 - (void) MouseTerm_writeData: (NSData*) data
 {
     [self MouseTerm_writeData: data];
+}
+
+- (void) MouseTerm_cachePosition: (Position*) pos
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    if (pos) {
+        [[MouseTerm_ivars objectForKey: ptr]
+            setObject: [NSValue valueWithBytes: pos objCType: @encode(Position)]
+               forKey: @"positionCache"];
+    } else {
+        [[MouseTerm_ivars objectForKey: ptr] removeObjectForKey: @"positionCache"];
+    }
+}
+
+- (BOOL) MouseTerm_positionIsChanged: (Position*) pos;
+{
+    Position cache;
+    NSValue *ptr = [self MouseTerm_initVars];
+    NSValue *value = [[MouseTerm_ivars objectForKey: ptr] objectForKey: @"positionCache"];
+    if (!value)
+        return YES;
+    [value getValue: &cache];
+    return cache.x != pos->x || cache.y != pos->y;
 }
 
 // Deletes instance variables
