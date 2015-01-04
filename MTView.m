@@ -185,8 +185,10 @@ static BOOL base64PasteEnabled = YES;
     char buf[BUFFER_LENGTH];
 
     switch (mode) {
-    case DEC_LOCATOR_MODE:
     case DEC_LOCATOR_ONESHOT_MODE:
+        [shell MouseTerm_setMouseMode: NO_MODE];
+        // pass through
+    case DEC_LOCATOR_MODE:
         cb = button * 2 + 2 + (release ? 1: 0);
         if ([shell MouseTerm_getMouseState] & 1 << MOUSE_BUTTON1)
             buttonState |= 4;
@@ -360,6 +362,7 @@ static BOOL base64PasteEnabled = YES;
     case HILITE_MODE:
         goto ignored;
     case DEC_LOCATOR_MODE:
+    case DEC_LOCATOR_ONESHOT_MODE:
         if (!([shell MouseTerm_getEventFilter] & BUTTONDOWN_EVENT)) {
             [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] | 1 << button];
             goto handled;
@@ -406,6 +409,7 @@ ignored:
     case HILITE_MODE:
     case BUTTON_MODE:
     case DEC_LOCATOR_MODE:
+    case DEC_LOCATOR_ONESHOT_MODE:
         goto handled;
     case ALL_MODE:
         {
@@ -447,6 +451,7 @@ ignored:
     case NORMAL_MODE:
     case HILITE_MODE:
     case DEC_LOCATOR_MODE:
+    case DEC_LOCATOR_ONESHOT_MODE:
         goto handled;
     case BUTTON_MODE:
     case ALL_MODE:
@@ -487,6 +492,7 @@ ignored:
     case HILITE_MODE:
         goto ignored;
     case DEC_LOCATOR_MODE:
+    case DEC_LOCATOR_ONESHOT_MODE:
         if (!([shell MouseTerm_getEventFilter] & BUTTONUP_EVENT)) {
             [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] & ~(1 << button)];
             goto handled;

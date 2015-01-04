@@ -691,6 +691,8 @@ static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
     case ('?' << 8) | 'l':
         disable_extended_mode(ppc, shell);
         break;
+    case ('\'' << 8) | 'w':  /* DECEFR */
+        break;
     case ('\'' << 8) | 'z':  /* DECELR */
         if (ppc->params_index < 1)
             ppc->params[0] = 0;
@@ -749,8 +751,10 @@ static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
             //Position pos = [view displayPositionForPoint: viewloc];
             NSString *response = @"\033[0&w";
             switch ([shell MouseTerm_getMouseMode]) {
-            case DEC_LOCATOR_MODE:
             case DEC_LOCATOR_ONESHOT_MODE:
+               [shell MouseTerm_setMouseMode: NO_MODE];
+               // pass through
+            case DEC_LOCATOR_MODE:
                 if (CGRectContainsPoint([view frame], location)) {
                     int pixelx = (int)location.x;
                     int pixely = (int)([view frame].size.height - location.y);
