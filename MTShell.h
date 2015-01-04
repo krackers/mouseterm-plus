@@ -57,6 +57,9 @@ struct parse_context {
 - (void) MouseTerm_setEventFilter: (int) eventFilter;
 - (int) MouseTerm_getEventFilter;
 
+- (void) MouseTerm_setFilterRectangle: (NSValue *) filterRectangle;
+- (NSValue *) MouseTerm_getFilterRectangle;
+
 - (void) MouseTerm_setAppCursorMode: (BOOL) appCursorMode;
 - (BOOL) MouseTerm_getAppCursorMode;
 
@@ -82,4 +85,5 @@ struct parse_context {
 
 - (void) MouseTerm_cachePosition: (Position*) pos;
 - (BOOL) MouseTerm_positionIsChanged: (Position*) pos;
+
 @end

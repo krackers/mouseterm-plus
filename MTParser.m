@@ -668,6 +668,25 @@ static void esc_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
     }
 }
 
+static void get_current_position(MTShell *shell, int *x, int *y)
+{
+    TTView *view = (TTView *)[[[shell controller] activePane] view];
+    NSWindow *window = [view window];
+    NSPoint location = [view convertPoint: [window mouseLocationOutsideOfEventStream] toView: nil];
+    NSRect frame = [view frame];
+    *x = (int)location.x;
+    *y = (int)(frame.size.height - location.y);
+    if (*x < 0) x = 0;
+    if (*y < 0) y = 0;
+    if (*x >= frame.size.width) *x = frame.size.width - 1;
+    if (*y >= frame.size.height) *y = frame.size.height - 1;
+    if ([shell MouseTerm_getCoordinateType] == CELL_COORDINATE) {
+        CGSize size = [view cellSize];
+        *x = (int)round(*x / (double)size.width + 1.0);
+        *y = (int)round(*y / (double)size.height + 0.5);
+    }
+}
+
 static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
 {
     int i;
@@ -692,6 +711,21 @@ static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
         disable_extended_mode(ppc, shell);
         break;
     case ('\'' << 8) | 'w':  /* DECEFR */
+        {
+            int x = 0;
+            int y = 0;
+            get_current_position(shell, &x, &y);
+            if (ppc->params_index < 1 || ppc->params[0] == 0)
+               ppc->params[0] = y;
+            if (ppc->params_index < 2 || ppc->params[1] == 0)
+               ppc->params[1] = x;
+            if (ppc->params_index < 3 || ppc->params[2] == 0)
+               ppc->params[2] = y;
+            if (ppc->params_index < 4 || ppc->params[3] == 0)
+               ppc->params[3] = x;
+            [shell MouseTerm_setFilterRectangle: [NSValue value:ppc->params
+                                                   withObjCType:@encode(int[4])]];
+        }
         break;
     case ('\'' << 8) | 'z':  /* DECELR */
         if (ppc->params_index < 1)
@@ -774,8 +808,8 @@ static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
                         break;
                     case CELL_COORDINATE:
                         size = [view cellSize];
-                        cellx = MAX(1, round(pixelx / (double)size.width + 1.0));
-                        celly = MAX(1, round(pixely / (double)size.height + 0.5));
+                        cellx = (int)round(pixelx / (double)size.width + 1.0);
+                        celly = (int)round(pixely / (double)size.height + 0.5);
                         response = [NSString stringWithFormat: @"\033[1;%d;%d;%d;%d&w", button, celly, cellx, 0];
                         break;
                     default:

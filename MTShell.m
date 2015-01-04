@@ -981,6 +981,19 @@ NSDictionary* generateX11ColorNameMap()
                             objectForKey: @"eventFilter"] intValue];
 }
 
+- (void) MouseTerm_setFilterRectangle: (NSValue *) filterRectangle
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    [[MouseTerm_ivars objectForKey: ptr]
+        setObject: filterRectangle forKey: @"filterRectangle"];
+}
+
+- (NSValue *) MouseTerm_getFilterRectangle
+{
+    NSValue *ptr = [self MouseTerm_initVars];
+    return [[MouseTerm_ivars objectForKey: ptr] objectForKey: @"filterRectangle"];
+}
+
 - (void) MouseTerm_setAppCursorMode: (BOOL) appCursorMode
 {
     NSValue *ptr = [self MouseTerm_initVars];
