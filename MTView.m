@@ -161,17 +161,14 @@ static BOOL base64PasteEnabled = YES;
     return colour;
 }
 
-- (NSData*) MouseTerm_codeForEvent: (NSEvent*) event
-                            button: (MouseButton) button
-                            motion: (BOOL) motion
-                           release: (BOOL) release
+- (NSData*) MouseTerm_codeForX: (unsigned int) x
+                             Y: (unsigned int) y
+                      modifier: (char) modflag
+                        button: (MouseButton) button
+                        motion: (BOOL) motion
+                       release: (BOOL) release
 {
-    // get mouse position, the origin coodinate is (1, 1).
-    Position pos = [self MouseTerm_currentPosition: event];
-    unsigned int x = pos.x;
-    unsigned int y = pos.y;
     char cb = button;
-    char modflag = [event modifierFlags];
     int buttonState = 0;
 
     if (modflag & NSShiftKeyMask) cb |= 4;
@@ -180,6 +177,7 @@ static BOOL base64PasteEnabled = YES;
     if (motion) cb += 32;
 
     MTShell* shell = [[(TTView*) self controller] shell];
+
     MouseProtocol mouseProtocol = [shell MouseTerm_getMouseProtocol];
     MouseMode mode = [shell MouseTerm_getMouseMode];
     unsigned int len;
@@ -366,12 +364,18 @@ static BOOL base64PasteEnabled = YES;
     case ALL_MODE:
     case DEC_LOCATOR_MODE:
         [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] | 1 << button];
-        data = [self MouseTerm_codeForEvent: event
+        {
+            // get mouse position, the origin coodinate is (1, 1).
+            Position pos = [self MouseTerm_currentPosition: event];
+            [shell MouseTerm_cachePosition: &pos];
+            data = [self MouseTerm_codeForX: pos.x
+                                          Y: pos.y
+                                   modifier: [event modifierFlags]
                                      button: button
                                      motion: NO
                                     release: NO];
-        [(TTShell*) shell writeData: data];
-
+            [(TTShell*) shell writeData: data];
+        }
         goto handled;
     }
 handled:
@@ -398,11 +402,20 @@ ignored:
     case BUTTON_MODE:
         goto handled;
     case ALL_MODE:
-        data = [self MouseTerm_codeForEvent: event
-                                     button: MOUSE_RELEASE + 32
-                                     motion: NO
-                                    release: NO];
-        [(TTShell*) shell writeData: data];
+        {
+            // get mouse position, the origin coodinate is (1, 1).
+            Position pos = [self MouseTerm_currentPosition: event];
+            if ([shell MouseTerm_positionIsChanged: &pos]) {
+                [shell MouseTerm_cachePosition: &pos];
+                data = [self MouseTerm_codeForX: pos.x
+                                              Y: pos.y
+                                       modifier: [event modifierFlags]
+                                         button: MOUSE_RELEASE
+                                         motion: YES
+                                        release: NO];
+                [(TTShell*) shell writeData: data];
+            }
+        }
         goto handled;
     }
 handled:
@@ -430,11 +443,20 @@ ignored:
         goto handled;
     case BUTTON_MODE:
     case ALL_MODE:
-        data = [self MouseTerm_codeForEvent: event
-                                     button: button
-                                     motion: YES
-                                    release: NO];
-        [(TTShell*) shell writeData: data];
+        {
+            // get mouse position, the origin coodinate is (1, 1).
+            Position pos = [self MouseTerm_currentPosition: event];
+            if ([shell MouseTerm_positionIsChanged: &pos]) {
+                [shell MouseTerm_cachePosition: &pos];
+                data = [self MouseTerm_codeForX: pos.x
+                                              Y: pos.y
+                                       modifier: [event modifierFlags]
+                                         button: button
+                                         motion: YES
+                                        release: NO];
+                [(TTShell*) shell writeData: data];
+            }
+        }
         goto handled;
     }
 handled:
@@ -462,12 +484,18 @@ ignored:
     case ALL_MODE:
     case DEC_LOCATOR_MODE:
         [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] & ~(1 << button)];
-        data = [self MouseTerm_codeForEvent: event
+        {
+            // get mouse position, the origin coodinate is (1, 1).
+            Position pos = [self MouseTerm_currentPosition: event];
+            [shell MouseTerm_cachePosition: &pos];
+            data = [self MouseTerm_codeForX: pos.x
+                                          Y: pos.y
+                                   modifier: [event modifierFlags]
                                      button: button
                                      motion: NO
                                     release: YES];
-        [(TTShell*) shell writeData: data];
-
+            [(TTShell*) shell writeData: data];
+        }
         goto handled;
     }
 handled:
@@ -628,16 +656,19 @@ ignored:
         }
         else
             button = MOUSE_WHEEL_UP;
-
-        data = [self MouseTerm_codeForEvent: event
+        {
+            // get mouse position, the origin coodinate is (1, 1).
+            Position pos = [self MouseTerm_currentPosition: event];
+            data = [self MouseTerm_codeForX: pos.x
+                                          Y: pos.y
+                                   modifier: [event modifierFlags]
                                      button: button
                                      motion: NO
                                     release: NO];
-
-        lines = lround(delta) + 1;
-        for (i = 0; i < lines; ++i)
-            [(TTShell*) shell writeData: data];
-
+            lines = lround(delta) + 1;
+            for (i = 0; i < lines; ++i)
+                [(TTShell*) shell writeData: data];
+        }
         goto handled;
     }
 handled:
