@@ -9,7 +9,7 @@
 NSString* convertToHexString(NSString *src)
 {
     char const *raw = [src UTF8String];
-    NSMutableString *ms = [[NSMutableString alloc] init];
+    NSMutableString *ms = [[[NSMutableString alloc] init] autorelease];
     int i;
     for (i = 0; i < src.length; ++i) {
         [ms appendString:[NSString stringWithFormat:@"%02x", raw[i]]];
