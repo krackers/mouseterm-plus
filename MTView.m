@@ -359,10 +359,15 @@ static BOOL base64PasteEnabled = YES;
     case NO_MODE:
     case HILITE_MODE:
         goto ignored;
+    case DEC_LOCATOR_MODE:
+        if (!([shell MouseTerm_getEventFilter] & BUTTONDOWN_EVENT)) {
+            [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] | 1 << button];
+            goto handled;
+        }
+        // pass through
     case NORMAL_MODE:
     case BUTTON_MODE:
     case ALL_MODE:
-    case DEC_LOCATOR_MODE:
         [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] | 1 << button];
         {
             // get mouse position, the origin coodinate is (1, 1).
@@ -400,6 +405,7 @@ ignored:
     case NORMAL_MODE:
     case HILITE_MODE:
     case BUTTON_MODE:
+    case DEC_LOCATOR_MODE:
         goto handled;
     case ALL_MODE:
         {
@@ -440,6 +446,7 @@ ignored:
         goto ignored;
     case NORMAL_MODE:
     case HILITE_MODE:
+    case DEC_LOCATOR_MODE:
         goto handled;
     case BUTTON_MODE:
     case ALL_MODE:
@@ -479,10 +486,15 @@ ignored:
     case NO_MODE:
     case HILITE_MODE:
         goto ignored;
+    case DEC_LOCATOR_MODE:
+        if (!([shell MouseTerm_getEventFilter] & BUTTONUP_EVENT)) {
+            [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] & ~(1 << button)];
+            goto handled;
+        }
+        // pass through
     case NORMAL_MODE:
     case BUTTON_MODE:
     case ALL_MODE:
-    case DEC_LOCATOR_MODE:
         [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] & ~(1 << button)];
         {
             // get mouse position, the origin coodinate is (1, 1).

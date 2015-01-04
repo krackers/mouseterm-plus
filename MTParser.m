@@ -726,7 +726,13 @@ static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
                 [shell MouseTerm_setEventFilter: [shell MouseTerm_getEventFilter] | BUTTONDOWN_EVENT];
                 break;
             case 2:
+                [shell MouseTerm_setEventFilter: [shell MouseTerm_getEventFilter] & ~BUTTONDOWN_EVENT];
+                break;
+            case 3:
                 [shell MouseTerm_setEventFilter: [shell MouseTerm_getEventFilter] | BUTTONUP_EVENT];
+                break;
+            case 4:
+                [shell MouseTerm_setEventFilter: [shell MouseTerm_getEventFilter] & ~BUTTONUP_EVENT];
                 break;
             case 0:
             default:
