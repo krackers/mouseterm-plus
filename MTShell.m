@@ -890,8 +890,8 @@ NSDictionary* generateX11ColorNameMap()
                  forKey: @"emojiFix"];
         [dict setObject: [NSNumber numberWithBool: NO]
                  forKey: @"appCursorMode"];
-        [dict setObject: [NSNumber numberWithBool: NO]
-                 forKey: @"isMouseDown"];
+        [dict setObject: [NSNumber numberWithInt: 0]
+                 forKey: @"mouseState"];
         [dict setObject: [NSMutableDictionary dictionary]
                  forKey: @"colorPalette"];
         [dict setObject: [[[NSMutableData alloc] initWithLength:sizeof(struct parse_context)] autorelease]
@@ -1052,19 +1052,19 @@ NSDictionary* generateX11ColorNameMap()
     }
 }
 
-- (void) MouseTerm_setIsMouseDown: (BOOL) isMouseDown
+- (void) MouseTerm_setMouseState: (int) state
 {
     NSValue *ptr = [self MouseTerm_initVars];
     [[MouseTerm_ivars objectForKey: ptr]
-        setObject: [NSNumber numberWithBool:isMouseDown]
-           forKey: @"isMouseDown"];
+        setObject: [NSNumber numberWithInt:state]
+           forKey: @"mouseState"];
 }
 
-- (BOOL) MouseTerm_getIsMouseDown
+- (int) MouseTerm_getMouseState
 {
     NSValue *ptr = [self MouseTerm_initVars];
     return [(NSNumber*) [[MouseTerm_ivars objectForKey: ptr]
-                            objectForKey: @"isMouseDown"] boolValue];
+                            objectForKey: @"mouseState"] intValue];
 }
 
 - (BOOL) MouseTerm_writeToPasteBoard: (NSString*) stringToWrite

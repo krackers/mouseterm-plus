@@ -172,6 +172,7 @@ static BOOL base64PasteEnabled = YES;
     unsigned int y = pos.y;
     char cb = button;
     char modflag = [event modifierFlags];
+    int buttonState = 0;
 
     if (modflag & NSShiftKeyMask) cb |= 4;
     if (modflag & NSAlternateKeyMask) cb |= 8;
@@ -180,41 +181,57 @@ static BOOL base64PasteEnabled = YES;
 
     MTShell* shell = [[(TTView*) self controller] shell];
     MouseProtocol mouseProtocol = [shell MouseTerm_getMouseProtocol];
+    MouseMode mode = [shell MouseTerm_getMouseMode];
     unsigned int len;
     const size_t BUFFER_LENGTH = 256;
     char buf[BUFFER_LENGTH];
 
-    switch (mouseProtocol) {
-
-    case URXVT_PROTOCOL:
-        if (release)
-            cb |= MOUSE_RELEASE;
-        cb += 32; // base offset +32 (to make it printable)
-        snprintf(buf, BUFFER_LENGTH, "\e[%d;%d;%dM", cb, x, y);
+    switch (mode) {
+    case DEC_LOCATOR_MODE:
+    case DEC_LOCATOR_ONESHOT_MODE:
+        cb = button * 2 + 2 + (release ? 1: 0);
+        if ([shell MouseTerm_getMouseState] & 1 << MOUSE_BUTTON1)
+            buttonState |= 4;
+        if ([shell MouseTerm_getMouseState] & 1 << MOUSE_BUTTON3)
+            buttonState |= 2;
+        if ([shell MouseTerm_getMouseState] & 1 << MOUSE_BUTTON2)
+            buttonState |= 1;
+        snprintf(buf, BUFFER_LENGTH, "\e[%d;%d;%d;%d;%d&w", cb, buttonState, y, x, 0);
         len = strlen(buf);
         break;
-
-    case SGR_PROTOCOL:
-        if (release) // release
-            snprintf(buf, BUFFER_LENGTH, "\e[<%d;%d;%dm", cb, x, y);
-        else
-            snprintf(buf, BUFFER_LENGTH, "\e[<%d;%d;%dM", cb, x, y);
-        len = strlen(buf);
-        break;
-
-    case NORMAL_PROTOCOL:
     default:
-        // add base offset +32 (to make it printable)
-        cb += 32;
-        x += 32;
-        y += 32;
-        if (release)
-            cb |= MOUSE_RELEASE;
-        x = MIN(x, 255);
-        y = MIN(y, 255);
-        len = MOUSE_RESPONSE_LEN;
+        switch (mouseProtocol) {
+        case URXVT_PROTOCOL:
+            if (release)
+                cb |= MOUSE_RELEASE;
+            cb += 32; // base offset +32 (to make it printable)
+            snprintf(buf, BUFFER_LENGTH, "\e[%d;%d;%dM", cb, x, y);
+            len = strlen(buf);
+            break;
 
-        snprintf(buf, len + 1, MOUSE_RESPONSE, cb, x, y);
+        case SGR_PROTOCOL:
+            if (release) // release
+                snprintf(buf, BUFFER_LENGTH, "\e[<%d;%d;%dm", cb, x, y);
+            else
+                snprintf(buf, BUFFER_LENGTH, "\e[<%d;%d;%dM", cb, x, y);
+            len = strlen(buf);
+            break;
+
+        case NORMAL_PROTOCOL:
+        default:
+            // add base offset +32 (to make it printable)
+            cb += 32;
+            x += 32;
+            y += 32;
+            if (release)
+                cb |= MOUSE_RELEASE;
+            x = MIN(x, 255);
+            y = MIN(y, 255);
+            len = MOUSE_RESPONSE_LEN;
+
+            snprintf(buf, len + 1, MOUSE_RESPONSE, cb, x, y);
+            break;
+        }
         break;
     }
     return [NSData dataWithBytes: buf length: len];
@@ -291,7 +308,7 @@ static BOOL base64PasteEnabled = YES;
         return YES;
 
     MTShell* shell = [[(TTView*) self controller] shell];
-    if (![shell MouseTerm_getIsMouseDown])
+    if (![shell MouseTerm_getMouseState] & 1 << button)
         return YES;
 
     return NO;
@@ -333,6 +350,8 @@ static BOOL base64PasteEnabled = YES;
 
 - (BOOL) MouseTerm_buttonDown: (NSEvent*) event button: (MouseButton) button
 {
+    NSData *data;
+
     if ([self MouseTerm_shouldIgnore: event button: button])
         goto ignored;
 
@@ -345,18 +364,16 @@ static BOOL base64PasteEnabled = YES;
     case NORMAL_MODE:
     case BUTTON_MODE:
     case ALL_MODE:
-    {
-        [shell MouseTerm_setIsMouseDown: YES];
-        NSData* data = [self MouseTerm_codeForEvent: event
-                                             button: button
-                                             motion: NO
-                                            release: NO];
+    case DEC_LOCATOR_MODE:
+        [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] | 1 << button];
+        data = [self MouseTerm_codeForEvent: event
+                                     button: button
+                                     motion: NO
+                                    release: NO];
         [(TTShell*) shell writeData: data];
 
         goto handled;
     }
-    }
-
 handled:
     [(TTView*) self clearTextSelection];
     return YES;
@@ -366,6 +383,8 @@ ignored:
 
 - (BOOL) MouseTerm_buttonMoved: (NSEvent*) event
 {
+    NSData* data;
+
     if ([self MouseTerm_shouldIgnoreMoved: event])
         goto ignored;
 
@@ -379,14 +398,12 @@ ignored:
     case BUTTON_MODE:
         goto handled;
     case ALL_MODE:
-    {
-        NSData* data = [self MouseTerm_codeForEvent: event
-                                             button: MOUSE_RELEASE + 32
-                                             motion: NO
-                                            release: NO];
+        data = [self MouseTerm_codeForEvent: event
+                                     button: MOUSE_RELEASE + 32
+                                     motion: NO
+                                    release: NO];
         [(TTShell*) shell writeData: data];
         goto handled;
-    }
     }
 handled:
     [(TTView*) self clearTextSelection];
@@ -398,6 +415,8 @@ ignored:
 
 - (BOOL) MouseTerm_buttonDragged: (NSEvent*) event button: (MouseButton) button
 {
+    NSData* data;
+
     if ([self MouseTerm_shouldIgnoreDown: event button: button])
         goto ignored;
 
@@ -411,14 +430,12 @@ ignored:
         goto handled;
     case BUTTON_MODE:
     case ALL_MODE:
-    {
-        NSData* data = [self MouseTerm_codeForEvent: event
-                                             button: button
-                                             motion: YES
-                                            release: NO];
+        data = [self MouseTerm_codeForEvent: event
+                                     button: button
+                                     motion: YES
+                                    release: NO];
         [(TTShell*) shell writeData: data];
         goto handled;
-    }
     }
 handled:
     [(TTView*) self clearTextSelection];
@@ -429,6 +446,8 @@ ignored:
 
 - (BOOL) MouseTerm_buttonUp: (NSEvent*) event button: (MouseButton) button
 {
+    NSData *data;
+
     if ([self MouseTerm_shouldIgnoreDown: event button: button])
         goto ignored;
 
@@ -441,16 +460,15 @@ ignored:
     case NORMAL_MODE:
     case BUTTON_MODE:
     case ALL_MODE:
-    {
-        [shell MouseTerm_setIsMouseDown: NO];
-        NSData* data = [self MouseTerm_codeForEvent: event
-                                             button: button
-                                             motion: NO
-                                            release: YES];
+    case DEC_LOCATOR_MODE:
+        [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] & ~(1 << button)];
+        data = [self MouseTerm_codeForEvent: event
+                                     button: button
+                                     motion: NO
+                                    release: YES];
         [(TTShell*) shell writeData: data];
 
         goto handled;
-    }
     }
 handled:
     [(TTView*) self clearTextSelection];
@@ -539,6 +557,13 @@ ignored:
 // Intercepts all scroll wheel movements (one wheel "tick" at a time)
 - (void) MouseTerm_scrollWheel: (NSEvent*) event
 {
+    NSData* data;
+    long i;
+    long lines;
+    double delta;
+    MTProfile* profile;
+    MouseButton button;
+
     if ([self MouseTerm_shouldIgnore: event button: MOUSE_WHEEL_UP])
         goto ignored;
 
@@ -548,9 +573,7 @@ ignored:
     switch ([shell MouseTerm_getMouseMode])
     {
     case NO_MODE:
-    {
-        MTProfile* profile = [(TTTabController*) [(TTView*) self controller]
-                                                 profile];
+        profile = [(TTTabController*) [(TTView*) self controller] profile];
         if ([NSView MouseTerm_getMouseEnabled] &&
             [profile MouseTerm_emulationEnabled] &&
             [screen isAlternateScreenActive] &&
@@ -558,12 +581,11 @@ ignored:
         {
             // Calculate how many lines to scroll by (takes acceleration
             // into account)
-            NSData* data;
             // deltaY returns CGFloat, which can be float or double
             // depending on the architecture. Upcasting floats to doubles
             // seems like an easier compromise than detecting what the
             // type really is.
-            double delta = [event deltaY];
+            delta = [event deltaY];
 
             // Trackpads seem to return a lot of 0.0 events, which
             // shouldn't trigger scrolling anyway.
@@ -590,16 +612,13 @@ ignored:
         }
         else
             goto ignored;
-    }
     // FIXME: Unhandled at the moment
     case HILITE_MODE:
         goto ignored;
     case NORMAL_MODE:
     case BUTTON_MODE:
     case ALL_MODE:
-    {
-        MouseButton button;
-        double delta = [event deltaY];
+        delta = [event deltaY];
         if (delta == 0.0)
             goto handled;
         else if (delta < 0.0)
@@ -610,20 +629,17 @@ ignored:
         else
             button = MOUSE_WHEEL_UP;
 
-        NSData* data = [self MouseTerm_codeForEvent: event
-                                             button: button
-                                             motion: NO
-                                            release: NO];
+        data = [self MouseTerm_codeForEvent: event
+                                     button: button
+                                     motion: NO
+                                    release: NO];
 
-        long i;
-        long lines = lround(delta) + 1;
+        lines = lround(delta) + 1;
         for (i = 0; i < lines; ++i)
             [(TTShell*) shell writeData: data];
 
         goto handled;
     }
-    }
-
 handled:
     [(TTView*) self clearTextSelection];
     return;

@@ -65,8 +65,8 @@ struct parse_context {
 - (void) MouseTerm_pushTabTitle;
 - (void) MouseTerm_popTabTitle;
 
-- (void) MouseTerm_setIsMouseDown: (BOOL) isMouseDown;
-- (BOOL) MouseTerm_getIsMouseDown;
+- (void) MouseTerm_setMouseState: (int) state;
+- (int) MouseTerm_getMouseState;
 
 - (BOOL) MouseTerm_writeToPasteBoard: (NSString*) stringToWrite;
 - (NSString*) MouseTerm_readFromPasteBoard;

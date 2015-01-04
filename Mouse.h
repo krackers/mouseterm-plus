@@ -13,9 +13,10 @@ typedef enum
 
 typedef enum
 {
-    NORMAL_PROTOCOL = 0,
-    URXVT_PROTOCOL  = 1,
-    SGR_PROTOCOL    = 2,
+    NORMAL_PROTOCOL  = 0,
+    URXVT_PROTOCOL   = 1,
+    SGR_PROTOCOL     = 2,
+    LOCATOR_PROTOCOL = 3,
 } MouseProtocol;
 
 typedef enum

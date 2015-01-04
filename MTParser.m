@@ -710,7 +710,7 @@ static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
         }
         switch (ppc->params[1]) {
         case 1:
-            [shell MouseTerm_setMouseMode: PIXEL_COORDINATE];
+            [shell MouseTerm_setCoordinateType: PIXEL_COORDINATE];
             break;
         case 2:
         case 0:
@@ -733,6 +733,51 @@ static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
                 [shell MouseTerm_setEventFilter: REQUEST_EVENT];
                 break;
             }
+        }
+        break;
+    case ('\'' << 8) | '|':  /* DECRQLP */
+        {
+            TTView *view = (TTView *)[[[shell controller] activePane] view];
+            NSWindow *window = [view window];
+            NSPoint location = [view convertPoint: [window mouseLocationOutsideOfEventStream] toView: nil];
+            //Position pos = [view displayPositionForPoint: viewloc];
+            NSString *response = @"\033[0&w";
+            switch ([shell MouseTerm_getMouseMode]) {
+            case DEC_LOCATOR_MODE:
+            case DEC_LOCATOR_ONESHOT_MODE:
+                if (CGRectContainsPoint([view frame], location)) {
+                    int pixelx = (int)location.x;
+                    int pixely = (int)([view frame].size.height - location.y);
+                    int cellx;
+                    int celly;
+                    CGSize size;
+                    int button = 0;
+                    if ([shell MouseTerm_getMouseState] & 1 << MOUSE_BUTTON1)
+                        button |= 4;
+                    if ([shell MouseTerm_getMouseState] & 1 << MOUSE_BUTTON3)
+                        button |= 2;
+                    if ([shell MouseTerm_getMouseState] & 1 << MOUSE_BUTTON2)
+                        button |= 1;
+                    switch ([shell MouseTerm_getCoordinateType]) {
+                    case PIXEL_COORDINATE:
+                        response = [NSString stringWithFormat: @"\033[1;%d;%d;%d;%d&w", button, pixely, pixelx, 0];
+                        break;
+                    case CELL_COORDINATE:
+                        size = [view cellSize];
+                        cellx = MAX(1, round(pixelx / (double)size.width + 1.0));
+                        celly = MAX(1, round(pixely / (double)size.height + 0.5));
+                        response = [NSString stringWithFormat: @"\033[1;%d;%d;%d;%d&w", button, celly, cellx, 0];
+                        break;
+                    default:
+                        break;
+                    }
+                }
+                break;
+            default:
+                break;
+            }
+            [(TTShell*) shell writeData: [NSData dataWithBytes: [response UTF8String]
+                                                        length: response.length]];
         }
         break;
     case 't':
@@ -947,6 +992,7 @@ int MTParser_execute(char* data, int len, id obj)
             case 0x1c ... 0x1f:
                 break;
             case 0x20 ... 0x2f:
+                push(ppc);
                 collect(ppc, p);
                 ppc->state = PS_CSI_INTERMEDIATE;
                 break;
