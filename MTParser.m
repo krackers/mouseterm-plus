@@ -886,6 +886,7 @@ int MTParser_execute(char* data, int len, id obj)
             case 0x1c ... 0x1f:
                 break;
             case 0x20 ... 0x2f:
+                push(ppc);
                 collect(ppc, p);
                 ppc->state = PS_CSI_INTERMEDIATE;
                 break;
