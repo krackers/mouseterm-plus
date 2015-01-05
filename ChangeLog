@@ -1,4 +1,34 @@
+2015-01-05  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m: Reset DECELR/DECEFR/DECSLE state with RIS sequence
+
+  * MTParser.m: Reset filter rectangle with DECELR sequence
+
+  * MTParser.m, MTShell.m, MTView.m: Implement DEC Locator filter rectangle
+  feature
+
+  * MTParser.m, MTShell.h, MTShell.m: Handle DECEFR
+
+  * MTParser.m, MTView.m: Implement DEC Locator one-shot mode event
+
+  * MTParser.m, MTView.m: Fix wrong DECSLE behavior
+
+  * MTShell.m: Fix a fixed size leak when initializing the tcap map
+
+  * MTShell.h, MTShell.m, MTView.h, MTView.m: Filter extra motion events
+  (Motion events are reported only if the mouse pointer has moved to a
+  different character cell.)
+
 2015-01-04  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m, MTShell.h, MTShell.m, MTView.m, Mouse.h: Implement DECRQLP
+
+  * MTParser.m: Fix a state transition bug around CSI intermediate bytes
+  parsing
+
+  * MTParser.m, MTShell.h, MTShell.m, Mouse.h: Implement DECSLE
+
+  * MTParser.m, MTShell.h, MTShell.m, Mouse.h: Implement DECELR
 
   * MTParser.m: Make sure to redraw the view after the palette state is changed
 
