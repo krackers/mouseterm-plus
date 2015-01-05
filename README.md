@@ -38,12 +38,15 @@ Additionally, this project does:
 
 * Fix OS X Mavericks installation problem.
 * Fix some bugs around mouse event coordinate handling.
+* Performance improvement: filter out extra motion events during mouse dragging.
 * Handle RIS (hard reset) sequence (*reset(1)* command works well).
 * Support OS X Yosemite installation.
 * Support *URXVT 1015 styled mouse tracking*(already backported into original source).
   [MinEd][5] uses it.
 * Support *SGR 1006 styled mouse tracking*(already backported into original source).
   Recent various terminal applications use it.
+* Support *"DEC Locator mode"*.
+  [Vim][7] optionally uses it(:set ttymouse=dec).
 * Support xterm's *"Any Event Mouse(private mode 1003)"* tracking mode.
   [MinEd][5] uses it.
 * Support xterm's *"Focus Reporting Mode (private mode 1004)"*.
