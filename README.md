@@ -38,12 +38,15 @@ Additionally, this project does:
 
 * Fix OS X Mavericks installation problem.
 * Fix some bugs around mouse event coordinate handling.
+* Performance improvement: filter out extra motion events during mouse dragging.
 * Handle RIS (hard reset) sequence (*reset(1)* command works well).
 * Support OS X Yosemite installation.
 * Support *URXVT 1015 styled mouse tracking*(already backported into original source).
   [MinEd][5] uses it.
 * Support *SGR 1006 styled mouse tracking*(already backported into original source).
   Recent various terminal applications use it.
+* Support *"DEC Locator mode"*.
+  [Vim][7] optionally uses it(:set ttymouse=dec).
 * Support xterm's *"Any Event Mouse(private mode 1003)"* tracking mode.
   [MinEd][5] uses it.
 * Support xterm's *"Focus Reporting Mode (private mode 1004)"*.
@@ -150,7 +153,7 @@ file:
 Development
 -----------
 
-Download the development repository using [Git][7]:
+Download the development repository using [Git][16]:
 
     git clone git://github.com/saitoha/mouseterm-plus.git
 
@@ -159,15 +162,14 @@ into your home directory's SIMBL plugins folder. `make test` will
 install the plugin and run a second instance of Terminal.app for
 testing.
 
-Visit [GitHub][8] if you'd like to fork the project, watch for new
+Visit [GitHub][17] if you'd like to fork the project, watch for new
 changes, or report issues.
 
-[JRSwizzle][9] and some mouse reporting code from [iTerm][10] are used
-in MouseTerm. [Ragel][11] is used for parsing control codes.
+[JRSwizzle][18] and some mouse reporting code from [iTerm][19] are used
+in MouseTerm.
 
-[7]: http://git-scm.org/
-[8]: http://github.com/brodie/mouseterm
-[9]: http://rentzsch.com/trac/wiki/JRSwizzle
-[10]: http://iterm.sourceforge.net/
-[11]: http://www.complang.org/ragel/
+[16]: http://git-scm.org/
+[17]: http://github.com/brodie/mouseterm
+[18]: http://rentzsch.com/trac/wiki/JRSwizzle
+[19]: http://iterm.sourceforge.net/
 
