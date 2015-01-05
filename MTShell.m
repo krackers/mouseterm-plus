@@ -984,8 +984,12 @@ NSDictionary* generateX11ColorNameMap()
 - (void) MouseTerm_setFilterRectangle: (NSValue *) filterRectangle
 {
     NSValue *ptr = [self MouseTerm_initVars];
-    [[MouseTerm_ivars objectForKey: ptr]
-        setObject: filterRectangle forKey: @"filterRectangle"];
+    if (filterRectangle) {
+        [[MouseTerm_ivars objectForKey: ptr]
+            setObject: filterRectangle forKey: @"filterRectangle"];
+    } else {
+        [[MouseTerm_ivars objectForKey: ptr] removeObjectForKey: @"filterRectangle"];
+    }
 }
 
 - (NSValue *) MouseTerm_getFilterRectangle

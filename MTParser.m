@@ -676,8 +676,8 @@ static void get_current_position(MTShell *shell, int *x, int *y)
     NSRect frame = [view frame];
     *x = (int)location.x;
     *y = (int)(frame.size.height - location.y);
-    if (*x < 0) x = 0;
-    if (*y < 0) y = 0;
+    if (*x < 0) *x = 0;
+    if (*y < 0) *y = 0;
     if (*x >= frame.size.width) *x = frame.size.width - 1;
     if (*y >= frame.size.height) *y = frame.size.height - 1;
     if ([shell MouseTerm_getCoordinateType] == CELL_COORDINATE) {
