@@ -1,3 +1,64 @@
+2015-01-05  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m: Reset DECELR/DECEFR/DECSLE state with RIS sequence
+
+  * MTParser.m: Reset filter rectangle with DECELR sequence
+
+  * MTParser.m, MTShell.m, MTView.m: Implement DEC Locator filter rectangle
+  feature
+
+  * MTParser.m, MTShell.h, MTShell.m: Handle DECEFR
+
+  * MTParser.m, MTView.m: Implement DEC Locator one-shot mode event
+
+  * MTParser.m, MTView.m: Fix wrong DECSLE behavior
+
+  * MTShell.m: Fix a fixed size leak when initializing the tcap map
+
+  * MTShell.h, MTShell.m, MTView.h, MTView.m: Filter extra motion events
+  (Motion events are reported only if the mouse pointer has moved to a
+  different character cell.)
+
+2015-01-04  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m, MTShell.h, MTShell.m, MTView.m, Mouse.h: Implement DECRQLP
+
+  * MTParser.m: Fix a state transition bug around CSI intermediate bytes
+  parsing
+
+  * MTParser.m, MTShell.h, MTShell.m, Mouse.h: Implement DECSLE
+
+  * MTParser.m, MTShell.h, MTShell.m, Mouse.h: Implement DECELR
+
+  * MTParser.m: Make sure to redraw the view after the palette state is changed
+
+  * MTParser.m, MTShell.h, MTShell.m: Parse X11 color names with a lookup table
+
+2015-01-03  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m, MTView.m: Minor fixes
+
+  * MTParser.m: Update x11 color spec parser to parse #RRRGGGBBB/#RRRRGGGGBBBB
+  format
+
+  * MTParser.m: Respect alpha component of original color(OSC4/10/11/12)
+
+  * MTParser.m: Fix a memory leak problem
+
+  * MTParser.m: Implement xterm's OSC 12/112
+
+  * MTParser.m, MTView.m, Terminal.h: Implement xterm's OSC 10/11/110/111
+
+  * MTParser.m: Implement xterm's OSC104 feature
+
+  * MTParser.m, MTShell.h, MTShell.m, MTView.h, MTView.m, MouseTerm.m,
+  Terminal.h: Implement xterm's OSC4 feature
+
+2014-12-30  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m, MTShell.h, MTShell.m: Drop unnecessary member of struct
+  parse_context
+
 2014-12-29  Hayaki Saito <user@zuse.jp>
 
   * MTParser.m: Fix a bug caused by lack of parameter state initialization
