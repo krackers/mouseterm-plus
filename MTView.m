@@ -170,34 +170,38 @@ static BOOL base64PasteEnabled = YES;
 {
     char cb = button;
     int buttonState = 0;
-
-    if (modflag & NSShiftKeyMask) cb |= 4;
-    if (modflag & NSAlternateKeyMask) cb |= 8;
-    if (modflag & NSControlKeyMask) cb |= 16;
-    if (motion) cb += 32;
+    int state;
 
     MTShell* shell = [[(TTView*) self controller] shell];
 
     MouseProtocol mouseProtocol = [shell MouseTerm_getMouseProtocol];
     MouseMode mode = [shell MouseTerm_getMouseMode];
-    unsigned int len;
+    unsigned int len = 0;
     const size_t BUFFER_LENGTH = 256;
     char buf[BUFFER_LENGTH];
 
     switch (mode) {
-    case DEC_LOCATOR_MODE:
     case DEC_LOCATOR_ONESHOT_MODE:
-        cb = button * 2 + 2 + (release ? 1: 0);
-        if ([shell MouseTerm_getMouseState] & 1 << MOUSE_BUTTON1)
-            buttonState |= 4;
-        if ([shell MouseTerm_getMouseState] & 1 << MOUSE_BUTTON3)
-            buttonState |= 2;
-        if ([shell MouseTerm_getMouseState] & 1 << MOUSE_BUTTON2)
-            buttonState |= 1;
+    case DEC_LOCATOR_MODE:
+        state = [shell MouseTerm_getMouseState];
+        if (state & 1 << MOUSE_BUTTON1) buttonState |= 4;
+        if (state & 1 << MOUSE_BUTTON3) buttonState |= 2;
+        if (state & 1 << MOUSE_BUTTON2) buttonState |= 1;
+        if (motion) {
+            cb = 10;
+        } else {
+            cb = button * 2 + 2 + (release ? 1: 0);
+        }
         snprintf(buf, BUFFER_LENGTH, "\e[%d;%d;%d;%d;%d&w", cb, buttonState, y, x, 0);
         len = strlen(buf);
+        if (mode == DEC_LOCATOR_ONESHOT_MODE)
+            [shell MouseTerm_setMouseMode: NO_MODE];
         break;
     default:
+        if (modflag & NSShiftKeyMask) cb |= 4;
+        if (modflag & NSAlternateKeyMask) cb |= 8;
+        if (modflag & NSControlKeyMask) cb |= 16;
+        if (motion) cb += 32;
         switch (mouseProtocol) {
         case URXVT_PROTOCOL:
             if (release)
@@ -359,10 +363,16 @@ static BOOL base64PasteEnabled = YES;
     case NO_MODE:
     case HILITE_MODE:
         goto ignored;
+    case DEC_LOCATOR_MODE:
+    case DEC_LOCATOR_ONESHOT_MODE:
+        if (!([shell MouseTerm_getEventFilter] & BUTTONDOWN_EVENT)) {
+            [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] | 1 << button];
+            goto handled;
+        }
+        // pass through
     case NORMAL_MODE:
     case BUTTON_MODE:
     case ALL_MODE:
-    case DEC_LOCATOR_MODE:
         [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] | 1 << button];
         {
             // get mouse position, the origin coodinate is (1, 1).
@@ -400,6 +410,32 @@ ignored:
     case NORMAL_MODE:
     case HILITE_MODE:
     case BUTTON_MODE:
+        goto handled;
+    case DEC_LOCATOR_MODE:
+    case DEC_LOCATOR_ONESHOT_MODE:
+        {
+            NSValue *value = [shell MouseTerm_getFilterRectangle];
+            int x;
+            int y;
+            if (value) {
+                int filterRect[4];
+                [value getValue: &filterRect];
+                if ([shell MouseTerm_getCoordinateType] == PIXEL_COORDINATE) {
+                    NSPoint point = [self convertPoint: [event locationInWindow] fromView: nil];
+                    x = point.x;
+                    y = [self frame].size.height - point.y;
+                } else {
+                    Position point = [self MouseTerm_currentPosition: event];
+                    x = point.x;
+                    y = point.y;
+                }
+                if (y >= filterRect[0] && x >= filterRect[1] && y <= filterRect[2] && x <= filterRect[3])
+                    goto handled;
+                [shell MouseTerm_setFilterRectangle: nil];
+                data = [self MouseTerm_codeForX: x Y: y modifier: 0 button: 0 motion: YES release: NO];
+                [(TTShell*) shell writeData: data];
+            }
+        }
         goto handled;
     case ALL_MODE:
         {
@@ -441,6 +477,32 @@ ignored:
     case NORMAL_MODE:
     case HILITE_MODE:
         goto handled;
+    case DEC_LOCATOR_MODE:
+    case DEC_LOCATOR_ONESHOT_MODE:
+        {
+            NSValue *value = [shell MouseTerm_getFilterRectangle];
+            int x;
+            int y;
+            if (value) {
+                int filterRect[4];
+                [value getValue: &filterRect];
+                if ([shell MouseTerm_getCoordinateType] == PIXEL_COORDINATE) {
+                    NSPoint point = [self convertPoint: [event locationInWindow] fromView: nil];
+                    x = point.x;
+                    y = [self frame].size.height - point.y;
+                } else {
+                    Position point = [self MouseTerm_currentPosition: event];
+                    x = point.x;
+                    y = point.y;
+                }
+                if (y >= filterRect[0] && x >= filterRect[1] && y <= filterRect[2] && x <= filterRect[3])
+                    goto handled;
+                [shell MouseTerm_setFilterRectangle: nil];
+                data = [self MouseTerm_codeForX: x Y: y modifier: 0 button: 0 motion: YES release: NO];
+                [(TTShell*) shell writeData: data];
+            }
+        }
+        goto handled;
     case BUTTON_MODE:
     case ALL_MODE:
         {
@@ -479,10 +541,16 @@ ignored:
     case NO_MODE:
     case HILITE_MODE:
         goto ignored;
+    case DEC_LOCATOR_MODE:
+    case DEC_LOCATOR_ONESHOT_MODE:
+        if (!([shell MouseTerm_getEventFilter] & BUTTONUP_EVENT)) {
+            [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] & ~(1 << button)];
+            goto handled;
+        }
+        // pass through
     case NORMAL_MODE:
     case BUTTON_MODE:
     case ALL_MODE:
-    case DEC_LOCATOR_MODE:
         [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] & ~(1 << button)];
         {
             // get mouse position, the origin coodinate is (1, 1).
