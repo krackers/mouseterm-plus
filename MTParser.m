@@ -754,6 +754,7 @@ static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
             [shell MouseTerm_setCoordinateType: CELL_COORDINATE];
             break;
         }
+        [shell MouseTerm_setFilterRectangle: nil];
         break;
     case ('\'' << 8) | '{':  /* DECSLE */
         for (i = 0; i < ppc->params_index; ++i) {
