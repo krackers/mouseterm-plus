@@ -540,6 +540,9 @@ static void handle_ris(struct parse_context *ppc, MTShell *shell)
     [shell MouseTerm_setMouseMode: NO_MODE];
     [shell MouseTerm_setFocusMode: NO];
     [shell MouseTerm_setMouseProtocol: NORMAL_PROTOCOL];
+    [shell MouseTerm_setCoordinateType: CELL_COORDINATE];
+    [shell MouseTerm_setEventFilter: REQUEST_EVENT];
+    [shell MouseTerm_setFilterRectangle: nil];
     [ppc->buffer release];
     ppc->buffer = nil;
 }
