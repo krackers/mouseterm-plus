@@ -71,6 +71,7 @@ Additionally, this project does:
   Some terminal emulators such as iTerm2 also have this feature(set access only).
   But they have some problems caused by buffer size restriction.
   The OSC 52 implementation of MouseTerm-Plus does not have buffer size restriction, just like XTerm.
+* Report original DA1 response ("\033\[?1;22;29c").
 * Report original DA2 response ("\033\[>19796;10000;2c").
 * Eliminate [ragel][9] dependency.
 * Parse control sequences with DEC VT/ECMA-48 compliant canonical parser.
