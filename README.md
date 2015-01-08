@@ -159,9 +159,7 @@ Download the development repository using [Git][16]:
     git clone git://github.com/saitoha/mouseterm-plus.git
 
 Run `make` to compile the plugin, and `make install` to install it
-into your home directory's SIMBL plugins folder. `make test` will
-install the plugin and run a second instance of Terminal.app for
-testing.
+into your home directory's SIMBL plugins folder.
 
 Visit [GitHub][17] if you'd like to fork the project, watch for new
 changes, or report issues.
