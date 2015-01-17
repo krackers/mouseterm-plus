@@ -683,7 +683,7 @@ static void get_current_position(MTShell *shell, int *x, int *y)
     if (*y >= frame.size.height) *y = frame.size.height - 1;
     if ([shell MouseTerm_getCoordinateType] == CELL_COORDINATE) {
         CGSize size = [view cellSize];
-        *x = (int)round(*x / (double)size.width + 1.0);
+        *x = (int)round(*x / (double)size.width);
         *y = (int)round(*y / (double)size.height + 0.5);
     }
 }
@@ -808,7 +808,7 @@ static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
                         break;
                     case CELL_COORDINATE:
                         size = [view cellSize];
-                        cellx = (int)round(pixelx / (double)size.width + 1.0);
+                        cellx = (int)round(pixelx / (double)size.width);
                         celly = (int)round(pixely / (double)size.height + 0.5);
                         response = [NSString stringWithFormat: @"\033[1;%d;%d;%d;%d&w", button, celly, cellx, 0];
                         break;
