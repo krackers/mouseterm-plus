@@ -828,6 +828,47 @@ static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
                                                         length: response.length]];
         }
         break;
+    case (' ' << 8) | 'q':  /* DECSCUSR */
+        if (ppc->params_index < 1)
+            ppc->params[0] = 0;  /* default parameter as 0 */
+        TTProfile *activeProfile = (TTProfile *)[[[[shell controller] activePane] view] profile];
+        switch (ppc->params[0]) {
+        case 0:
+        case 1:
+            /* blink block (default) */
+            [activeProfile setValue:[NSNumber numberWithBool:true] forUndefinedKey:@"CursorBlink"];
+            [activeProfile setValue:[NSNumber numberWithInt:0] forUndefinedKey:@"CursorType"];
+            break;
+        case 2:
+            /* steady block */
+            [activeProfile setValue:[NSNumber numberWithBool:false] forUndefinedKey:@"CursorBlink"];
+            [activeProfile setValue:[NSNumber numberWithInt:0] forUndefinedKey:@"CursorType"];
+            break;
+        case 3:
+            /* blink underline */
+            [activeProfile setValue:[NSNumber numberWithBool:true] forUndefinedKey:@"CursorBlink"];
+            [activeProfile setValue:[NSNumber numberWithInt:1] forUndefinedKey:@"CursorType"];
+            break;
+        case 4:
+            /* steady underline */
+            [activeProfile setValue:[NSNumber numberWithBool:false] forUndefinedKey:@"CursorBlink"];
+            [activeProfile setValue:[NSNumber numberWithInt:1] forUndefinedKey:@"CursorType"];
+            break;
+        case 5:
+            /* blink bar */
+            [activeProfile setValue:[NSNumber numberWithBool:true] forUndefinedKey:@"CursorBlink"];
+            [activeProfile setValue:[NSNumber numberWithInt:2] forUndefinedKey:@"CursorType"];
+            break;
+        case 6:
+            /* steady bar */
+            [activeProfile setValue:[NSNumber numberWithBool:false] forUndefinedKey:@"CursorBlink"];
+            [activeProfile setValue:[NSNumber numberWithInt:2] forUndefinedKey:@"CursorType"];
+            break;
+        default:
+            /* ignore */
+            break;
+        }
+        break;
     case 't':
         if (ppc->params_index > 0) {
             switch (ppc->params[0]) {

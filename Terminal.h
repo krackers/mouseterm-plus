@@ -58,10 +58,15 @@ typedef struct
 @property(readonly) TTPane *activePane; // @synthesize activePane;
 @end
 
+@interface TTProfile: NSObject
+- (void)setValue:(id)value forUndefinedKey:(id)key;
+@end
+
 @interface TTView: NSView
 - (TTLogicalScreen*) logicalScreen;
 - (linecount_t) rowCount;
 - (TTPane*) pane;
+- (TTProfile*) profile;
 - (MTTabController*) controller;
 - (Position) displayPositionForPoint: (NSPoint) point;
 - (void) clearTextSelection;
