@@ -91,6 +91,18 @@ NSMutableDictionary* MouseTerm_ivars = nil;
     EXISTS(profile, @selector(setValue:forKey:));
     EXISTS(profile, @selector(propertyListRepresentation));
 
+    Class windowController = NSClassFromString(@"TTWindowController");
+    if (!windowController)
+    {
+        NSLog(@"[MouseTerm] ERROR: Got nil Class for TTWindowController");
+        return;
+    }
+
+    EXISTS(windowController, @selector(makeTabWithProfile:customFont:command:
+                                               runAsShell:restorable:
+                                         workingDirectory:sessionClass:
+                                           restoreSession:));
+
     // Initialize instance vars before any swizzling so nothing bad happens
     // if some methods are swizzled but not others.
     MouseTerm_ivars = [[NSMutableDictionary alloc] init];
@@ -145,6 +157,13 @@ NSMutableDictionary* MouseTerm_ivars = nil;
             @selector(MouseTerm_colorForANSIColor:adjustedRelativeToColor:));
     SWIZZLE(view, @selector(colorForExtendedANSIColor:adjustedRelativeToColor:withProfile:),
             @selector(MouseTerm_colorForExtendedANSIColor:adjustedRelativeToColor:withProfile:));
+    SWIZZLE(windowController, @selector(makeTabWithProfile:customFont:command:
+                                               runAsShell:restorable:
+                                         workingDirectory:sessionClass:
+                                           restoreSession:),
+            @selector(MouseTerm_makeTabWithProfile:customFont:command:
+                                        runAsShell:restorable:workingDirectory:
+                                      sessionClass:restoreSession:));
     [self insertMenuItem];
 }
 
