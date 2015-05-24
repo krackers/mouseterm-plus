@@ -6,6 +6,7 @@
 @class MTTabController;
 @class MTProfile;
 @class TTPane;
+@class TTProfile;
 @class TTView;
 @class MTWindowController;
 
@@ -57,6 +58,7 @@ typedef struct
 - (void)setScriptBackgroundColor:(id)arg1;
 - (id)scriptBackgroundColor;
 - (void)setScriptCursorColor:(id)arg1;
+- (void) setProfile:(TTProfile*)profile;
 - (id)scriptCursorColor;
 @property(readonly) TTPane *activePane; // @synthesize activePane;
 @end

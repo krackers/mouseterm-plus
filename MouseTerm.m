@@ -165,6 +165,24 @@ NSMutableDictionary* MouseTerm_ivars = nil;
                                         runAsShell:restorable:workingDirectory:
                                       sessionClass:restoreSession:));
     [self insertMenuItem];
+    [self updateProfileOfAlreadyRunningTabs];
+}
+
++ (void) updateProfileOfAlreadyRunningTabs
+{
+    Class shellMetaClass = NSClassFromString(@"TTShell");
+    NSArray *runningShells = [objc_msgSend(shellMetaClass, @selector(runningShells)) allValues];
+    if((runningShells != nil) && ([runningShells count] != 0)) {
+        Class sharedProfileControllerMetaclass = objc_getClass("TTProfileManager");
+        TTProfileManager *sharedProfileManager \
+            = (TTProfileManager*) objc_msgSend(sharedProfileControllerMetaclass, \
+                    @selector(sharedProfileManager));
+        for(id shell in runningShells) {
+            TTTabController *tabController = [shell controller];
+            TTProfile *newProfile = [[sharedProfileManager profileWithName:[[tabController profile] name]] copy];
+            [tabController setProfile:newProfile];
+        }
+    }
 }
 
 + (void) toggleMouse: (NSMenuItem*) sender
