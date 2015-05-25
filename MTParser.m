@@ -16,7 +16,7 @@ parse_x_colorspec(MTShell *shell, char const *spec, int *red, int *green, int *b
 
     if (strncmp(spec, "rgb:", 4) == 0) {
         p = spec + 4;
-        while (p) {
+        while (*p) {
             component = strtoul(p, &endptr, 16);
             if (component == ULONG_MAX)
                 break;
@@ -34,7 +34,7 @@ parse_x_colorspec(MTShell *shell, char const *spec, int *red, int *green, int *b
                 break;
             ++p;
         }
-        if (*p == '\0' || *p == '/')
+        if (*p != '\0')
             return (-1);
         if (index != 3)
             return (-1);
