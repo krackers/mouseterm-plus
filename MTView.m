@@ -410,7 +410,7 @@ ignored:
     case NORMAL_MODE:
     case HILITE_MODE:
     case BUTTON_MODE:
-        goto handled;
+        goto ignored;
     case DEC_LOCATOR_MODE:
     case DEC_LOCATOR_ONESHOT_MODE:
         {
