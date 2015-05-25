@@ -543,8 +543,33 @@ static void handle_ris(struct parse_context *ppc, MTShell *shell)
     [shell MouseTerm_setCoordinateType: CELL_COORDINATE];
     [shell MouseTerm_setEventFilter: REQUEST_EVENT];
     [shell MouseTerm_setFilterRectangle: nil];
+
+    TTProfile *activeProfile = (TTProfile *)[[[[shell controller] activePane] view] profile];
+    Class sharedProfileControllerMetaclass = objc_getClass("TTProfileManager");
+    TTProfileManager *sharedProfileManager \
+        = (TTProfileManager*) objc_msgSend(sharedProfileControllerMetaclass, \
+                @selector(sharedProfileManager));
+
+    TTProfile *originalProfile = [sharedProfileManager profileWithName:[activeProfile name]];
+
+    [activeProfile setValue:[originalProfile valueForKey:@"CursorBlink"] forUndefinedKey:@"CursorBlink"];
+    [activeProfile setValue:[originalProfile valueForKey:@"CursorType"] forUndefinedKey:@"CursorType"];
+
     [ppc->buffer release];
     ppc->buffer = nil;
+}
+
+static void handle_decstr(struct parse_context *ppc, MTShell *shell)
+{
+    TTProfile *activeProfile = (TTProfile *)[[[[shell controller] activePane] view] profile];
+    Class sharedProfileControllerMetaclass = objc_getClass("TTProfileManager");
+    TTProfileManager *sharedProfileManager \
+        = (TTProfileManager*) objc_msgSend(sharedProfileControllerMetaclass, \
+                @selector(sharedProfileManager));
+
+    TTProfile *originalProfile = [sharedProfileManager profileWithName:[activeProfile name]];
+
+    [activeProfile setValue:[originalProfile valueForKey:@"CursorType"] forUndefinedKey:@"CursorType"];
 }
 
 static void enable_extended_mode(struct parse_context *ppc, MTShell *shell)
@@ -822,6 +847,50 @@ static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
             }
             [(TTShell*) shell writeData: [NSData dataWithBytes: [response UTF8String]
                                                         length: response.length]];
+        }
+        break;
+    case ('!' << 8) | 'p':  /* DECSTR */
+        handle_decstr(ppc, shell);
+        break;
+    case (' ' << 8) | 'q':  /* DECSCUSR */
+        if (ppc->params_index < 1)
+            ppc->params[0] = 0;  /* default parameter as 0 */
+        TTProfile *activeProfile = (TTProfile *)[[[[shell controller] activePane] view] profile];
+        switch (ppc->params[0]) {
+        case 0:
+        case 1:
+            /* blink block (default) */
+            [activeProfile setValue:[NSNumber numberWithBool:true] forUndefinedKey:@"CursorBlink"];
+            [activeProfile setValue:[NSNumber numberWithInt:0] forUndefinedKey:@"CursorType"];
+            break;
+        case 2:
+            /* steady block */
+            [activeProfile setValue:[NSNumber numberWithBool:false] forUndefinedKey:@"CursorBlink"];
+            [activeProfile setValue:[NSNumber numberWithInt:0] forUndefinedKey:@"CursorType"];
+            break;
+        case 3:
+            /* blink underline */
+            [activeProfile setValue:[NSNumber numberWithBool:true] forUndefinedKey:@"CursorBlink"];
+            [activeProfile setValue:[NSNumber numberWithInt:1] forUndefinedKey:@"CursorType"];
+            break;
+        case 4:
+            /* steady underline */
+            [activeProfile setValue:[NSNumber numberWithBool:false] forUndefinedKey:@"CursorBlink"];
+            [activeProfile setValue:[NSNumber numberWithInt:1] forUndefinedKey:@"CursorType"];
+            break;
+        case 5:
+            /* blink bar */
+            [activeProfile setValue:[NSNumber numberWithBool:true] forUndefinedKey:@"CursorBlink"];
+            [activeProfile setValue:[NSNumber numberWithInt:2] forUndefinedKey:@"CursorType"];
+            break;
+        case 6:
+            /* steady bar */
+            [activeProfile setValue:[NSNumber numberWithBool:false] forUndefinedKey:@"CursorBlink"];
+            [activeProfile setValue:[NSNumber numberWithInt:2] forUndefinedKey:@"CursorType"];
+            break;
+        default:
+            /* ignore */
+            break;
         }
         break;
     case 't':

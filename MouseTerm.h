@@ -4,6 +4,7 @@ extern NSMutableDictionary* MouseTerm_ivars;
 
 @interface MouseTerm: NSWindowController
 + (void) load;
++ (void) updateProfileOfAlreadyRunningTabs;
 + (void) toggleMouse: (NSMenuItem*) sender;
 + (void) toggleBase64Copy: (NSMenuItem*) sender;
 + (void) insertMenuItem;
