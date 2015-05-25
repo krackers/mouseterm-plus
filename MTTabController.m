@@ -43,6 +43,8 @@
 - (void) MouseTerm_tabControllerDealloc
 {
     [[(TTTabController *)self profile] release];
+    Ivar sPivar = class_getInstanceVariable([self class], "_scriptingProfile");
+    object_setIvar(self, sPivar, nil);
     [self MouseTerm_tabControllerDealloc];
 }
 
