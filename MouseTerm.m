@@ -91,6 +91,18 @@ NSMutableDictionary* MouseTerm_ivars = nil;
     EXISTS(profile, @selector(setValue:forKey:));
     EXISTS(profile, @selector(propertyListRepresentation));
 
+    Class windowController = NSClassFromString(@"TTWindowController");
+    if (!windowController)
+    {
+        NSLog(@"[MouseTerm] ERROR: Got nil Class for TTWindowController");
+        return;
+    }
+
+    EXISTS(windowController, @selector(makeTabWithProfile:customFont:command:
+                                               runAsShell:restorable:
+                                         workingDirectory:sessionClass:
+                                           restoreSession:));
+
     // Initialize instance vars before any swizzling so nothing bad happens
     // if some methods are swizzled but not others.
     MouseTerm_ivars = [[NSMutableDictionary alloc] init];
@@ -127,6 +139,8 @@ NSMutableDictionary* MouseTerm_ivars = nil;
             @selector(MouseTerm_resignFirstResponder));
     SWIZZLE(controller, @selector(shellDidReceiveData:),
             @selector(MouseTerm_shellDidReceiveData:));
+    SWIZZLE(controller, @selector(dealloc),
+            @selector(MouseTerm_tabControllerDealloc));
     SWIZZLE(prefs, @selector(windowDidLoad),
             @selector(MouseTerm_windowDidLoad));
     SWIZZLE(profile, @selector(valueForKey:),
@@ -145,7 +159,32 @@ NSMutableDictionary* MouseTerm_ivars = nil;
             @selector(MouseTerm_colorForANSIColor:adjustedRelativeToColor:));
     SWIZZLE(view, @selector(colorForExtendedANSIColor:adjustedRelativeToColor:withProfile:),
             @selector(MouseTerm_colorForExtendedANSIColor:adjustedRelativeToColor:withProfile:));
+    SWIZZLE(windowController, @selector(makeTabWithProfile:customFont:command:
+                                               runAsShell:restorable:
+                                         workingDirectory:sessionClass:
+                                           restoreSession:),
+            @selector(MouseTerm_makeTabWithProfile:customFont:command:
+                                        runAsShell:restorable:workingDirectory:
+                                      sessionClass:restoreSession:));
     [self insertMenuItem];
+    [self updateProfileOfAlreadyRunningTabs];
+}
+
++ (void) updateProfileOfAlreadyRunningTabs
+{
+    Class shellMetaClass = NSClassFromString(@"TTShell");
+    NSArray *runningShells = [objc_msgSend(shellMetaClass, @selector(runningShells)) allValues];
+    if((runningShells != nil) && ([runningShells count] != 0)) {
+        Class sharedProfileControllerMetaclass = objc_getClass("TTProfileManager");
+        TTProfileManager *sharedProfileManager \
+            = (TTProfileManager*) objc_msgSend(sharedProfileControllerMetaclass, \
+                    @selector(sharedProfileManager));
+        for(id shell in runningShells) {
+            TTTabController *tabController = [shell controller];
+            TTProfile *newProfile = [[sharedProfileManager profileWithName:[[tabController profile] name]] copy];
+            [tabController setProfile:newProfile];
+        }
+    }
 }
 
 + (void) toggleMouse: (NSMenuItem*) sender
