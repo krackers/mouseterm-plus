@@ -91,13 +91,14 @@ Additionally, this project does:
 Thanks
 ======
 
-Thanks to the original developper [Brodie Rao][5], and [Tom Feist][6] and [Scott Kroll][7] for their contributions.
-[Benoit Chesneau][13] reported some bugs to MouseTerm-Plus.
+Thanks to [Brodie Rao][10](original developper) and contributors [Tom Feist][11], [Scott Kroll][12], and [Enrico Ghirardi][13].
+[Benoit Chesneau][14] reported some bugs to MouseTerm-Plus.
 
 [10]: http://brodierao.com/
 [11]: http://github.com/shabble
 [12]: http://github.com/skroll
-[13]: https://github.com/benoitc
+[13]: https://github.com/cHoco
+[14]: https://github.com/benoitc
 
 
 -------
@@ -108,7 +109,7 @@ Frequently Asked Questions
 > What programs can I use the mouse in?
 
 This varies widely and depends on the specific program. `less`,
-[Emacs][8], and [Vim][9] are good places to test out mouse reporting.
+[Emacs][15], and [Vim][16] are good places to test out mouse reporting.
 
 > How do I disable mouse reporting temporarily?
 
@@ -147,28 +148,28 @@ file:
                                    (interactive)
                                    (scroll-up 1))))
 
-[14]: http://www.gnu.org/software/emacs/
-[15]: http://www.vim.org/
+[15]: http://www.gnu.org/software/emacs/
+[16]: http://www.vim.org/
 
 
 Development
 -----------
 
-Download the development repository using [Git][16]:
+Download the development repository using [Git][17]:
 
     git clone git://github.com/saitoha/mouseterm-plus.git
 
 Run `make` to compile the plugin, and `make install` to install it
 into your home directory's SIMBL plugins folder.
 
-Visit [GitHub][17] if you'd like to fork the project, watch for new
+Visit [GitHub][18] if you'd like to fork the project, watch for new
 changes, or report issues.
 
-[JRSwizzle][18] and some mouse reporting code from [iTerm][19] are used
+[JRSwizzle][19] and some mouse reporting code from [iTerm][20] are used
 in MouseTerm.
 
-[16]: http://git-scm.org/
-[17]: http://github.com/brodie/mouseterm
-[18]: http://rentzsch.com/trac/wiki/JRSwizzle
-[19]: http://iterm.sourceforge.net/
+[17]: http://git-scm.org/
+[18]: http://github.com/brodie/mouseterm
+[19]: http://rentzsch.com/trac/wiki/JRSwizzle
+[20]: http://iterm.sourceforge.net/
 
