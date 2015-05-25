@@ -139,6 +139,8 @@ NSMutableDictionary* MouseTerm_ivars = nil;
             @selector(MouseTerm_resignFirstResponder));
     SWIZZLE(controller, @selector(shellDidReceiveData:),
             @selector(MouseTerm_shellDidReceiveData:));
+    SWIZZLE(controller, @selector(dealloc),
+            @selector(MouseTerm_tabControllerDealloc));
     SWIZZLE(prefs, @selector(windowDidLoad),
             @selector(MouseTerm_windowDidLoad));
     SWIZZLE(profile, @selector(valueForKey:),

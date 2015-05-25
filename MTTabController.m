@@ -40,4 +40,10 @@
     return YES;
 }
 
+- (void) MouseTerm_tabControllerDealloc
+{
+    [[(TTTabController *)self profile] release];
+    [self MouseTerm_tabControllerDealloc];
+}
+
 @end
