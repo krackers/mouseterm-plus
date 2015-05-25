@@ -1,7 +1,6 @@
 #import <Cocoa/Cocoa.h>
 #import "Mouse.h"
 #import "MTParser.h"
-#import "MTParserState.h"
 #import "MTShell.h"
 #import "MTView.h"
 #import "MTTabController.h"
@@ -15,21 +14,9 @@
     NSUInteger length = [data length];
     char* chars = (char*)[data bytes];
 
-    MTParserState* state = [[(TTTabController*) self shell]
-                               MouseTerm_getParserState];
-    MTParser_execute(chars, length, NO, [(TTTabController*) self shell],
-                     state);
+    MTParser_execute(chars, length, [(TTTabController*) self shell]);
 
     [self MouseTerm_shellDidReceiveData: data];
-
-    if (state.handleSda)
-    {
-        [(TTShell*) [(TTTabController*) self shell]
-            writeData: [NSData dataWithBytes: SDA_RESPONSE
-                                      length: SDA_RESPONSE_LEN]];
-        // Unset so it's not set the next time
-        state.handleSda = NO;
-    }
 }
 
 - (BOOL) MouseTerm_acceptsFirstResponder
@@ -39,7 +26,7 @@
 
 - (BOOL) MouseTerm_becomeFirstResponder
 {
-    NSData* data = [NSData dataWithBytes: "\x1b[I" length: 3];
+    NSData* data = [NSData dataWithBytes: "\033[I" length: 3];
     MTShell* shell = [(TTTabController*) self shell];
     [(TTShell*) shell writeData: data];
     return YES;
@@ -47,10 +34,18 @@
 
 - (BOOL) MouseTerm_resignFirstResponder
 {
-    NSData* data = [NSData dataWithBytes: "\x1b[O" length: 3];
+    NSData* data = [NSData dataWithBytes: "\033[O" length: 3];
     MTShell* shell = [(TTTabController*) self shell];
     [(TTShell*) shell writeData: data];
     return YES;
+}
+
+- (void) MouseTerm_tabControllerDealloc
+{
+    [[(TTTabController *)self profile] release];
+    Ivar sPivar = class_getInstanceVariable([self class], "_scriptingProfile");
+    object_setIvar(self, sPivar, nil);
+    [self MouseTerm_tabControllerDealloc];
 }
 
 @end

@@ -2,11 +2,26 @@
 #import "Mouse.h"
 #import "Terminal.h"
 
+@interface NSObject (TTLogicalScreen)
+
+- (NSValue*) MouseTerm_initVars2;
+- (void) MouseTerm_setNaturalEmojiWidth: (BOOL) emojiFix;
+- (BOOL) MouseTerm_getNaturalEmojiWidth;
+- (unsigned long long)MouseTerm_logicalWidthForCharacter:(int)arg1;
+- (unsigned long long)MouseTerm_displayWidthForCharacter:(int)arg1;
+
+@end
+
 @interface NSView (MTView)
-- (NSData*) MouseTerm_codeForEvent: (NSEvent*) event
-                            button: (MouseButton) button
-                            motion: (BOOL) motion
-                           release: (BOOL) release;
+- (id) MouseTerm_colorForANSIColor:(unsigned int)index;
+- (id) MouseTerm_colorForANSIColor:(unsigned int)index adjustedRelativeToColor:(id)bgColor;
+- (id) MouseTerm_colorForExtendedANSIColor:(unsigned long long)index adjustedRelativeToColor:(id)bgColor withProfile:(id)profile;
+- (NSData*) MouseTerm_codeForX: (unsigned int) x
+                             Y: (unsigned int) y
+                      modifier: (char) modflag
+                        button: (MouseButton) button
+                        motion: (BOOL) motion
+                       release: (BOOL) release;
 + (void) MouseTerm_setMouseEnabled: (BOOL) value;
 + (BOOL) MouseTerm_getMouseEnabled;
 + (void) MouseTerm_setBase64CopyEnabled: (BOOL) value;

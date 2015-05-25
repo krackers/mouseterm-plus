@@ -1,10 +1,14 @@
 #import <Cocoa/Cocoa.h>
+#import <objc/runtime.h>
+#import <objc/message.h>
 
 @class MTShell;
 @class MTTabController;
 @class MTProfile;
 @class TTPane;
+@class TTProfile;
 @class TTView;
+@class MTWindowController;
 
 // Classes from Terminal.app being overridden
 
@@ -47,18 +51,35 @@ typedef struct
 - (MTShell*) shell;
 - (MTProfile*) profile;
 - (TTOutputDecoder*) encodingConverter;
+- (void)setScriptBoldTextColor:(id)arg1;
+- (id)scriptBoldTextColor;
+- (void)setScriptNormalTextColor:(id)arg1;
+- (id)scriptNormalTextColor;
+- (void)setScriptBackgroundColor:(id)arg1;
+- (id)scriptBackgroundColor;
+- (void)setScriptCursorColor:(id)arg1;
+- (void) setProfile:(TTProfile*)profile;
+- (id)scriptCursorColor;
 @property(readonly) TTPane *activePane; // @synthesize activePane;
+@end
+
+@interface TTProfile: NSObject
+- (void)setValue:(id)value forUndefinedKey:(id)key;
+- (NSString*)name;
 @end
 
 @interface TTView: NSView
 - (TTLogicalScreen*) logicalScreen;
 - (linecount_t) rowCount;
 - (TTPane*) pane;
+- (TTProfile*) profile;
 - (MTTabController*) controller;
 - (Position) displayPositionForPoint: (NSPoint) point;
 - (void) clearTextSelection;
 - (struct CGSize)cellSize;
 - (void)copy:(id)arg1;
+- (id)adjustedColorWithColor:(id)arg1 withBackgroundColor:(id)arg2 force:(BOOL)arg3;
+- (id)colorForANSIColor:(unsigned int)index;
 @end
 
 @interface TTProfileArrayController:
@@ -68,4 +89,8 @@ typedef struct
 @interface TTAppPrefsController: NSWindowController <NSWindowDelegate>
 + (TTAppPrefsController*) sharedPreferencesController;
 - (TTProfileArrayController*) profilesController;
+@end
+
+@interface TTProfileManager: NSObject
+- (TTProfile*) profileWithName:(NSString*)profileName;
 @end

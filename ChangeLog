@@ -1,0 +1,632 @@
+2015-01-05  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m: Reset DECELR/DECEFR/DECSLE state with RIS sequence
+
+  * MTParser.m: Reset filter rectangle with DECELR sequence
+
+  * MTParser.m, MTShell.m, MTView.m: Implement DEC Locator filter rectangle
+  feature
+
+  * MTParser.m, MTShell.h, MTShell.m: Handle DECEFR
+
+  * MTParser.m, MTView.m: Implement DEC Locator one-shot mode event
+
+  * MTParser.m, MTView.m: Fix wrong DECSLE behavior
+
+  * MTShell.m: Fix a fixed size leak when initializing the tcap map
+
+  * MTShell.h, MTShell.m, MTView.h, MTView.m: Filter extra motion events
+  (Motion events are reported only if the mouse pointer has moved to a
+  different character cell.)
+
+2015-01-04  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m, MTShell.h, MTShell.m, MTView.m, Mouse.h: Implement DECRQLP
+
+  * MTParser.m: Fix a state transition bug around CSI intermediate bytes
+  parsing
+
+  * MTParser.m, MTShell.h, MTShell.m, Mouse.h: Implement DECSLE
+
+  * MTParser.m, MTShell.h, MTShell.m, Mouse.h: Implement DECELR
+
+  * MTParser.m: Make sure to redraw the view after the palette state is changed
+
+  * MTParser.m, MTShell.h, MTShell.m: Parse X11 color names with a lookup table
+
+2015-01-03  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m, MTView.m: Minor fixes
+
+  * MTParser.m: Update x11 color spec parser to parse #RRRGGGBBB/#RRRRGGGGBBBB
+  format
+
+  * MTParser.m: Respect alpha component of original color(OSC4/10/11/12)
+
+  * MTParser.m: Fix a memory leak problem
+
+  * MTParser.m: Implement xterm's OSC 12/112
+
+  * MTParser.m, MTView.m, Terminal.h: Implement xterm's OSC 10/11/110/111
+
+  * MTParser.m: Implement xterm's OSC104 feature
+
+  * MTParser.m, MTShell.h, MTShell.m, MTView.h, MTView.m, MouseTerm.m,
+  Terminal.h: Implement xterm's OSC4 feature
+
+2014-12-30  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m, MTShell.h, MTShell.m: Drop unnecessary member of struct
+  parse_context
+
+2014-12-29  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m: Fix a bug caused by lack of parameter state initialization
+  (issue #2)
+
+  * MTParser.m: Fix a state transition bug around OSC teminator
+
+  * MTShell.m: Use NSMutableData instead of a pair of malloc/free
+
+  * Info.plist: Fix version typo
+
+  * MTParser.m, README.md: Quick fix for tmux DA1 handling progmem(Thanks to
+  @benoitc).
+
+2014-12-24  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m: Override DECID(ESC Z)
+
+  * README.md: Conflicts: Makefile README.md
+
+  * README.md: Fix a typo
+
+2014-12-23  Hayaki Saito <user@zuse.jp>
+
+  * Info.plist: Update Info.plist
+
+  * Makefile: Makefile tweak
+
+  * ChangeLog: Add ChangeLog
+
+  * MTParser.m, MTShell.m, MTView.h, MTView.m, MouseTerm.m: Add extend mode
+  8810: treat emoji as double width characters
+
+  * MTShell.m: Add kmous to termcap entries
+
+  * MTParser.m, Mouse.h, README.md: Report customized DA1 response
+
+  * Makefile: Makefile tweak
+
+2014-12-22  Hayaki Saito <user@zuse.jp>
+
+  * MTShell.m, MTTabController.m, MTView.m: Fix style issue
+
+  * MTShell.m: Fix NULL injection error of OSC52 read access
+
+  * MTParser.m: Handle OSC terminator correctly
+
+  * Mouse.h, README.md: Change DA2 response
+
+2014-12-21  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m: Ignore PM/APC/SOS
+
+  * Makefile: Makefile tweak
+
+  * Mouse.h: Drop unused definitions
+
+  * MTShell.m: Generate hex-encoded tcap map on initialize time
+
+  * MTParser.m, MTShell.h, MTShell.m: Initial support of tcap-query
+
+  * MTParser.h, MTParser.m, MTParserState.h, MTParserState.m, MTShell.h,
+  MTShell.m, MTTabController.m: Drop class MTParserState
+
+2014-12-20  Hayaki Saito <user@zuse.jp>
+
+  * .gitignore, MTParser.m, MTParser.rl, Makefile: Don't use ragel and rewrite
+  MTParser.rl with hand-made parser
+
+  * MTParser.rl: Suppress warnings(unused-const-variable)
+
+2014-12-23  Hayaki Saito <user@zuse.jp>
+
+  * MTShell.m: Add kmous to termcap entries
+
+  * MTParser.m, MTShell.m, MTView.h, MTView.m, MouseTerm.m: Add extend mode
+  8810: treat emoji as double width characters
+
+  * MTParser.m, Mouse.h, README.md: Report customized DA1 response
+
+  * Makefile: Makefile tweak
+
+2014-12-22  Hayaki Saito <user@zuse.jp>
+
+  * MTShell.m, MTTabController.m, MTView.m: Fix style issue
+
+  * MTShell.m: Fix NULL injection error of OSC52 read access
+
+  * MTParser.m: Handle OSC terminator correctly
+
+  * Mouse.h, README.md: Change DA2 response
+
+2014-12-21  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.m: Ignore PM/APC/SOS
+
+  * Makefile: Makefile tweak
+
+  * Mouse.h: Drop unused definitions
+
+  * MTShell.m: Generate hex-encoded tcap map on initialize time
+
+  * MTParser.m, MTShell.h, MTShell.m: Initial support of tcap-query
+
+  * MTParser.h, MTParser.m, MTParserState.h, MTParserState.m, MTShell.h,
+  MTShell.m, MTTabController.m: Drop class MTParserState
+
+2014-12-20  Hayaki Saito <user@zuse.jp>
+
+  * .gitignore, MTParser.m, MTParser.rl, Makefile: Don't use ragel and rewrite
+  MTParser.rl with hand-made parser
+
+  * MTParser.rl: Suppress warnings(unused-const-variable)
+
+2014-07-09  Hayaki Saito <user@zuse.jp>
+
+  * MTAppPrefsController.m: Arrange button position in the preference panel
+
+2014-02-21  Hayaki Saito <user@zuse.jp>
+
+  * README.md: Add minor fix to README.md
+
+  * Makefile: Distribute source code with dmg package
+
+  * README.md: Fix a typo
+
+  * README.md: Add download link to README
+
+  * Makefile: Makefile tweak
+
+  * MouseTerm.m: Make OSC52 read access disabled by default
+
+  * MouseTerm.h, MouseTerm.m: Get rid of IBAction from method definitions
+
+  * MTShell.m: Suppress some warnings
+
+  * MTShell.m: Fix a typo
+
+  * MTShell.h: Fix a typo
+
+  * Terminal.h: Update terminal.h
+
+2013-12-05  Hayaki Saito <user@zuse.jp>
+
+  * Makefile: Makefile tweak
+
+2013-11-19  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.rl: Reset app cursor key mode when RIS is detected
+
+2013-11-18  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.rl: Handle RIS
+
+2013-06-22  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.rl, MTParserState.h, MTParserState.m, Mouse.h, README.md: Drop
+  DECSCUSR
+
+2013-05-24  Hayaki Saito <user@zuse.jp>
+
+  * MTParser.rl, MTShell.h, MTShell.m, MTTabController.h, MTTabController.m,
+  MTView.h, MTView.m, Makefile, MouseTerm.m, Terminal.h: Add support for focus
+  reporting mode
+
+2012-12-17  saitoha <user@zuse.jp>
+
+  * MTParser.rl, MTParserState.h, MTParserState.m, MTShell.h, MTShell.m,
+  Makefile, Mouse.h, Terminal.h: Support title stacking
+
+2012-09-03  Hayaki Saito <user@zuse.jp>
+
+  * README.md: fix typo
+
+2012-08-05  saitoha <user@zuse.jp>
+
+  * Japanese.lproj/Localizable.strings: Add Japanese localization support
+
+  * MTParser.h, MTParser.rl, MTTabController.m, Mouse.h: change DA2 version
+  95->277, and ignore DCS string
+
+  * English.lproj/Localizable.strings, French.lproj/Localizable.strings,
+  MTParser.rl, MTView.h, MTView.m, Makefile, MouseTerm.m: arrange menu items,
+  and add some localize strings.
+
+  * MTParser.rl, MTShell.h, MTShell.m, Terminal.h: support OSC 52 / get access
+
+  * English.lproj/Localizable.strings, French.lproj/Localizable.strings,
+  MTParser.rl, MTShell.h, MTShell.m, MTTabController.m, MTView.h, MTView.m,
+  Makefile, MouseTerm.h, MouseTerm.m, Terminal.h: support OSC 52(clipboard
+  access) / set access
+
+2012-08-04  saitoha <user@zuse.jp>
+
+  * MTView.h, MTView.m, MouseTerm.m: add support for DECSET 1003 / "any event
+  tracking"
+
+2012-07-16  saitoha <user@zuse.jp>
+
+  * MTView.m: fix off-by-one issues
+
+2012-06-04  saitoha <user@zuse.jp>
+
+  * MTView.m: fix a bug in retriveing current position.
+
+  * MTParser.rl, MTShell.h, MTShell.m, MTView.h, MTView.m, Mouse.h, Terminal.h:
+  support SGR/urxvt styled mouse reporting
+
+2010-09-25  Brodie Rao <brodie@bitheap.org>
+
+  * MTView.m: Check if events should be ignored in emulated scrolling mode
+
+  * MTView.m: Style improvement
+
+2010-09-07  Brodie Rao <brodie@bitheap.org>
+
+  * README.md: Wrap README to 70 characters
+
+  * MTView.m: Ensure coordinate characters in mouse response never exceed 255 
+  xterm mouse reporting is limited to 223 columns/rows as each position is
+  encoded in a single character as value + 32.
+
+2010-07-22  Brodie Rao <brodie@bitheap.org>
+
+  * MTView.m: Fix mouse event toggle not working in scroll wheel emulation mode
+
+  * English.lproj/Configuration.xib, Info.plist, MTAppPrefsController.h,
+  MTAppPrefsController.m, MTProfile.h, MTProfile.m, MTView.h, MTView.m,
+  Makefile, MouseTerm.h, MouseTerm.m, Terminal.h: Add preferences support
+
+2010-07-20  Brodie Rao <brodie@bitheap.org>
+
+  * MTView.h, MTView.m, MouseTerm.m, Terminal.h: Handle TTPane not being
+  present in Terminal.app (fixes 10.5 compatibility)
+
+2010-07-18  Brodie Rao <brodie@bitheap.org>
+
+  * README.md: Add "thanks" section to README
+
+  * README.md: Remove erroneous mouse-wheel-mode usage in README
+
+  * English.lproj/Localizable.strings, French.lproj/Localizable.strings,
+  Makefile, MouseTerm.m: Localize menu item title and add French translation
+
+  * MouseTerm.m: Slightly friendlier menu item title
+
+  * MTView.h, MTView.m, MouseTerm.h, MouseTerm.m: Implement menu item for
+  toggling mouse reporting
+
+  * MTShell.h, MTShell.m, Mouse.h, MouseTerm.m: Suppress Terminal.app's PDA
+  response when SDA is received
+
+2010-07-14  Brodie Rao <brodie@bitheap.org>
+
+  * README.md: README: mention Ragel and clarify Makefile commands
+
+2010-07-13  Brodie Rao <brodie@bitheap.org>
+
+  * Info.plist: Update bundle version
+
+2010-07-07  Brodie Rao <brodie@bitheap.org>
+
+  * MTParser.rl: Remove extraneous whitespace
+
+  * MTParser.rl: Remove extraneous ternary operator
+
+2010-07-06  Brodie Rao <brodie@bitheap.org>
+
+  * Makefile: Makefile improvements
+
+2010-07-05  Brodie Rao <brodie@bitheap.org>
+
+  * MTView.h, MTView.m: Ignore control and add modifier ignore to motion/up
+  events
+
+  * MouseTerm.m: Print selectors using NSStringFromSelector (to supress format
+  warnings)
+
+  * README.md: Update DMG size
+
+  * MTView.m: Fix typo
+
+  * Mouse.h: Fix middle/right buttons being swapped
+
+  * README.md: Updated README with mouse button status (and removed hilite
+  todo)
+
+  * MTView.h, MTView.m, MouseTerm.m: Implement remaining mouse buttons (and
+  cmd+click)
+
+2010-07-04  Brodie Rao <brodie@bitheap.org>
+
+  * MTTabController.m, Mouse.h: Move SDA_RESPONSE* into Mouse.h
+
+  * MTView.m: Clear text selection on mouse scroll
+
+  * Makefile: Increase OSXVER to 10.5 now that we're using @property
+
+  * MTTabController.m: Fix remaining warnings
+
+  * Makefile: Fix long line
+
+  * MTParser.rl: Mark ragel eof attribute as possibly unused
+
+  * MTTabController.m: Fix "may not respond to method" warnings
+
+  * .gitignore, EscapeParser.h, EscapeParser.rl, MTEscapeParserState.h,
+  MTEscapeParserState.m, MTParser.h, MTParser.rl, MTParserState.h,
+  MTParserState.m, MTShell.h, MTShell.m, MTTabController.m, Makefile: Renamed
+  EscapeParser* to MTParser*
+
+  * EscapeParser.h, EscapeParser.rl, MTEscapeParserState.h,
+  MTEscapeParserState.m, MTShell.h, MTShell.m, MTTabController.m, MTView.m,
+  Makefile: Repair whitespace damage
+
+2010-06-30  Scott M. Kroll <skroll@gmail.com>
+
+  * .gitignore: Added .gitignore.  Makes git stop complaining about files I
+  don't care about.
+
+  * MouseTerm.m: Removed swizzling of unused mouse events.  Handling these
+  events can sometimes cause the debug console to get spammed and hang.
+
+2010-06-28  Scott M. Kroll <skroll@gmail.com>
+
+  * MTShell.m: Added autorelease to initVars.
+
+  * MTTabController.m: Removed FIXME comment as it's now fixed.
+
+  * MTTabController.m: Minor formatting changes.
+
+  * EscapeParser.rl, MTEscapeParserState.h, MTEscapeParserState.m,
+  MTTabController.m: Fixed SDA reporting.  Terminal now responds to Secondary
+  Send Device Attributes escape codes and responsds appropriately.
+
+  * MTTabController.m: Unset handleSda flag.  Unset the flag so it's not
+  handled the next time the shell receives data.
+
+  * EscapeParser.rl, MTEscapeParserState.h, MTEscapeParserState.m: Added SDA
+  parsing.  Secondary Device Attribute parsing added so MouseTerm can report
+  mouse support to applications.
+
+  * EscapeParser.rl, MTEscapeParserState.h, MTEscapeParserState.m: Added
+  lastEscapeIndex.  This is necessary for tracking secondary device attributes.
+
+  * EscapeParser.h, EscapeParser.rl, MTTabController.m, Makefile: Added
+  EscapeParser state machine.
+
+  * MTEscapeParserState.h, MTEscapeParserState.m: Added new properties to
+  MTEscapeParserState.  Added currentState. Added pendingMouseMode. Added
+  toggleState.
+
+  * MTEscapeParserState.h, MTEscapeParserState.m, MTShell.h, MTShell.m,
+  Makefile: Added MTEscapeParserState.
+
+  * MTShell.h, MTShell.m: Removed MouseTerm_get and MouseTerm_set from MTShell.
+
+  * MTShell.h, MTShell.m, MTView.m: Added isMouseDown getter/setter to MTShell.
+
+  * MTShell.h, MTShell.m, MTTabController.m, MTView.m: Added appCursorMode
+  getter and setter to MTShell.
+
+  * MTShell.h, MTShell.m, MTTabController.m, MTView.m: Added mouseMode
+  getter/setter to MTShell.
+
+2010-06-25  Brodie Rao <brodie@bitheap.org>
+
+  * MTShell.h, MTTabController.h, MTView.h: Fix category names
+
+  * Makefile: Makefile: fix typo
+
+  * MTShell.h, MTShell.m, MTTabController.h, MTTabController.m, MTView.h,
+  MTView.m, Makefile, Mouse.h, MouseTerm.h, MouseTerm.m, Terminal.h,
+  Terminal.m: Reorganized classes and shortened category names
+
+  * Makefile, README.md, README.txt: Rename README.txt to README.md
+
+  * Makefile: Makefile: support for building for 10.4
+
+  * Makefile: Makefile: add all target
+
+  * Terminal.h, Terminal.m: Remove unused argument
+
+  * Makefile: Lower OSXVER to 10.5
+
+  * Mouse.h, MouseTerm.h, MouseTerm.m, Terminal.h, Terminal.m: Move mousePress
+  code into method and reorganize headers
+
+  * MouseTerm.h, MouseTerm.m, Terminal.m: Properly define interfaces/categories
+  and fix ivars not being initialized
+
+  * Makefile: Makefile: improve ARCH flag
+
+2010-06-24  Brodie Rao <brodie@bitheap.org>
+
+  * MouseTerm.h, Terminal.m: Clean up ivar code
+
+  * Makefile: Numerous Makefile improvements (with help from shabble and
+  skroll)
+
+  * Makefile: Add test target for launching Terminal.app
+
+2010-06-17  Brodie Rao <brodie@bitheap.org>
+
+  * Mouse.h, MouseTerm.m, Terminal.m: Basic support for mouseUp/Dragged/Down
+
+  * utils/da.py, utils/da2.py, utils/mouseon.py: Add scripts for reporting
+  primary/secondary device attributes
+
+  * Terminal.m: Formatting tweaks
+
+  * Makefile: Add make dmg and add proper command dependencies
+
+2010-05-01  Brodie Rao <brodie@bitheap.org>
+
+  * README.txt: Remove PlugSuit mention and make SIMBL requirement explicit
+
+2009-09-13  Brodie Rao <brodie@bitheap.org>
+
+  * MouseTerm.m: Remove dummy implementation classes since we're not building
+  x86_64
+
+  * Makefile: Remove x86_64 building - it doesn't make sense for 10.5
+
+  * MouseTerm.h, MouseTerm.m, Terminal.m: Updates for Snow Leopard
+  compatibility  Changes include:  - Categories are now added to the
+  superclasses of the respective Terminal.app classes. This avoids undefined
+  symbol issues with the x86_64 linker. - Changes in type sizes are across
+  architectures are taken into account. - With the inclusion of terminal panes,
+  some APIs have changed. Pane issues are taken into account, and custom
+  instance variables are now associated with shell objects.  As an added bonus,
+  interfaces are now defined for Terminal.app APIs and "may not respond to
+  method" warnings should go away.
+
+  * MouseTerm.m: Report errors from JRSwizzle when swizzling
+
+  * Makefile: Remove direct lipo usage since we're on the same SDK (and remove
+  PPC)
+
+  * Makefile: Bump up SDK version to 10.6
+
+2009-09-12  Brodie Rao <brodie@bitheap.org>
+
+  * Makefile: Removed ppc64 building from the Makefile (gone in 10.6)
+
+2009-09-02  Brodie Rao <brodie@bitheap.org>
+
+  * utils/mouseoff.sh, utils/mouseon.py, utils/mouseon.sh, utils/trace.d,
+  utils/trace.sh: Added utility scripts
+
+  * JRSwizzle.m: Updated JRSwizzle
+
+2009-03-28  Brodie Rao <brodie@bitheap.org>
+
+  * Terminal.m: Removed unused import
+
+  * Terminal.m: Removed trailing whitespace
+
+2008-07-04  Brodie Rao <brodie@bitheap.org>
+
+  * README.txt: Added contact information
+
+2008-05-11  Brodie Rao <brodie@bitheap.org>
+
+  * Terminal.m: Fixed scrollWheel incorrectly handling 0.0 delta events (and
+  removed contrived copysign() usage)
+
+  * README.txt: Updated dmg size
+
+  * Mouse.h, Terminal.m: Converted GET_IVAR/IVAR to inline functions, added
+  code to initialize instance variables if they aren't there (to fix late
+  loading with PlugSuit)
+
+  * README.txt: Added mention of PlugSuit
+
+  * README.txt: Fixed stray line during copy/paste in README
+
+  * Terminal.m: Changed copysignf calls to copysign (which takes doubles)
+
+2008-05-10  Brodie Rao <brodie@bitheap.org>
+
+  * Info.plist: Changed version to 1.0a1
+
+  * README.txt: Updated README
+
+  * MouseTerm.h, MouseTerm.m, Terminal.m: Implemented checking for all used
+  methods before loading, added EXISTS/SWIZZLE macros, added preliminary code
+  for handling other mouse events (commented out for now)
+
+  * Terminal.m: Removed trailing whitespace
+
+2008-05-09  Brodie Rao <brodie@bitheap.org>
+
+  * Terminal.m: Implemented scrolling being ignored when the scroller isn't at
+  the bottom
+
+  * MouseTerm.h: Fixed TTView base class
+
+  * README.txt: README fixes
+
+  * Install.scpt: Fixed typo in install script
+
+  * Install.scpt: Updated Install script to get MouseTerm.bundle path relative
+  to the script
+
+  * Mouse.h: Hopefully solved the mousePress mystery. At least vte's source
+  code was comprehensible, unlike xterm's.
+
+  * Mouse.h: Fixed mouse wheel up button being incorrectly formatted (needs
+  testing with other buttons)
+
+  * README.txt: Added .emacs example to README
+
+  * Mouse.h, Terminal.m: Fixed Y position reporting not compensating for
+  scrollback, and adjusted some signedness
+
+2008-05-08  Brodie Rao <brodie@bitheap.org>
+
+  * Terminal.m: Implemented acceleration for xterm reporting as well (and fixed
+  a few incorrect math function calls)
+
+  * Terminal.m: Added a comment noting CGFloat discrepancy
+
+  * Terminal.m: Implemented simulated mouse wheel scrolling with acceleration
+  taken into account
+
+  * COPYING.txt, Install.scpt, LICENSE.txt, Makefile, README.txt,
+  Uninstall.scpt: Updated Makefile with builddmg command, updated README with
+  FAQs and builddmg note, renamed COPYING.txt to LICENSE.txt, added
+  install/uninstall scripts
+
+2008-05-07  Brodie Rao <brodie@bitheap.org>
+
+  * Makefile: Made Makefile more general and removed -Wextra
+
+  * MouseTerm.m, README.txt: Added FIXME note and tweaked README formatting
+
+  * Makefile: Made buildnative actually build natively (imagine that)
+
+  * README.txt: Updated project status in README
+
+  * Makefile, Mouse.h: Fixed MOUSE_WHEEL_DOWN and UP being reversed
+
+  * Mouse.h: Fixed mousePress returning garbage - sizeof() doesn't make much
+  sense on a format string
+
+  * Mouse.h, Terminal.m: Added code for handling application cursor keys mode
+  and made mouse wheel scrolling send up/down for alternate screens with this
+  mode on
+
+  * Mouse.h: Fixed mousePress result being truncated by snprintf
+
+  * MouseTerm.h, MouseTerm.m, Terminal.m: Fixed some syntax errors/warnings
+
+  * README.txt: Added project status section to README
+
+  * README.txt: Added note to README about JRSwizzle and iTerm code usage
+
+  * Makefile: Added -Wall -Wextra to CFLAGS
+
+  * Makefile: Added -O2 to CFLAGS
+
+  * Makefile, Mouse.h, MouseTerm.h, MouseTerm.m, Terminal.m: Reorganized code
+  into separate files, changed swizzle on load to only go through if methods
+  for both classes are found, removed usage of swizzle error, made #defines for
+  some constants, replaced non-standard \e with \033, made TOGGLE_MOUSE
+  handling more correct, disabled alternate screen scrolling for now (has
+  issues), cleaned up formatting, added more comments
+
+  * COPYING.txt, Info.plist, JRSwizzle.h, JRSwizzle.m, Makefile, MouseTerm.m,
+  README.txt: Initial import

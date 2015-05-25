@@ -5,6 +5,67 @@
 #import "MTView.h"
 #import "Mouse.h"
 #import "Terminal.h"
+#import "MouseTerm.h"
+
+@implementation NSObject (TTLogicalScreen)
+
+- (NSValue*) MouseTerm_initVars2
+{
+    NSValue* ptr = [NSValue valueWithPointer: self];
+    if ([MouseTerm_ivars objectForKey: ptr] == nil)
+    {
+        NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+        [MouseTerm_ivars setObject: dict forKey: ptr];
+        [dict setObject: [NSNumber numberWithInt: NO]
+                 forKey: @"emojiFix"];
+    }
+    return ptr;
+}
+
+- (void) MouseTerm_setNaturalEmojiWidth: (BOOL) emojiFix
+{
+    NSValue* ptr = [NSValue valueWithPointer: self];
+    if ([MouseTerm_ivars objectForKey: ptr] == nil)
+    {
+        NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+        [MouseTerm_ivars setObject: dict forKey: ptr];
+        [dict setObject: [NSNumber numberWithInt: emojiFix]
+                 forKey: @"emojiFix"];
+    } else {
+        [[MouseTerm_ivars objectForKey: ptr]
+            setObject: [NSNumber numberWithBool: emojiFix]
+               forKey: @"emojiFix"];
+    }
+}
+
+- (BOOL) MouseTerm_getNaturalEmojiWidth
+{
+    NSValue* ptr = [NSValue valueWithPointer: self];
+    if ([MouseTerm_ivars objectForKey: ptr] == nil)
+    {
+        return NO;
+    }
+    return [(NSNumber*) [[MouseTerm_ivars objectForKey: ptr]
+                            objectForKey: @"emojiFix"] boolValue];
+}
+
+- (unsigned long long)MouseTerm_logicalWidthForCharacter:(int)code
+{
+    if ((code & 0x1f0000) == 0x10000)
+        if ([self MouseTerm_getNaturalEmojiWidth])
+            return 2;
+    return [self MouseTerm_logicalWidthForCharacter:code];
+}
+
+- (unsigned long long)MouseTerm_displayWidthForCharacter:(int)code
+{
+    if ((code & 0x1f0000) == 0x10000)
+        if ([self MouseTerm_getNaturalEmojiWidth])
+            return 2;
+    return [self MouseTerm_displayWidthForCharacter:code];
+}
+
+@end
 
 @implementation NSView (MTView)
 
@@ -12,60 +73,167 @@ static BOOL mouseEnabled = YES;
 static BOOL base64CopyEnabled = YES;
 static BOOL base64PasteEnabled = YES;
 
-- (NSData*) MouseTerm_codeForEvent: (NSEvent*) event
-                            button: (MouseButton) button
-                            motion: (BOOL) motion
-                           release: (BOOL) release
+- (id) MouseTerm_colorForANSIColor:(unsigned int)index;
 {
-    // get mouse position, the origin coodinate is (1, 1).
-    Position pos = [self MouseTerm_currentPosition: event]; 
-    unsigned int x = pos.x;
-    unsigned int y = pos.y;
-    char cb = button;
-    char modflag = [event modifierFlags];
+    id colour = nil;
+    MTShell *shell = [[(TTView*)self controller] shell];
+    NSMutableDictionary *palette = [(MTShell*)shell MouseTerm_getPalette];
+    int n;
 
-    if (modflag & NSShiftKeyMask) cb |= 4;
-    if (modflag & NSAlternateKeyMask) cb |= 8;
-    if (modflag & NSControlKeyMask) cb |= 16;
-    if (motion) cb += 32;
+    if (palette) {
+        if (index < 17) {
+            n = index - 1;
+        } else if (index < 1000) {
+            n = index;
+        } else {
+            n = index - 1000;
+        }
+        colour = [palette objectForKey:[NSNumber numberWithInt: n]];
+        if (colour) {
+            return colour;
+        }
+    }
+    return [self MouseTerm_colorForANSIColor: index];
+}
+
+- (id) MouseTerm_colorForANSIColor:(unsigned int)index adjustedRelativeToColor:(id)bgColor;
+{
+    id colour = nil;
+    MTShell *shell = [[(TTView*) self controller] shell];
+    NSMutableDictionary *palette = [(MTShell*)shell MouseTerm_getPalette];
+    int n;
+
+    if (palette) {
+        if (index == 0) {
+            if (bgColor) {
+                n = -1;
+            } else {
+                n = -3;
+            }
+        } else if (index < 17) {
+            n = index - 1;
+        } else if (index < 1000) {
+            n = index;
+        } else {
+            n = index - 1000;
+        }
+        colour = [palette objectForKey:[NSNumber numberWithInt: n]];
+    }
+    if (colour)
+    {
+        colour = [(TTView *)self adjustedColorWithColor: colour
+                                    withBackgroundColor: bgColor
+                                                  force: YES];
+        return colour;
+    }
+    colour = [self MouseTerm_colorForANSIColor: index
+                       adjustedRelativeToColor: bgColor];
+    return colour;
+}
+
+- (id) MouseTerm_colorForExtendedANSIColor:(unsigned long long)index adjustedRelativeToColor:(id)bgColor withProfile:(id)profile
+{
+    id colour = nil;
+    MTShell *shell = [[(TTView*) self controller] shell];
+    NSMutableDictionary *palette = [(MTShell*)shell MouseTerm_getPalette];
+    int n;
+
+    if (palette) {
+        if (index < 17) {
+            n = index - 1;
+        } else if (index < 1000) {
+            n = index;
+        } else {
+            n = index - 1000;
+        }
+        colour = [palette objectForKey: [NSNumber numberWithInt: n]];
+        if (colour)
+        {
+            colour = [(TTView *)self adjustedColorWithColor: colour
+                                        withBackgroundColor: bgColor
+                                                      force: YES];
+            return colour;
+        }
+    }
+    colour = [self MouseTerm_colorForExtendedANSIColor: index
+                               adjustedRelativeToColor: bgColor
+                                           withProfile: profile];
+    return colour;
+}
+
+- (NSData*) MouseTerm_codeForX: (unsigned int) x
+                             Y: (unsigned int) y
+                      modifier: (char) modflag
+                        button: (MouseButton) button
+                        motion: (BOOL) motion
+                       release: (BOOL) release
+{
+    char cb = button;
+    int buttonState = 0;
+    int state;
 
     MTShell* shell = [[(TTView*) self controller] shell];
+
     MouseProtocol mouseProtocol = [shell MouseTerm_getMouseProtocol];
-    unsigned int len;
+    MouseMode mode = [shell MouseTerm_getMouseMode];
+    unsigned int len = 0;
     const size_t BUFFER_LENGTH = 256;
     char buf[BUFFER_LENGTH];
 
-    switch (mouseProtocol) {
-
-    case URXVT_PROTOCOL:
-        if (release)
-            cb |= MOUSE_RELEASE;
-        cb += 32; // base offset +32 (to make it printable)
-        snprintf(buf, BUFFER_LENGTH, "\e[%d;%d;%dM", cb, x, y);
+    switch (mode) {
+    case DEC_LOCATOR_ONESHOT_MODE:
+    case DEC_LOCATOR_MODE:
+        state = [shell MouseTerm_getMouseState];
+        if (state & 1 << MOUSE_BUTTON1) buttonState |= 4;
+        if (state & 1 << MOUSE_BUTTON3) buttonState |= 2;
+        if (state & 1 << MOUSE_BUTTON2) buttonState |= 1;
+        if (motion) {
+            cb = 10;
+        } else {
+            cb = button * 2 + 2 + (release ? 1: 0);
+        }
+        snprintf(buf, BUFFER_LENGTH, "\e[%d;%d;%d;%d;%d&w", cb, buttonState, y, x, 0);
         len = strlen(buf);
+        if (mode == DEC_LOCATOR_ONESHOT_MODE)
+            [shell MouseTerm_setMouseMode: NO_MODE];
         break;
-   
-    case SGR_PROTOCOL:
-        if (release) // release
-            snprintf(buf, BUFFER_LENGTH, "\e[<%d;%d;%dm", cb, x, y);
-        else 
-            snprintf(buf, BUFFER_LENGTH, "\e[<%d;%d;%dM", cb, x, y);
-        len = strlen(buf);
-        break;
-
-    case NORMAL_PROTOCOL:
     default:
-        // add base offset +32 (to make it printable)
-        cb += 32;
-        x += 32;
-        y += 32;
-        if (release)
-            cb |= MOUSE_RELEASE;
-        x = MIN(x, 255);
-        y = MIN(y, 255);
-        len = MOUSE_RESPONSE_LEN;
+        if (modflag & NSShiftKeyMask) cb |= 4;
+        if (modflag & NSAlternateKeyMask) cb |= 8;
+        if (modflag & NSControlKeyMask) cb |= 16;
+        if (motion) cb += 32;
+        switch (mouseProtocol) {
+        case URXVT_PROTOCOL:
+            if (release)
+                cb |= MOUSE_RELEASE;
+            cb += 32; // base offset +32 (to make it printable)
+            snprintf(buf, BUFFER_LENGTH, "\e[%d;%d;%dM", cb, x, y);
+            len = strlen(buf);
+            break;
 
-        snprintf(buf, len + 1, MOUSE_RESPONSE, cb, x, y);
+        case SGR_PROTOCOL:
+            if (release) // release
+                snprintf(buf, BUFFER_LENGTH, "\e[<%d;%d;%dm", cb, x, y);
+            else
+                snprintf(buf, BUFFER_LENGTH, "\e[<%d;%d;%dM", cb, x, y);
+            len = strlen(buf);
+            break;
+
+        case NORMAL_PROTOCOL:
+        default:
+            // add base offset +32 (to make it printable)
+            cb += 32;
+            x += 32;
+            y += 32;
+            if (release)
+                cb |= MOUSE_RELEASE;
+            x = MIN(x, 255);
+            y = MIN(y, 255);
+            len = MOUSE_RESPONSE_LEN;
+
+            snprintf(buf, len + 1, MOUSE_RESPONSE, cb, x, y);
+            break;
+        }
         break;
     }
     return [NSData dataWithBytes: buf length: len];
@@ -142,7 +310,7 @@ static BOOL base64PasteEnabled = YES;
         return YES;
 
     MTShell* shell = [[(TTView*) self controller] shell];
-    if (![shell MouseTerm_getIsMouseDown])
+    if (![shell MouseTerm_getMouseState] & 1 << button)
         return YES;
 
     return NO;
@@ -170,8 +338,8 @@ static BOOL base64PasteEnabled = YES;
     // so we have to compensate for that.
     pos.y -= scrollback;
     pos.y += 1; // origin offset +1
-    // pos.x may not indicate correct coordinate value if the tail 
-    // cells of line buffer are empty, so we calculate it from the cell size. 
+    // pos.x may not indicate correct coordinate value if the tail
+    // cells of line buffer are empty, so we calculate it from the cell size.
     CGSize size = [(TTView*) self cellSize];
     pos.x = (linecount_t)round(viewloc.x / size.width);
 
@@ -184,6 +352,8 @@ static BOOL base64PasteEnabled = YES;
 
 - (BOOL) MouseTerm_buttonDown: (NSEvent*) event button: (MouseButton) button
 {
+    NSData *data;
+
     if ([self MouseTerm_shouldIgnore: event button: button])
         goto ignored;
 
@@ -193,21 +363,31 @@ static BOOL base64PasteEnabled = YES;
     case NO_MODE:
     case HILITE_MODE:
         goto ignored;
+    case DEC_LOCATOR_MODE:
+    case DEC_LOCATOR_ONESHOT_MODE:
+        if (!([shell MouseTerm_getEventFilter] & BUTTONDOWN_EVENT)) {
+            [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] | 1 << button];
+            goto handled;
+        }
+        // pass through
     case NORMAL_MODE:
     case BUTTON_MODE:
     case ALL_MODE:
-    {
-        [shell MouseTerm_setIsMouseDown: YES];
-        NSData* data = [self MouseTerm_codeForEvent: event
-                                             button: button
-                                             motion: NO
-                                            release: NO];
-        [(TTShell*) shell writeData: data];
-
+        [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] | 1 << button];
+        {
+            // get mouse position, the origin coodinate is (1, 1).
+            Position pos = [self MouseTerm_currentPosition: event];
+            [shell MouseTerm_cachePosition: &pos];
+            data = [self MouseTerm_codeForX: pos.x
+                                          Y: pos.y
+                                   modifier: [event modifierFlags]
+                                     button: button
+                                     motion: NO
+                                    release: NO];
+            [(TTShell*) shell writeData: data];
+        }
         goto handled;
     }
-    }
-
 handled:
     [(TTView*) self clearTextSelection];
     return YES;
@@ -217,6 +397,8 @@ ignored:
 
 - (BOOL) MouseTerm_buttonMoved: (NSEvent*) event
 {
+    NSData* data;
+
     if ([self MouseTerm_shouldIgnoreMoved: event])
         goto ignored;
 
@@ -228,16 +410,49 @@ ignored:
     case NORMAL_MODE:
     case HILITE_MODE:
     case BUTTON_MODE:
+        goto ignored;
+    case DEC_LOCATOR_MODE:
+    case DEC_LOCATOR_ONESHOT_MODE:
+        {
+            NSValue *value = [shell MouseTerm_getFilterRectangle];
+            int x;
+            int y;
+            if (value) {
+                int filterRect[4];
+                [value getValue: &filterRect];
+                if ([shell MouseTerm_getCoordinateType] == PIXEL_COORDINATE) {
+                    NSPoint point = [self convertPoint: [event locationInWindow] fromView: nil];
+                    x = point.x;
+                    y = [self frame].size.height - point.y;
+                } else {
+                    Position point = [self MouseTerm_currentPosition: event];
+                    x = point.x;
+                    y = point.y;
+                }
+                if (y >= filterRect[0] && x >= filterRect[1] && y <= filterRect[2] && x <= filterRect[3])
+                    goto handled;
+                [shell MouseTerm_setFilterRectangle: nil];
+                data = [self MouseTerm_codeForX: x Y: y modifier: 0 button: 0 motion: YES release: NO];
+                [(TTShell*) shell writeData: data];
+            }
+        }
         goto handled;
     case ALL_MODE:
-    {
-        NSData* data = [self MouseTerm_codeForEvent: event
-                                             button: MOUSE_RELEASE + 32
-                                             motion: NO
-                                            release: NO];
-        [(TTShell*) shell writeData: data];
+        {
+            // get mouse position, the origin coodinate is (1, 1).
+            Position pos = [self MouseTerm_currentPosition: event];
+            if ([shell MouseTerm_positionIsChanged: &pos]) {
+                [shell MouseTerm_cachePosition: &pos];
+                data = [self MouseTerm_codeForX: pos.x
+                                              Y: pos.y
+                                       modifier: [event modifierFlags]
+                                         button: MOUSE_RELEASE
+                                         motion: YES
+                                        release: NO];
+                [(TTShell*) shell writeData: data];
+            }
+        }
         goto handled;
-    }
     }
 handled:
     [(TTView*) self clearTextSelection];
@@ -249,6 +464,8 @@ ignored:
 
 - (BOOL) MouseTerm_buttonDragged: (NSEvent*) event button: (MouseButton) button
 {
+    NSData* data;
+
     if ([self MouseTerm_shouldIgnoreDown: event button: button])
         goto ignored;
 
@@ -260,16 +477,49 @@ ignored:
     case NORMAL_MODE:
     case HILITE_MODE:
         goto handled;
+    case DEC_LOCATOR_MODE:
+    case DEC_LOCATOR_ONESHOT_MODE:
+        {
+            NSValue *value = [shell MouseTerm_getFilterRectangle];
+            int x;
+            int y;
+            if (value) {
+                int filterRect[4];
+                [value getValue: &filterRect];
+                if ([shell MouseTerm_getCoordinateType] == PIXEL_COORDINATE) {
+                    NSPoint point = [self convertPoint: [event locationInWindow] fromView: nil];
+                    x = point.x;
+                    y = [self frame].size.height - point.y;
+                } else {
+                    Position point = [self MouseTerm_currentPosition: event];
+                    x = point.x;
+                    y = point.y;
+                }
+                if (y >= filterRect[0] && x >= filterRect[1] && y <= filterRect[2] && x <= filterRect[3])
+                    goto handled;
+                [shell MouseTerm_setFilterRectangle: nil];
+                data = [self MouseTerm_codeForX: x Y: y modifier: 0 button: 0 motion: YES release: NO];
+                [(TTShell*) shell writeData: data];
+            }
+        }
+        goto handled;
     case BUTTON_MODE:
     case ALL_MODE:
-    {
-        NSData* data = [self MouseTerm_codeForEvent: event
-                                             button: button
-                                             motion: YES
-                                            release: NO];
-        [(TTShell*) shell writeData: data];
+        {
+            // get mouse position, the origin coodinate is (1, 1).
+            Position pos = [self MouseTerm_currentPosition: event];
+            if ([shell MouseTerm_positionIsChanged: &pos]) {
+                [shell MouseTerm_cachePosition: &pos];
+                data = [self MouseTerm_codeForX: pos.x
+                                              Y: pos.y
+                                       modifier: [event modifierFlags]
+                                         button: button
+                                         motion: YES
+                                        release: NO];
+                [(TTShell*) shell writeData: data];
+            }
+        }
         goto handled;
-    }
     }
 handled:
     [(TTView*) self clearTextSelection];
@@ -280,6 +530,8 @@ ignored:
 
 - (BOOL) MouseTerm_buttonUp: (NSEvent*) event button: (MouseButton) button
 {
+    NSData *data;
+
     if ([self MouseTerm_shouldIgnoreDown: event button: button])
         goto ignored;
 
@@ -289,19 +541,30 @@ ignored:
     case NO_MODE:
     case HILITE_MODE:
         goto ignored;
+    case DEC_LOCATOR_MODE:
+    case DEC_LOCATOR_ONESHOT_MODE:
+        if (!([shell MouseTerm_getEventFilter] & BUTTONUP_EVENT)) {
+            [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] & ~(1 << button)];
+            goto handled;
+        }
+        // pass through
     case NORMAL_MODE:
     case BUTTON_MODE:
     case ALL_MODE:
-    {
-        [shell MouseTerm_setIsMouseDown: NO];
-        NSData* data = [self MouseTerm_codeForEvent: event
-                                             button: button
-                                             motion: NO
-                                            release: YES];
-        [(TTShell*) shell writeData: data];
-
+        [shell MouseTerm_setMouseState: [shell MouseTerm_getMouseState] & ~(1 << button)];
+        {
+            // get mouse position, the origin coodinate is (1, 1).
+            Position pos = [self MouseTerm_currentPosition: event];
+            [shell MouseTerm_cachePosition: &pos];
+            data = [self MouseTerm_codeForX: pos.x
+                                          Y: pos.y
+                                   modifier: [event modifierFlags]
+                                     button: button
+                                     motion: NO
+                                    release: YES];
+            [(TTShell*) shell writeData: data];
+        }
         goto handled;
-    }
     }
 handled:
     [(TTView*) self clearTextSelection];
@@ -390,6 +653,13 @@ ignored:
 // Intercepts all scroll wheel movements (one wheel "tick" at a time)
 - (void) MouseTerm_scrollWheel: (NSEvent*) event
 {
+    NSData* data;
+    long i;
+    long lines;
+    double delta;
+    MTProfile* profile;
+    MouseButton button;
+
     if ([self MouseTerm_shouldIgnore: event button: MOUSE_WHEEL_UP])
         goto ignored;
 
@@ -399,9 +669,7 @@ ignored:
     switch ([shell MouseTerm_getMouseMode])
     {
     case NO_MODE:
-    {
-        MTProfile* profile = [(TTTabController*) [(TTView*) self controller]
-                                                 profile];
+        profile = [(TTTabController*) [(TTView*) self controller] profile];
         if ([NSView MouseTerm_getMouseEnabled] &&
             [profile MouseTerm_emulationEnabled] &&
             [screen isAlternateScreenActive] &&
@@ -409,12 +677,11 @@ ignored:
         {
             // Calculate how many lines to scroll by (takes acceleration
             // into account)
-            NSData* data;
             // deltaY returns CGFloat, which can be float or double
             // depending on the architecture. Upcasting floats to doubles
             // seems like an easier compromise than detecting what the
             // type really is.
-            double delta = [event deltaY];
+            delta = [event deltaY];
 
             // Trackpads seem to return a lot of 0.0 events, which
             // shouldn't trigger scrolling anyway.
@@ -441,16 +708,13 @@ ignored:
         }
         else
             goto ignored;
-    }
     // FIXME: Unhandled at the moment
     case HILITE_MODE:
         goto ignored;
     case NORMAL_MODE:
     case BUTTON_MODE:
     case ALL_MODE:
-    {
-        MouseButton button;
-        double delta = [event deltaY];
+        delta = [event deltaY];
         if (delta == 0.0)
             goto handled;
         else if (delta < 0.0)
@@ -460,21 +724,21 @@ ignored:
         }
         else
             button = MOUSE_WHEEL_UP;
-
-        NSData* data = [self MouseTerm_codeForEvent: event
-                                             button: button
-                                             motion: NO
-                                            release: NO];
-
-        long i;
-        long lines = lround(delta) + 1;
-        for (i = 0; i < lines; ++i)
-            [(TTShell*) shell writeData: data];
-
+        {
+            // get mouse position, the origin coodinate is (1, 1).
+            Position pos = [self MouseTerm_currentPosition: event];
+            data = [self MouseTerm_codeForX: pos.x
+                                          Y: pos.y
+                                   modifier: [event modifierFlags]
+                                     button: button
+                                     motion: NO
+                                    release: NO];
+            lines = lround(delta) + 1;
+            for (i = 0; i < lines; ++i)
+                [(TTShell*) shell writeData: data];
+        }
         goto handled;
     }
-    }
-
 handled:
     [(TTView*) self clearTextSelection];
     return;
@@ -489,7 +753,7 @@ ignored:
 
 - (BOOL) MouseTerm_windowDidBecomeKey: (id) arg1
 {
-    NSData* data = [NSData dataWithBytes: "\x1b[I" length: 3];
+    NSData* data = [NSData dataWithBytes: "\033[I" length: 3];
     MTShell* shell = [[(TTView*) self controller] shell];
     if ([shell MouseTerm_getFocusMode]) {
         [(TTShell*) shell writeData: data];
@@ -499,7 +763,7 @@ ignored:
 
 - (BOOL) MouseTerm_windowDidResignKey: (id) arg1
 {
-    NSData* data = [NSData dataWithBytes: "\x1b[O" length: 3];
+    NSData* data = [NSData dataWithBytes: "\033[O" length: 3];
     MTShell* shell = [[(TTView*) self controller] shell];
     if ([shell MouseTerm_getFocusMode]) {
         [(TTShell*) shell writeData: data];
@@ -509,7 +773,7 @@ ignored:
 
 - (BOOL) MouseTerm_becomeFirstResponder
 {
-    NSData* data = [NSData dataWithBytes: "\x1b[I" length: 3];
+    NSData* data = [NSData dataWithBytes: "\033[I" length: 3];
     MTShell* shell = [[(TTView*) self controller] shell];
     if ([shell MouseTerm_getFocusMode]) {
         [(TTShell*) shell writeData: data];
@@ -519,7 +783,7 @@ ignored:
 
 - (BOOL) MouseTerm_resignFirstResponder
 {
-    NSData* data = [NSData dataWithBytes: "\x1b[O" length: 3];
+    NSData* data = [NSData dataWithBytes: "\033[O" length: 3];
     MTShell* shell = [[(TTView*) self controller] shell];
     if ([shell MouseTerm_getFocusMode]) {
         [(TTShell*) shell writeData: data];
