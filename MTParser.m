@@ -16,7 +16,7 @@ parse_x_colorspec(MTShell *shell, char const *spec, int *red, int *green, int *b
 
     if (strncmp(spec, "rgb:", 4) == 0) {
         p = spec + 4;
-        while (p) {
+        while (*p) {
             component = strtoul(p, &endptr, 16);
             if (component == ULONG_MAX)
                 break;
@@ -34,7 +34,7 @@ parse_x_colorspec(MTShell *shell, char const *spec, int *red, int *green, int *b
                 break;
             ++p;
         }
-        if (*p == '\0' || *p == '/')
+        if (*p != '\0')
             return (-1);
         if (index != 3)
             return (-1);
@@ -681,13 +681,11 @@ static void pop_title(MTShell *shell, int param)
 static void esc_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
 {
     switch (ppc->action) {
-#if 0
     case 'Z':
         [(TTShell*) shell writeData: [NSData dataWithBytes: PDA_RESPONSE
                                                     length: PDA_RESPONSE_LEN]];
         *p = 0x7f;
         break;
-#endif
     case 'c':
         handle_ris(ppc, shell);
         break;
@@ -710,7 +708,7 @@ static void get_current_position(MTShell *shell, int *x, int *y)
     if (*y >= frame.size.height) *y = frame.size.height - 1;
     if ([shell MouseTerm_getCoordinateType] == CELL_COORDINATE) {
         CGSize size = [view cellSize];
-        *x = (int)round(*x / (double)size.width + 1.0);
+        *x = (int)round(*x / (double)size.width);
         *y = (int)round(*y / (double)size.height + 0.5);
     }
 }
@@ -720,13 +718,11 @@ static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
     int i;
 
     switch (ppc->action) {
-#if 0
     case 'c':
         [(TTShell*) shell writeData: [NSData dataWithBytes: PDA_RESPONSE
                                                     length: PDA_RESPONSE_LEN]];
         *p = 0x7f;
         break;
-#endif
     case ('>' << 8) | 'c':
         [(TTShell*) shell writeData: [NSData dataWithBytes: SDA_RESPONSE
                                                     length: SDA_RESPONSE_LEN]];
@@ -837,7 +833,7 @@ static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
                         break;
                     case CELL_COORDINATE:
                         size = [view cellSize];
-                        cellx = (int)round(pixelx / (double)size.width + 1.0);
+                        cellx = (int)round(pixelx / (double)size.width);
                         celly = (int)round(pixely / (double)size.height + 0.5);
                         response = [NSString stringWithFormat: @"\033[1;%d;%d;%d;%d&w", button, celly, cellx, 0];
                         break;

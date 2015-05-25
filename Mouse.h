@@ -34,7 +34,7 @@ typedef enum
 
 // Control codes
 
-#define PDA_RESPONSE "\033[1;2;22c"
+#define PDA_RESPONSE "\033[?1;22;29c"
 #define PDA_RESPONSE_LEN (sizeof(PDA_RESPONSE) - 1)
 
 // MT(0x4d54 => 19796) ver 1.0.0(10000)
