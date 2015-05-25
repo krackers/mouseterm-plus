@@ -543,8 +543,33 @@ static void handle_ris(struct parse_context *ppc, MTShell *shell)
     [shell MouseTerm_setCoordinateType: CELL_COORDINATE];
     [shell MouseTerm_setEventFilter: REQUEST_EVENT];
     [shell MouseTerm_setFilterRectangle: nil];
+
+    TTProfile *activeProfile = (TTProfile *)[[[[shell controller] activePane] view] profile];
+    Class sharedProfileControllerMetaclass = objc_getClass("TTProfileManager");
+    TTProfileManager *sharedProfileManager \
+        = (TTProfileManager*) objc_msgSend(sharedProfileControllerMetaclass, \
+                @selector(sharedProfileManager));
+
+    TTProfile *originalProfile = [sharedProfileManager profileWithName:[activeProfile name]];
+
+    [activeProfile setValue:[originalProfile valueForKey:@"CursorBlink"] forUndefinedKey:@"CursorBlink"];
+    [activeProfile setValue:[originalProfile valueForKey:@"CursorType"] forUndefinedKey:@"CursorType"];
+
     [ppc->buffer release];
     ppc->buffer = nil;
+}
+
+static void handle_decstr(struct parse_context *ppc, MTShell *shell)
+{
+    TTProfile *activeProfile = (TTProfile *)[[[[shell controller] activePane] view] profile];
+    Class sharedProfileControllerMetaclass = objc_getClass("TTProfileManager");
+    TTProfileManager *sharedProfileManager \
+        = (TTProfileManager*) objc_msgSend(sharedProfileControllerMetaclass, \
+                @selector(sharedProfileManager));
+
+    TTProfile *originalProfile = [sharedProfileManager profileWithName:[activeProfile name]];
+
+    [activeProfile setValue:[originalProfile valueForKey:@"CursorType"] forUndefinedKey:@"CursorType"];
 }
 
 static void enable_extended_mode(struct parse_context *ppc, MTShell *shell)
@@ -827,6 +852,9 @@ static void csi_dispatch(struct parse_context *ppc, char *p, MTShell *shell)
             [(TTShell*) shell writeData: [NSData dataWithBytes: [response UTF8String]
                                                         length: response.length]];
         }
+        break;
+    case ('!' << 8) | 'p':  /* DECSTR */
+        handle_decstr(ppc, shell);
         break;
     case (' ' << 8) | 'q':  /* DECSCUSR */
         if (ppc->params_index < 1)
