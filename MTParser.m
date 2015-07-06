@@ -211,7 +211,7 @@ static void osc11_get(MTShell *shell)
     r = components[0] * 0xffff;
     g = components[1] * 0xffff;
     b = components[2] * 0xffff;
-    NSString *spec = [NSString stringWithFormat: @"\033]10;rgb:%04x/%04x/%04x\033\\", r, g, b];
+    NSString *spec = [NSString stringWithFormat: @"\033]11;rgb:%04x/%04x/%04x\033\\", r, g, b];
     [(TTShell*) shell writeData: [NSData dataWithBytes: [spec UTF8String]
                                                 length: spec.length]];
 }
