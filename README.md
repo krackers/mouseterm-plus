@@ -79,6 +79,7 @@ Additionally, this project does:
 * Ignore unhandled DCS/APC/PM/SOS control string.
 * Localization support of menu resource (French/Japanese).
 * Add extended mode 8810: *"Emoji width fix"*.
+* Support VT's *DECSCUSR* sequence.
 
 [4]: http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter4.html#config-appcursor
 [5]: http://towo.net/mined/
@@ -169,7 +170,7 @@ changes, or report issues.
 in MouseTerm.
 
 [17]: http://git-scm.org/
-[18]: http://github.com/brodie/mouseterm
-[19]: http://rentzsch.com/trac/wiki/JRSwizzle
+[18]: http://github.com/saitoha/mouseterm-plus
+[19]: https://github.com/rentzsch/jrswizzle
 [20]: http://iterm.sourceforge.net/
 
