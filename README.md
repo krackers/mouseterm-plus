@@ -40,7 +40,7 @@ Additionally, this project does:
 * Fix some bugs around mouse event coordinate handling.
 * Performance improvement: filter out extra motion events during mouse dragging.
 * Handle RIS (hard reset) sequence (*reset(1)* command works well).
-* Support OS X Yosemite installation.
+* Tested on OS X El Capitan.
 * Support *URXVT 1015 styled mouse tracking*(already backported into original source).
   [MinEd][5] uses it.
 * Support *SGR 1006 styled mouse tracking*(already backported into original source).
