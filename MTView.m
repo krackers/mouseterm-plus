@@ -241,6 +241,7 @@ static BOOL base64PasteEnabled = YES;
 
 + (void) MouseTerm_setMouseEnabled: (BOOL) value
 {
+    NSLog(@"[MouseTerm] INFO: setMouseEnabled");
     mouseEnabled = value;
 }
 
