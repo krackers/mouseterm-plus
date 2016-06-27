@@ -37,9 +37,10 @@ Original MouseTerm(version 1.0b1) does:
 Additionally, this project does:
 
 * Fix OS X Mavericks installation problem.
+  On El Capitan, you have to disable System Integrity Protection(SIP) temporarily for the installation.
 * Fix some bugs around mouse event coordinate handling.
 * Performance improvement: filter out extra motion events during mouse dragging.
-* Handle RIS (hard reset) sequence (*reset(1)* command works well).
+* Handle RIS (hard reset) sequence correctly (*reset(1)* command works well).
 * Tested on OS X El Capitan.
 * Support *URXVT 1015 styled mouse tracking*(already backported into original source, Terminal.app of OS X El Capitan supports this by default).
   [MinEd][5] uses it.
@@ -73,10 +74,10 @@ Additionally, this project does:
   The OSC 52 implementation of MouseTerm-Plus does not have buffer size restriction, just like XTerm.
 * Report original DA1 response ("\033\[?1;22;29c").
 * Report original DA2 response ("\033\[>19796;10000;2c").
-* Eliminate [ragel][9] dependency.
+* Eliminate [ragel][9] build dependency.
 * Parse control sequences with DEC VT/ECMA-48 compliant canonical parser.
 * Handle "multiple-parameterized" control sequences(e.g. "\e[?1000;1006h") correctly (The original mouseterm doesn't).
-* Ignore unhandled DCS/APC/PM/SOS control string.
+* Ignore unhandled DCS/APC/PM/SOS control string, for compliance with ECMA-48.
 * Localization support of menu resource (French/Japanese).
 * Add extended private mode 8810: *"Emoji width fix"*.
 * Support VT's *DECSCUSR* sequence.
