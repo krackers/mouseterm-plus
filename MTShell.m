@@ -1138,6 +1138,9 @@ NSDictionary* generateX11ColorNameMap()
     it += prefix_len;
     apr_base64_encode(it, sourceCString, sourceLength);
     it += resultLength;
+    /* Newer version of apr_base64_encode_len() returns the length of including the trailing \0 */
+    if (resultLength > 0 && *it - 1 == '\0')
+        it--, allLength--;
     memcpy(it, postfix, postfix_len);
 
     [(TTShell*)self writeData: [NSData dataWithBytes: encodedBuffer
