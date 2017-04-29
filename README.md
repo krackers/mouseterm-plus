@@ -27,9 +27,9 @@ that includes various features unrelated to mouse emulation.
 
 Original MouseTerm(version 1.0b1) does:
 
-* Mouse normal event reporting.
-* Mouse button event reporting.
-* Mouse scroll wheel reporting.
+* Mouse normal event reporting (Terminal.app of OS X El Capitan supports this by default).
+* Mouse button event reporting (Terminal.app of OS X El Capitan supports this by default).
+* Mouse scroll wheel reporting (Terminal.app of OS X El Capitan supports this by default).
 * Simulated mouse wheel scrolling for programs like `less` (i.e. any
   fullscreen program that uses [application cursor key mode][4]).
 * Menu item integration.
@@ -37,19 +37,20 @@ Original MouseTerm(version 1.0b1) does:
 Additionally, this project does:
 
 * Fix OS X Mavericks installation problem.
+  On El Capitan, you have to disable System Integrity Protection(SIP) temporarily for the installation.
 * Fix some bugs around mouse event coordinate handling.
 * Performance improvement: filter out extra motion events during mouse dragging.
-* Handle RIS (hard reset) sequence (*reset(1)* command works well).
-* Support OS X Yosemite installation.
-* Support *URXVT 1015 styled mouse tracking*(already backported into original source).
+* Handle RIS (hard reset) sequence correctly (*reset(1)* command works well).
+* Tested on OS X El Capitan.
+* Support *URXVT 1015 styled mouse tracking*(already backported into original source, Terminal.app of OS X El Capitan supports this by default).
   [MinEd][5] uses it.
-* Support *SGR 1006 styled mouse tracking*(already backported into original source).
+* Support *SGR 1006 styled mouse tracking*(already backported into original source, Terminal.app of OS X El Capitan supports this by default).
   Recent various terminal applications use it.
 * Support *"DEC Locator mode"*.
   [Vim][7] optionally uses it(:set ttymouse=dec).
-* Support xterm's *"Any Event Mouse(private mode 1003)"* tracking mode.
+* Support xterm's *"Any Event Mouse"* tracking mode (private mode 1003, Terminal.app of OS X El Capitan supports this by default).
   [MinEd][5] uses it.
-* Support xterm's *"Focus Reporting Mode (private mode 1004)"*.
+* Support xterm's *"Focus Reporting Mode"* (private mode 1004, Terminal.app of OS X El Capitan supports this by default).
   Used by [MinEd][5].
 * Support xterm's *"Title stacking"* feature.
   Used by [tmux][6], [MinEd][5].
@@ -73,12 +74,12 @@ Additionally, this project does:
   The OSC 52 implementation of MouseTerm-Plus does not have buffer size restriction, just like XTerm.
 * Report original DA1 response ("\033\[?1;22;29c").
 * Report original DA2 response ("\033\[>19796;10000;2c").
-* Eliminate [ragel][9] dependency.
+* Eliminate [ragel][9] build dependency.
 * Parse control sequences with DEC VT/ECMA-48 compliant canonical parser.
-* Handle "multiple-parameterized" control sequences(e.g. "\e[?1000;1006h") correctly.
-* Ignore unhandled DCS/APC/PM/SOS control string.
+* Handle "multiple-parameterized" control sequences(e.g. "\e[?1000;1006h") correctly (The original mouseterm doesn't).
+* Ignore unhandled DCS/APC/PM/SOS control string, for compliance with ECMA-48.
 * Localization support of menu resource (French/Japanese).
-* Add extended mode 8810: *"Emoji width fix"*.
+* Add extended private mode 8810: *"Emoji width fix"*.
 * Support VT's *DECSCUSR* sequence.
 
 [4]: http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter4.html#config-appcursor
